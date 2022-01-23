@@ -1,15 +1,79 @@
-<!--
-  Generated template for the RequestStatusPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-  <ion-navbar>
-    <ion-title>request-status</ion-title>
-  </ion-navbar>
+	<ion-navbar *navbar primary class="request-status-page navbar">
+		<span>{{translate.header}}</span>
+	</ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="request-status-page">
+	<div class="request-status-page question" *ngIf="!jobIsDone">
+		<ion-label class="question--label"> {{questions[0].title}} </ion-label>
 
+		<ion-list radio-group [(ngModel)]="questions[0].value">
+			<ion-item *ngFor="#option of questions[0].options">
+				<ion-radio item-left value="{{option.value}}" (click)="radioChecked()"></ion-radio>
+				<ion-label>{{option.label}}</ion-label>
+			</ion-item>
+		</ion-list>
+	</div>
+
+	<div class="request-status-page question" *ngIf="jobIsDone">
+		<ion-label class="question--label"> {{questions[0].title}} </ion-label>
+
+		<ion-list radio-group [(ngModel)]="questions[0].value">
+			<ion-item>
+				<ion-radio disabled item-left value="{{questions[0].options[0].value}}"></ion-radio>
+				<ion-label>{{questions[0].options[0].label}}</ion-label>
+			</ion-item>
+
+			<ion-item>
+				<ion-radio disabled item-left value="{{questions[0].options[1].value}}"></ion-radio>
+				<ion-label>{{questions[0].options[1].label}}</ion-label>
+			</ion-item>
+
+			<ion-item>
+				<ion-radio disabled item-left value="{{questions[0].options[2].value}}" checked></ion-radio>
+				<ion-label>{{questions[0].options[2].label}}</ion-label>
+			</ion-item>
+		</ion-list>
+	</div>
+
+	<div class="request-status-page question" *ngIf="questions[0].value === '1' || questions[0].value === '2' || jobIsDone">
+		<ion-label class="question--label"> {{questions[1].title}} </ion-label>
+
+		<ion-list radio-group [(ngModel)]="questions[1].value">
+			<ion-item *ngFor="#option of questions[1].options">
+				<ion-radio item-left value="{{option.value}}" (click)="radioChecked()"></ion-radio>
+				<ion-label>{{option.label}}</ion-label>
+			</ion-item>
+		</ion-list>
+	</div>
+
+	<div *ngIf="questions[0].value === '1' || questions[0].value === '2' || jobIsDone">
+		<ion-item *ngIf="questions[1].value === '1'">
+			<input id="datetimepicker" type="text" />
+		</ion-item>
+	</div>
+
+	<div class="request-status-page question" style="border-bottom: 0" *ngIf="questions[0].value !== '0' && (questions[0].value !== null || jobIsDone) && (questions[1].value === '0' || questions[1].value === '1')">
+		<ion-list>
+			<ion-item class="request-status-page__text-box">
+				<ion-label>{{translate.personalTitle}}</ion-label>
+				<ion-textarea class="request-status-page__text-input" autocomplete="on" autocorrect="on" [(ngModel)]="personalMessage"> </ion-textarea>
+			</ion-item>
+		</ion-list>
+	</div>
 </ion-content>
+
+<ion-footer align="center">
+	<button class="request-status-page__submit-button request-status-page__submit-button--active" *ngIf="questions[0].value === '0'" (click)="submit()">{{translate.submitButton}}</button>
+
+	<div *ngIf="questions[0].value === '1' || questions[0].value === '2' || jobIsDone">
+		<button class="request-status-page__submit-button request-status-page__submit-button--active" *ngIf="questions[1].value !== null" (click)="submit()">{{translate.submitButton}}</button>
+	</div>
+
+	<button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="questions[0].value === null && !jobIsDone">{{translate.submitButton}}</button>
+
+	<button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="questions[0].value !== '0' && questions[0].value !== null && questions[1].value === null">{{translate.submitButton}}</button>
+
+	<button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="jobIsDone && questions[1].value === null">{{translate.submitButton}}</button>
+</ion-footer>

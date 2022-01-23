@@ -1,15 +1,167 @@
 <!--
-  Generated template for the QuoteDetailsPage page.
+Generated template for the RequestDetailsPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
+See http://ionicframework.com/docs/v2/components/#navigation for more info on
+Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar>
-    <ion-title>quote-details</ion-title>
-  </ion-navbar>
+	<ion-navbar primary *navbar>
+		<ion-title
+			>{{msgSendQuoteTo}} <br />
+			{{askerName}} ({{requestID}})</ion-title
+		>
+		<ion-buttons end>
+			<a href="tel:{{askerPhone}}" button clear lighter *ngIf="askerPhone!=''"><ion-icon name="call" style="color: white"></ion-icon></a>
+			<button (click)="archiveQuote('item-index')" [hidden]="quoteArchived">
+				<ion-icon name="archive"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
+	<ion-toolbar primary class="tollbar-editprice">
+		<button light outline small block center type="button" name="button" (click)="editPrice()">
+			<ion-icon name="create" [hidden]="quoteClosed"></ion-icon>
+			<span>€ {{taskPrice}}</span>
+		</button>
+	</ion-toolbar>
+
+	<ion-toolbar primary class="toolbar-segment">
+		<ion-segment light [(ngModel)]="segment">
+			<ion-segment-button value="chat" (click)="autoScroll()"> {{msgChat}} </ion-segment-button>
+			<ion-segment-button value="request"> {{msgRequest}} </ion-segment-button>
+		</ion-segment>
+	</ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="quote-details" [ngSwitch]="segment">
+	<div class="content-scroll" id="chat-autoscroll" *ngSwitchWhen="'chat'">
+		<ion-list class="chat">
+			<!--  -->
+			<ion-item
+				class="chat-message"
+				*ngFor="#message of chat[0].conversation"
+				[ngClass]="{
+                      tasker: message.who == 'tasker',
+                      zaask: message.who == 'zaask',
+                      bgSuccess: message.type == 'success',
+                      bgInfo: message.type == 'info',
+                      bgError: message.type == 'error'}"
+			>
+				<span class="chat-avatar" [hidden]="message.who == 'zaask'">
+					<img [src]="chat[0][message.who][0].avatar" />
+				</span>
+				<div class="chat-content">
+					<p class="chat-text">{{message.message}}</p>
+					<button clear (click)="launch('https://www.thepolyglotdeveloper.com')" class="chat-link" *ngIf="message.attach">{{msgSeeAttach}}</button>
+					<!-- <a href="{{message.attach}}" class="chat-link" *ngIf="message.attach">Ver Anexo</a> -->
+					<!-- <div class="chat-attach-full">
+                          <img [src]="message.attach" />
+                      </div> -->
+					<span class="chat-about">{{chat[0][message.who][0].name}} <span [hidden]="message.who == 'zaask'">.</span> {{message.when}}</span>
+				</div>
+				<!-- {{keyboardAlreadyOpen}} -->
+			</ion-item>
+			<button block clear danger class="buttonNoNet" (click)="sendAgain()" *ngIf="errorSendMessage">
+				<span class="buttonNoNet-message">{{formDataBackup.message}}</span>
+				<ion-icon name="alert"></ion-icon>
+				{{msgErrorSendAgain}}.
+				<ion-spinner right *ngIf="sending" icon="ripple"></ion-spinner>
+			</button>
+		</ion-list>
+	</div>
 
+	<div *ngSwitchWhen="'request'" class="content-scroll">
+		<!--
+              COPIED DIRECTLY FOR REQUEST-DETAILS.HTML
+              >> CREATE A DIRECTIVE TO NOT HAVE DUPLICATED CONTENT
+          -->
+		<!-- TODO create directive. exactly the same as request-details.html -->
+
+		<!-- START directive task-details -->
+		<ion-card class="task-card">
+			<ion-card-content>
+				<div class="task-card-header">
+					<div class="task-card-avatar">
+						<img src="{{askerPhoto}}" />
+					</div>
+
+					<div class="task-card-name">
+						<h2 class="h1">{{askerName}}</h2>
+						<h3>{{taskTitle}}</h3>
+					</div>
+				</div>
+
+				<div class="task-card-about">
+					<div class="task-card-item-icon">
+						<ion-icon name="time"></ion-icon>
+						<strong class="task-card-item-icon-title">{{postAgo}}</strong>
+						<span class="task-card-item-icon-text">{{postDate}}</span>
+						<!--{{postDate}}-->
+					</div>
+
+					<div class="task-card-item-icon task-card-item-icon--credits">
+						<span class="icon-spr"></span>
+						<strong class="task-card-item-icon-title">{{taskCredits}}</strong>
+						<span class="task-card-item-icon-text">{{msgCredits}}</span>
+					</div>
+
+					<div class="task-card-item-icon">
+						<ion-icon *ngIf="askerPhone == 0" name="eye-off"></ion-icon>
+						<span *ngIf="askerPhone == 0">{{msgPhone}}<br />{{msgNotValidated}}</span>
+						<ion-icon *ngIf="!askerPhone == 0" name="eye"></ion-icon>
+						<span *ngIf="!askerPhone == 0">{{msgPhone}}<br />{{msgValidated}}</span>
+					</div>
+				</div>
+			</ion-card-content>
+		</ion-card>
+
+		<ion-list class="task-details">
+			<ion-item-group>
+				<ion-item-divider class="t-q-divider">
+					<ion-icon name="md-create" class="t-q-divider-icon"></ion-icon>
+					<h4 class="t-q-divider-title">{{msgWhat}}</h4>
+				</ion-item-divider>
+				<ion-list class="task-questions">
+					<ion-item text-wrap class="t-q-item" *ngFor="#item of questions">
+						<p class="t-q-item-question">{{item.question}}</p>
+						<strong class="t-q-item-answer">{{item.answer}}</strong>
+					</ion-item>
+				</ion-list>
+			</ion-item-group>
+
+			<ion-item-group>
+				<ion-item-divider class="t-q-divider">
+					<ion-icon name="calendar" class="t-q-divider-icon"></ion-icon>
+					<h4 class="t-q-divider-title">{{msgWhen}}</h4>
+				</ion-item-divider>
+				<ion-item class="t-q-item">
+					<strong class="t-q-item-answer">{{when}}</strong>
+				</ion-item>
+			</ion-item-group>
+
+			<ion-item-group>
+				<ion-item-divider class="t-q-divider">
+					<ion-icon name="pin" class="t-q-divider-icon"></ion-icon>
+					<h4 class="t-q-divider-title">{{msgHere}}</h4>
+				</ion-item-divider>
+				<ion-item class="t-q-item-map">
+					<strong class="t-q-item-answer">{{here}}</strong>
+					<!-- <img src="https://maps.googleapis.com/maps/api/staticmap?sensor=false&center=38.617373,-9.103459&zoom=13&size=350x175&maptype=roadmap%20&markers=color:red|label:|38.617373,-9.103459&key=AIzaSyDH0ikt5YpHdBU6iqqVOy5eB1FZCUcZxOo" alt="" /> -->
+					<img src="{{googleMapPoint}}" alt="" />
+				</ion-item>
+			</ion-item-group>
+		</ion-list>
+		<!-- END directive task-details -->
+	</div>
 </ion-content>
+
+<ion-toolbar position="bottom" *ngIf="segment == 'chat'" id="elasticContainer" class="toolbar-chat">
+	<form [ngFormModel]="chatForm" (ngSubmit)="sendMessage(chatForm.value)" class="chat-write" novalidate>
+		<!-- <button clear type="button" name="btn-attach"><ion-icon name="attach"></ion-icon></button>
+          <input type="hidden" name="attach" value=""> -->
+
+		<div class="chat-write-content">
+			<textarea rows="2" placeholder="{{msgWriteMessage}}" [ngFormControl]="message" id="elastic" required></textarea>
+		</div>
+		<button clear small type="submit" [ngClass]="{collapse: !chatForm.valid}" (click)="autoScroll()">{{msgSend}}</button>
+	</form>
+</ion-toolbar>

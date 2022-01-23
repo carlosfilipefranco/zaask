@@ -4,6 +4,8 @@ import { User } from "../user/user";
 
 import "rxjs/add/operator/map";
 
+import Jquery from "jquery";
+
 @Injectable()
 export class ZaaskServices {
 	server: string;
@@ -293,19 +295,19 @@ export class ZaaskServices {
 		formData.append("source", source);
 		formData.append("attach", attach);
 		//
-		// return Jquery.ajax({
-		// 	type: "POST",
-		// 	url: this.url,
-		// 	data: formData,
-		// 	processData: false,
-		// 	contentType: false,
-		// 	success: function (data) {
-		// 		return Promise.resolve(data);
-		// 	},
-		// 	error: function (err) {
-		// 		return Promise.reject(err);
-		// 	}
-		// });
+		return Jquery.ajax({
+			type: "POST",
+			url: this.url,
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (data) {
+				return Promise.resolve(data);
+			},
+			error: function (err) {
+				return Promise.reject(err);
+			}
+		});
 	}
 
 	getBoughtTasks() {
@@ -356,19 +358,19 @@ export class ZaaskServices {
 		form.append("description", description);
 		form.append("attach", attach);
 		this.url = `${this.server}/pro/notification/save?api_token=${token}`;
-		// return Jquery.ajax({
-		// 	type: "POST",
-		// 	url: this.url,
-		// 	data: form,
-		// 	processData: false,
-		// 	contentType: false,
-		// 	success: function (data) {
-		// 		callBack(data);
-		// 	},
-		// 	error: function (data) {
-		// 		console.log("error in send message", data);
-		// 	}
-		// });
+		return Jquery.ajax({
+			type: "POST",
+			url: this.url,
+			data: form,
+			processData: false,
+			contentType: false,
+			success: function (data) {
+				callBack(data);
+			},
+			error: function (data) {
+				console.log("error in send message", data);
+			}
+		});
 	}
 
 	getFormUrlEncoded(toConvert) {

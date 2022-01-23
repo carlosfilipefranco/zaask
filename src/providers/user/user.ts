@@ -21,6 +21,8 @@ export class User {
 	api_key: string;
 	id: string;
 	uniqcode: string;
+	lead_credits: any;
+	osUserId;
 	constructor(private storage: Storage) {
 		this.country = "PT";
 

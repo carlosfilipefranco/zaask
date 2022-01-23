@@ -1,15 +1,33 @@
-<!--
-  Generated template for the QuotesFilterPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
-<ion-header>
-  <ion-navbar>
-    <ion-title>quotes-filter</ion-title>
-  </ion-navbar>
-</ion-header>
-
-<ion-content padding>
-
+<ion-content>
+	<ion-list no-lines>
+		<!-- contacts -->
+		<button ion-item class="filter-button" (click)="setFilter('bought')">
+			<ion-icon name="ios-menu" item-left class="filter-icon" [ngClass]="{'filter-icon-white':clicked == true}"></ion-icon>
+			{{translate.viewAllQuotes}}
+		</button>
+		<button ion-item class="filter-button" (click)="setFilter('with-bid')">
+			<ion-icon class="material-icons filter-icon" item-left>check</ion-icon>
+			{{translate.quotesSended}}
+		</button>
+		<button ion-item class="filter-button" (click)="setFilter('no-bid')">
+			<ion-icon class="material-icons filter-icon" item-left>hourglass_empty</ion-icon>
+			{{translate.quotesNotSended}}
+		</button>
+		<button ion-item class="filter-button" (click)="setFilter('won')">
+			<ion-icon class="material-icons filter-icon" item-left>how_to_reg</ion-icon>
+			{{translate.clientsWon}}
+		</button>
+		<button ion-item class="filter-button" (click)="setFilter('lost')">
+			<ion-icon name="ios-remove-circle-outline" class="filter-icon" item-left></ion-icon>
+			{{translate.clientsLost}}
+		</button>
+		<button ion-item class="filter-button" (click)="setFilter('refunded')">
+			<ion-icon name="return-left" class="filter-icon" item-left></ion-icon>
+			{{translate.quotesRefunded}}
+		</button>
+		<button ion-item class="filter-button" (click)="setFilter('archived')">
+			<ion-icon name="archive" class="filter-icon" item-left></ion-icon>
+			{{translate.quotesArchived}}
+		</button>
+	</ion-list>
 </ion-content>

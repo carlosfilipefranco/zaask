@@ -1,15 +1,110 @@
-<!--
-  Generated template for the QuotesPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-  <ion-navbar>
-    <ion-title>quotes</ion-title>
-  </ion-navbar>
+	<ion-navbar *navbar primary class="task-page navbar">
+		<ion-title>{{translate.title}}</ion-title>
+	</ion-navbar>
+	<ion-searchbar placeholder="{{searchPlaceholder}}" (click)="clearQuery()" (input)="updateSearch($event.value)" (clear)="openFilter($event)" cancelText=""> </ion-searchbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="task-page task-page__heigth">
+	<ion-list class="task-page task-page-list">
+		<ionic-item class="task-page task-page__card" *ngFor="#task of quotesToShow; #i = index" data-index="#i">
+			<ion-card>
+				<ion-card-content>
+					<ion-card-title> {{task.title}} </ion-card-title>
+					<label>{{task.userName}} · {{translate.request}} {{task.id}}</label>
+					<!--STATUS-->
+					<div *ngIf="task.status == 'BIDED'" class="quote-state quote-state-bided">
+						<ion-icon class="material-icons quote-icon quote-icon-bided">check</ion-icon>
+						{{translate.bided}}
+					</div>
+					<div *ngIf="task.status == 'NOT-BIDED'" class="quote-state quote-state-not-bided">
+						<ion-icon class="material-icons quote-icon quote-icon-not-bided">hourglass_empty</ion-icon>
+						{{translate.notBided}}
+					</div>
+					<div *ngIf="task.status == 'WON'" class="quote-state quote-state-won">
+						<ion-icon class="material-icons quote-icon quote-icon-won">how_to_reg</ion-icon>
+						{{translate.won}}
+					</div>
+					<div *ngIf="task.status == 'LOST'" class="quote-state quote-state-lost">
+						<ion-icon name="ios-remove-circle-outline" class="quote-icon quote-icon-lost"></ion-icon>
+						{{translate.lost}}
+					</div>
+					<div *ngIf="task.status == 'REFUNDED'" class="quote-state quote-state-refunded">
+						<ion-icon name="return-left" class="quote-icon quote-icon-refunded"></ion-icon>
+						{{translate.refunded}}
+					</div>
+					<!---->
+					<div class="task-page task-page__card--info">
+						<span>
+							<ion-icon name="calendar"></ion-icon>
+							{{getRelativeTime(task.postedDate)}}
+						</span>
+						<span>
+							<ion-icon name="pin"></ion-icon>
+							{{task.addressCountry}}, {{task.addressDistrict}}, {{task.addressZipCode}}
+						</span>
+					</div>
+				</ion-card-content>
+			</ion-card>
 
+			<ion-grid>
+				<ion-row>
+					<ion-col col-6>
+						<button ion-button full class="task-page task-page__button task-page__button--details" (click)="redirectToChat(task.id)">{{translate.details}}</button>
+					</ion-col>
+					<ion-col col-6 *ngIf="!task.archived">
+						<button ion-button full class="task-page task-page__button task-page__button--ignore" (click)="archiveQuote(task.id, i)">{{translate.archive}}</button>
+					</ion-col>
+					<ion-col col-6 *ngIf="task.archived">
+						<button ion-button full class="task-page task-page__button task-page__button--abort" (click)="unarchiveQuote(task.id, i)">{{translate.unarchive}}</button>
+					</ion-col>
+				</ion-row>
+			</ion-grid>
+		</ionic-item>
+
+		<div class="task-quote-edit-info" *ngIf="!quotesToShow.length">
+			<div class="task-quote-title">{{translate.noRequestsToShow}}</div>
+			<div class="task-quote-edit-button" (click)="clearFilter()">
+				<label>{{translate.clearFilter}}</label>
+			</div>
+		</div>
+	</ion-list>
 </ion-content>
+
+<div class="task-page nav-bar">
+	<div (click)="tabRedirect(taskPage)">
+		<ion-label>
+			<svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M0 0.0635687V26H17.0926L23.3598 19.7066V0H0V0.0635687ZM17.4724 23.8386V20.088H21.2074L17.4724 23.8386ZM22.0937 18.8802H16.8393L16.2063 19.5159V24.7922H1.26611V1.33496H22.0937V18.8802ZM5.76082 15.0024L5.57091 15.066L3.79834 20.1516L4.62132 20.978L9.68578 19.198L9.74908 19.0709H9.939L19.4349 9.53545V8.64548L16.2063 5.40342H15.32L5.82413 14.9389V15.0024H5.76082ZM15.6365 6.61125L17.9788 8.96332L9.43256 17.6088L7.09024 15.2567L15.6365 6.61125ZM8.29305 18.2445L5.44429 19.2616L6.45719 16.401L8.29305 18.2445ZM11.6483 5.33985H3.54512V6.61125H11.6483V5.33985ZM8.29305 8.89976H3.54512V10.1711H8.29305V8.89976ZM10.8253 20.9144H14.497V19.643H10.8253V20.9144ZM5.25438 12.5232H3.54512V13.7946H5.25438V12.5232ZM18.0421 13.7311H19.7514V12.4597H18.0421V13.7311ZM14.9402 17.3545H19.7514V16.0831H14.9402V17.3545ZM16.3329 9.2176L15.4466 8.32763L8.7995 15.0024L9.68578 15.8924L16.3329 9.2176Z"
+					fill="#9F9C9A"
+				/>
+			</svg>
+		</ion-label>
+		<span>{{translate.msgPedidosDisponiveis}}</span>
+	</div>
+
+	<div class="selected">
+		<ion-label>
+			<svg width="29" height="26" viewBox="0 0 29 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M28.3977 10.2742L23.456 6.56989L22.6207 7.68817L26.6577 10.7634L14.3381 17.3333L2.01847 10.7634L14.3381 1.46774L17.9574 4.19355L18.7926 3.07527L14.7557 0H13.9205L0.27841 10.2742L0 10.8333V25.3011L0.696023 26H27.9801L28.6761 25.3011V10.8333L28.3977 10.2742ZM1.39205 12.0215L12.8764 18.1021L1.39205 24.1828V12.0215ZM27.2841 24.6021H3.48011L27.2841 12.0215V24.6021ZM10.0923 6.63978L9.1179 7.61828L14.3381 12.8602L21.4375 5.73118L20.5327 4.75269L14.4077 10.9032L10.0923 6.63978Z"
+					fill="#0096D7"
+				/>
+			</svg>
+		</ion-label>
+		<span>{{translate.msgPedidosAdquiridos}}</span>
+	</div>
+
+	<div (click)="tabRedirect(tabAccount)">
+		<ion-label>
+			<svg width="26" height="31" viewBox="0 0 26 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M24.1595 18.5773L16.3223 14.87L12.6951 17.0814L9.06792 14.87L1.23065 18.5773L0 23.9107L1.81358 29.0489L12.5655 30.74H12.6951L23.5766 28.9839L25.3902 23.8456L24.1595 18.5773ZM17.8768 25.7318L23.7061 24.8212L22.605 27.8782L12.6951 29.4391L2.78515 27.8782L1.68404 24.8212L7.51342 25.7318L7.70773 24.431L1.42496 23.4554L2.33175 19.4879L9.00315 16.3659L12.6951 18.6424L16.387 16.3659L23.0584 19.4879L23.9652 23.4554L17.6824 24.431L17.8768 25.7318ZM12.6303 14.6098H12.8246C14.6382 14.6098 16.0632 13.9594 17.1643 12.7236C19.4313 10.122 19.1074 6.8293 19.0426 6.37401C18.9131 3.12196 17.3586 1.56098 16.0632 0.845531C15.0916 0.325204 13.9905 0 12.8246 0H12.6951C12.0474 0 10.6872 0.130081 9.45655 0.845531C8.16113 1.56098 6.60663 3.12196 6.41232 6.37401C6.34755 6.8293 6.02369 10.187 8.29067 12.7236C9.327 13.9594 10.8167 14.5448 12.6303 14.6098ZM7.64296 6.43905C7.7725 3.77237 9.00315 2.5366 10.0395 1.95123C11.0758 1.36586 12.1122 1.30082 12.6951 1.30082H12.7599C13.7314 1.30082 14.6382 1.56098 15.4155 2.01627C16.387 2.60164 17.6177 3.83741 17.7472 6.50409C17.812 6.95938 18.0711 9.73175 16.1927 11.8781C15.3507 12.8537 14.1848 13.309 12.8246 13.309H12.7599H12.6951C11.2701 13.309 10.169 12.7887 9.32701 11.8781C7.25434 9.66671 7.64296 6.63417 7.64296 6.43905Z"
+					fill="#9F9C9A"
+				/>
+			</svg>
+		</ion-label>
+		<span>{{translate.msgMyAccount}}</span>
+	</div>
+</div>

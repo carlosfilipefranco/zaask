@@ -1,15 +1,120 @@
-<!--
-  Generated template for the ChatPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-  <ion-navbar>
-    <ion-title>chat</ion-title>
-  </ion-navbar>
+	<ion-navbar *navbar primary class="chat-page navbar" hideBackButton="true">
+		<ion-buttons>
+			<button left (click)="backButtonAction()">
+				<ion-icon name="arrow-back"></ion-icon>
+			</button>
+			<button>
+				<div class="chat-info">
+					<p class="name">{{other_user_name}}</p>
+					<p class="status" *ngIf="isOtherUserOnline"><span class="online"></span> Online</p>
+					<p class="status" *ngIf="!isOtherUserOnline"><span class="offline"></span> Offline</p>
+				</div>
+			</button>
+		</ion-buttons>
+
+		<ion-buttons class="chat-header-more">
+			<ion-item>
+				<ion-label for="request-status">
+					<ion-icon name="md-more"></ion-icon>
+					<span>{{translate.selectTitle}}</span>
+				</ion-label>
+				<ion-select okText="{{okText}}" cancelText="{{cancelText}}" id="request-status" [ngFormControl]="request" (ngModelChange)="openRequestStatus($event)">
+					<ion-option *ngFor="#option of RequestTabs" value="{{option.id}}">{{option.key}}</ion-option>
+				</ion-select>
+			</ion-item>
+		</ion-buttons>
+	</ion-navbar>
 </ion-header>
+<!--bid: "2.00"-->
+<!--bid_type: "fixed"-->
+<ion-content class="chat-page">
+	<div id="chat-autoscroll">
+		<div *ngFor="#message of messagesPerDay; #i = index;" [attr.data-index]="i">
+			<div class="chat-msg">
+				<span class="chat-msg-date">{{message.date}}</span>
+			</div>
 
-<ion-content padding>
+			<div *ngFor="#message of message.messages; #j = index;" [attr.data-index]="j">
+				<div [ngClass]="setStyleClass(message.notification_from)">
+					<!-- Message -->
+					<span class="chat-message--inner chat-message--inner__flex" *ngIf="!message.bid && !message.attachment">
+						<!-- bid title (if applicable) -->
+						<span *ngIf="i == 0 && j == 0">
+							<span>{{translate.bidMoreInfo}}</span>
+							<hr style="background-color: white" />
+						</span>
+						<!-- content -->
+						<span [innerHTML]="message.notification_description"></span>
+						<!-- reviews (if applicable) -->
+						<div *ngIf="isAReviewMessage(message)">
+							<span *ngFor="#r of reviewsRange">
+								<ion-icon *ngIf="reviewsAvg>=r" name="star"></ion-icon>
+								<ion-icon *ngIf="reviewsAvg<r" name="star-outline"></ion-icon>
+							</span>
+						</div>
+					</span>
 
+					<!-- Bid info -->
+					<span class="chat-message--inner chat-message--inner__flex" *ngIf="message.bid">
+						<span> {{message.bid}} {{bidTypeTranslate(message.bid_type)}} </span>
+						<hr style="background-color: white" />
+						<span [innerHTML]="message.notification_description"> </span>
+					</span>
+
+					<!-- Attachment -->
+					<span *ngIf="message.attachment">
+						<img width="100px" *ngIf="isItImage(message.attachment)" src="{{message.attachment}}" (click)="modal(message.attachment)" />
+						<a class="chat-message--inner" *ngIf="!isItImage(message.attachment)" href="{{message.attachment}}"><ion-icon name="md-attach"></ion-icon> Anexo</a>
+					</span>
+
+					<!-- Hours -->
+					<div class="chat-msg chat-msg-hours">
+						<span *ngIf="message.seen_by_user == 1"> <span class="icon-msg-read"></span>{{translate.seen_at}}&nbsp; </span>
+						<span *ngIf="message.seen_by_user == 0"> <span class="icon-msg-seen"></span>{{translate.delivered_at}}&nbsp; </span>
+						{{getMessageHours(message)}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="myModal" class="modal">
+		<span class="close-span">&times;</span>
+		<img class="modal-content" id="img01" />
+		<div id="caption"></div>
+	</div>
 </ion-content>
+
+<ion-footer class="chat-page footer" [ngClass]="{full: taskInfo.phone !== null}">
+	<button ion-button small class="svg" *ngIf="taskInfo.phone !== null" (click)="callNumber()">
+		<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path
+				d="M16.8508 10.7708C15.7357 9.65701 13.9244 9.65701 12.8118 10.7708L11.5143 12.0684C10.0017 11.2571 8.74413 9.99953 7.93284 8.48571L9.2304 7.18815C10.3417 6.0756 10.3417 4.26426 9.2304 3.15171L6.91279 0.835352C5.80024 -0.278451 3.98891 -0.278451 2.87635 0.835352L1.77505 1.93665C0.342486 3.36797 -0.277542 5.42307 0.116226 7.43191C1.33128 13.6635 6.33527 18.6687 12.5681 19.885C12.9643 19.9625 13.3631 20 13.7581 20C15.3644 20 16.9145 19.3737 18.0633 18.2249L19.1646 17.1236C20.2784 16.0111 20.2784 14.1997 19.1646 13.0872L16.8508 10.7708ZM16.2957 16.4573C15.4532 17.2999 14.2381 17.6636 13.0481 17.4311C7.80283 16.4073 3.59264 12.1971 2.57009 6.95314C2.33633 5.76058 2.7001 4.54678 3.54264 3.70424L4.64394 2.60293C4.71394 2.53418 4.80395 2.49918 4.8952 2.49918C4.9852 2.49918 5.07896 2.53418 5.14521 2.60293L7.46157 4.91804C7.60033 5.0568 7.60033 5.28306 7.46282 5.42057L4.94895 7.93443L5.27147 8.70822C6.40027 11.4058 8.59412 13.601 11.293 14.7285L12.0655 15.051L14.5794 12.5384C14.7169 12.3996 14.9419 12.3996 15.0807 12.5384L17.397 14.8548C17.5345 14.9923 17.5345 15.2173 17.397 15.356L16.2957 16.4573Z"
+				fill="#0096D7"
+			/>
+		</svg>
+	</button>
+
+	<button ion-button small class="svg disable-button">
+		<input type="file" class="attach-file" (change)="attachFile($event)" accept="image/*, application/pdf, text/*, application/vnd.sealed-xls" />
+		<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path
+				fill-rule="evenodd"
+				clip-rule="evenodd"
+				d="M18.2504 1.75642C17.4158 0.918785 16.3513 0.347828 15.1919 0.115938C14.0325 -0.115951 12.8303 0.00167198 11.7377 0.453894C11.5859 0.516519 11.4479 0.608439 11.3316 0.724406C11.2152 0.840372 11.1229 0.978114 11.0598 1.12977C10.9967 1.28142 10.9641 1.44401 10.9639 1.60826C10.9636 1.77251 10.9957 1.93521 11.0584 2.08705C11.1848 2.39371 11.428 2.63757 11.7342 2.76498C11.8859 2.82807 12.0485 2.86067 12.2127 2.86092C12.377 2.86117 12.5397 2.82906 12.6915 2.76644C13.3274 2.50303 14.0273 2.4344 14.7022 2.56926C15.3772 2.70412 15.997 3.0364 16.4828 3.52395C17.1347 4.17771 17.5008 5.06327 17.5008 5.9865C17.5008 6.90973 17.1347 7.79529 16.4828 8.44904L8.44893 16.4842C8.12618 16.8088 7.74221 17.0661 7.31928 17.2412C6.89635 17.4163 6.44287 17.5057 5.98514 17.5042C5.05512 17.5042 4.1801 17.1417 3.52259 16.4842C3.1976 16.1616 2.93987 15.7777 2.76435 15.3548C2.58883 14.9319 2.499 14.4783 2.50007 14.0204C2.50007 13.0904 2.86258 12.2154 3.52134 11.5579L7.53766 7.54153C7.64133 7.43786 7.7644 7.35563 7.89984 7.29953C8.03528 7.24343 8.18045 7.21455 8.32705 7.21455C8.47366 7.21455 8.61883 7.24343 8.75427 7.29953C8.88971 7.35563 9.01278 7.43786 9.11644 7.54153C9.22011 7.64519 9.30234 7.76826 9.35844 7.9037C9.41454 8.03915 9.44342 8.18431 9.44342 8.33092C9.44342 8.47752 9.41454 8.62269 9.35844 8.75813C9.30234 8.89358 9.22011 9.01664 9.11644 9.12031L6.17264 12.0654C6.05658 12.1814 5.96452 12.3192 5.90171 12.4708C5.8389 12.6225 5.80657 12.785 5.80657 12.9491C5.80657 13.2806 5.93825 13.5985 6.17264 13.8329C6.40703 14.0673 6.72493 14.199 7.05641 14.199C7.38788 14.199 7.70578 14.0673 7.94017 13.8329L10.8852 10.8878C11.2223 10.5526 11.4896 10.1538 11.6715 9.71462C11.8535 9.2754 11.9465 8.80446 11.9452 8.32904C11.9452 7.36277 11.569 6.45401 10.8852 5.77149C10.2066 5.09472 9.28733 4.71467 8.32893 4.71467C7.37053 4.71467 6.45124 5.09472 5.77263 5.77149L1.75505 9.79032C1.19701 10.3443 0.754517 11.0036 0.453246 11.73C0.151976 12.4564 -0.00207781 13.2353 2.11633e-05 14.0217C2.11633e-05 15.6192 0.622533 17.1217 1.7538 18.2517C2.30917 18.8075 2.96887 19.2481 3.69501 19.5482C4.42115 19.8484 5.19942 20.0021 5.98514 20.0005C6.77092 20.0018 7.54923 19.8479 8.27537 19.5476C9.0015 19.2473 9.66116 18.8065 10.2165 18.2505L18.2504 10.2191C19.3708 9.09591 20 7.57421 20 5.98775C20 4.40129 19.3708 2.87959 18.2504 1.75642Z"
+				fill="#0096D7"
+			/>
+		</svg>
+	</button>
+
+	<div class="text-container">
+		<ion-input type="text" [(ngModel)]="message" placeholder="{{translate.placeholder}}"></ion-input>
+		<img *ngIf="attachType === 'img'" src="{{attachImage}}" alt="attach" />
+		<ion-icon *ngIf="attachType === 'document'" name="md-document"></ion-icon>
+	</div>
+
+	<button ion-button small icon-end class="send-button" (click)="send(message)" [disabled]="disableButton">
+		<ion-icon name="md-send"></ion-icon>
+	</button>
+</ion-footer>

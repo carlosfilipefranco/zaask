@@ -1,3 +1,369 @@
 page-request-details {
+	/*------------------------------------*\
+  TASK DETAILS
+\*------------------------------------*/
 
+	.TaskDetailsPage {
+		@extend %pageBackground;
+		height: auto;
+	}
+
+	// task top header
+	.task-card {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		background: color($colors, primary);
+		border-radius: 0;
+
+		ion-card-content {
+			padding: 0;
+		}
+	}
+
+	.task-card-header {
+		@include flexbox;
+		align-items: center;
+		padding: $safeArea/2 $safeArea 0;
+
+		.h1 {
+			font-size: 1.8rem;
+			font-weight: 500;
+		}
+
+		* {
+			color: color($colors, light);
+			line-height: 1.5;
+		}
+	}
+
+	//used on account
+	.task-card-subheader {
+		margin-top: $safeArea/2;
+
+		.t-c-reviews {
+			margin-left: $safeArea/2;
+		}
+	}
+
+	.task-card-avatar {
+		min-width: $safeArea/2 * 5;
+		min-height: $safeArea/2 * 5;
+		width: $safeArea/2 * 5;
+		height: $safeArea/2 * 5;
+		overflow: hidden;
+		border-radius: 50%;
+		border: 2px solid color($colors, light);
+		background: color($colors, light);
+		margin-right: $safeArea;
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	.task-card-about {
+		width: 100%;
+		@include flexbox;
+		justify-content: space-between;
+		flex-wrap: nowrap;
+		align-items: baseline;
+		margin-top: $safeArea;
+		border-top: 1px solid rgba(255, 255, 255, 0.5);
+		padding: $safeArea/4 * 3 $safeArea;
+		background: color($colors, graylightest);
+		color: color($colors, graydark);
+		font-size: 1.2rem;
+		line-height: 1.5;
+	}
+
+	.task-card-item-icon {
+		position: relative;
+		text-align: center;
+		flex-grow: 1;
+		width: 50%;
+
+		// if 2 items
+		&:nth-child(2) {
+			&:before,
+			&:after {
+				width: 1px;
+				height: $safeArea;
+				background: color($colors, light50);
+				@include centery;
+			}
+
+			&:before {
+				content: "";
+				left: 0;
+			}
+		}
+
+		// if 3 items
+		&:nth-last-child(n + 3),
+		&:nth-last-child(n + 3) ~ * {
+			width: 33%;
+		}
+
+		&:nth-last-child(n + 3) ~ *:nth-child(2) {
+			&:after {
+				content: "";
+				right: 0;
+			}
+		}
+
+		ion-icon {
+			color: color($colors, primary);
+		}
+
+		&-title {
+			width: 100%;
+			// display: block;
+			font-size: 1.4rem;
+			font-weight: 600;
+			color: color($colors, primary);
+		}
+
+		&-text {
+			display: block;
+		}
+
+		&--credits {
+			color: color($colors, secondary);
+
+			.task-card-item-icon {
+				&-text {
+					color: color($colors, creditsdark);
+				}
+
+				&-title {
+					color: color($colors, creditsdark);
+				}
+			}
+
+			.icon-spr {
+				@include bgImg2x("../../assets/images/credits", png);
+				background-repeat: no-repeat;
+				background-size: cover;
+				display: inline-block;
+				width: 14px;
+				height: 14px;
+			}
+		}
+	}
+
+	// task questions
+	// .t-q = task-questions
+
+	.task-details {
+		background: color($colors, lighter);
+		margin: 0;
+	}
+
+	.task-questions {
+		margin: 0;
+
+		ion-label {
+			margin-top: $safeArea/4 * 3;
+			margin-bottom: $safeArea/4 * 3;
+		}
+
+		> .item:last-child,
+		> .item:first-child {
+			border: 0;
+		}
+	}
+
+	.t-q-divider {
+		background: transparent;
+		margin-left: $safeArea;
+		padding-left: 0;
+		border-bottom: 1px solid color($colors, primary);
+		@include flexbox;
+		align-items: center;
+		padding-bottom: $safeArea/3;
+	}
+
+	.t-q-divider-icon {
+		color: color($colors, primary);
+		margin-right: $safeArea/2 * 3;
+	}
+
+	.t-q-divider-title {
+		margin: 0;
+		font-weight: 400;
+		color: color($colors, dark);
+	}
+
+	.t-q-item-question {
+		font-size: 1.4rem;
+		color: color($colors, gray);
+	}
+
+	.t-q-item-answer {
+		font-size: 1.6rem;
+		font-weight: 400;
+		display: block;
+	}
+
+	.t-q-item-map {
+		padding: 0;
+
+		ion-label,
+		.item-inner {
+			padding: 0;
+		}
+
+		ion-label {
+			margin-right: 0;
+			margin-bottom: 0;
+		}
+
+		.t-q-item-answer {
+			padding-left: $safeArea;
+		}
+
+		img {
+			padding-top: $safeArea;
+			width: 100%;
+		}
+	}
+
+	// button full inside toolbar;
+	.toolbar-btn-full {
+		padding: 0;
+		min-height: 5rem;
+
+		button {
+			height: 5rem;
+			margin: 0;
+		}
+	}
+
+	/*------------------------------------*\
+  SEND QUOTE
+\*------------------------------------*/
+
+	.sendquote-price {
+		@include flexbox;
+		align-items: stretch;
+	}
+
+	.sq-p-icon-left {
+		width: $safeArea;
+		color: color($colors, gray);
+		border-bottom: 1px solid color($colors, graylighter);
+		@include flexbox;
+		align-items: center;
+	}
+
+	.sq-p-input-price {
+		padding: 0;
+		padding-right: $safeArea/2;
+		width: calc(50% - #{$safeArea});
+
+		.item-inner {
+			padding: 0;
+		}
+	}
+
+	.sq-p-input-type {
+		padding: 0;
+		padding-left: $safeArea/2;
+		width: 50%;
+		transition: all $speed;
+
+		.item-inner {
+			padding: 0;
+		}
+
+		.input-wrapper {
+			justify-content: flex-end;
+		}
+
+		ion-select {
+			max-width: 100%;
+			width: 100%;
+			padding: 0;
+		}
+
+		.select-icon {
+			width: $safeArea/4 * 6;
+		}
+
+		&.single {
+			width: calc(100% - #{$safeArea});
+			padding-left: 0;
+		}
+	}
+
+	.sq-p-input-textarea {
+		width: 100%;
+		@include flexbox;
+		padding: 0;
+
+		ion-label {
+			@include flexbox;
+			align-items: flex-end;
+		}
+
+		ion-icon {
+			width: $safeArea;
+			color: color($colors, gray);
+			margin-right: $safeArea/2;
+			margin-top: $safeArea/4;
+		}
+
+		textarea {
+			width: calc(100% - #{$safeArea});
+			border: 0;
+			resize: none;
+		}
+
+		.item-inner {
+			width: 100%;
+		}
+	}
+
+	.sq-p-submit {
+		margin-top: $safeArea * 2;
+	}
+
+	/*------------------------------------*\
+  SENDQUOTE
+\*------------------------------------*/
+	.ios {
+		.request-sendquote-page {
+			ion-title {
+				padding-left: 5rem;
+				padding-right: 5rem;
+			}
+		}
+	}
+
+	@media (min-width: 650px) {
+		.task-details {
+			ion-item-group {
+				max-width: 450px;
+				margin: auto;
+				overflow: hidden;
+			}
+
+			.t-q-divider {
+				margin-left: 0;
+			}
+
+			.item {
+				padding-left: 0;
+			}
+		}
+
+		.request-sendquote-page {
+			form {
+				max-width: 600px;
+				margin: auto;
+			}
+		}
+	}
 }

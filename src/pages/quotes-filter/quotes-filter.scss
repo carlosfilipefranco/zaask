@@ -1,3 +1,36 @@
 page-quotes-filter {
+	.quotes-modal-filter.show-page.modal {
+		width: 80%;
+		height: 320px;
+		margin: auto;
+		top: 115px;
+		left: 30%;
+		border: 1px solid #e9e9ec;
+		box-sizing: border-box;
+		box-shadow: 0px 10px 20px rgba(31, 32, 65, 0.05);
+		background: #c4c4c4;
+	}
 
+	.filter-button {
+		background: #ffffff;
+		box-shadow: 0px -1px 0px #e9e9ec, 0px 1px 0px #e9e9ec;
+		border-top: 1px solid #e9e9ec;
+	}
+
+	.item.activated {
+		background: #0096d7;
+		box-shadow: 0px -1px 0px #e9e9ec, 0px 1px 0px #e9e9ec;
+		background-color: 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 300ms, -webkit-transform 300ms;
+		color: white;
+		font-weight: bold;
+	}
+
+	.filter-icon {
+		color: #2e384d;
+		opacity: 0.5;
+	}
+
+	.filter-icon-white {
+		color: white;
+	}
 }

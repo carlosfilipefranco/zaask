@@ -1,3 +1,139 @@
 page-requests {
+	.sidemenu {
+		button {
+			&.active ion-icon,
+			&.active {
+				color: color($colors, primary);
+			}
+		}
+	}
 
+	.task-list {
+		margin: 0;
+	}
+
+	.task-item {
+		padding: 0;
+
+		&.item:not([detail-none]) .item-inner,
+		&.item:not([detail-none]) .item-inner,
+		&.item[detail-push] .item-inner {
+			background: none;
+			padding: 1.6rem;
+		}
+
+		.item-inner {
+			padding: $safeArea;
+			display: flex;
+			align-items: stretch;
+			border-color: color($colors, graylighter);
+		}
+
+		ion-label {
+			padding: 0;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		h2 {
+			font-size: 1.6rem;
+			white-space: normal;
+			max-height: 4rem;
+			overflow: hidden;
+			margin-bottom: $safeArea/3;
+			line-height: 1.2;
+		}
+
+		p {
+			font-size: 1.4rem;
+			white-space: normal;
+			max-height: 4rem;
+			overflow: hidden;
+			line-height: 1.4;
+			color: color($colors, gray);
+		}
+
+		.task-right {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			align-items: stretch;
+			text-align: right;
+			margin: 0;
+			align-items: flex-end;
+			padding-left: $safeArea/4 * 3;
+
+			.button-inner {
+				align-items: flex-start;
+			}
+
+			ion-icon {
+				padding-top: $safeArea/4;
+				padding-right: 0;
+				padding-left: $safeArea;
+				font-size: 4rem;
+			}
+		}
+
+		.task-item-action {
+			color: color($colors, graylight);
+			font-size: 2rem;
+		}
+
+		.task-item-price {
+			font-size: 1.6rem;
+			line-height: 1.5;
+			margin-top: $safeArea/2;
+
+			.currency {
+				vertical-align: super;
+				font-size: 0.8rem;
+			}
+
+			.type {
+				font-size: 0.8rem;
+			}
+		}
+
+		.task-item-date {
+			font-size: 0.8rem;
+			line-height: 2.8;
+			color: color($colors, gray);
+		}
+	}
+
+	.search-not-found {
+		padding: $safeArea * 2 $safeArea;
+		text-align: center;
+
+		// not working
+		// svg {
+		//     stroke: color($colors, primary);
+		// }
+	}
+
+	.snf-icon,
+	.snf-txt {
+		color: color($colors, gray);
+	}
+	.snf-icon {
+		font-size: 3rem;
+	}
+
+	.snf-txt {
+		margin: $safeArea/2;
+		font-size: 1.8rem;
+	}
+
+	@media (min-width: 650px) {
+		.task-list {
+			max-width: 600px;
+			margin: 15px auto;
+			border: 1px solid color($colors, graylighter);
+			border-top: none;
+			border-bottom: none;
+		}
+	}
 }

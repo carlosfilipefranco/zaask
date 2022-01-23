@@ -1,15 +1,1406 @@
-<!--
-  Generated template for the TaskPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-  <ion-navbar>
-    <ion-title>task</ion-title>
-  </ion-navbar>
+	<ion-navbar *navbar primary class="task-page navbar">
+		<ion-title>{{translate.title}}</ion-title>
+	</ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content [ngClass]="getPageContentClass()">
+	<ion-refresher slot="fixed" (refresh)="doRefresh($event)">
+		<ion-refresher-content refreshingSpinner="dots"></ion-refresher-content>
+	</ion-refresher>
 
+	<ion-list class="task-page task-page-list">
+		<ionic-item class="task-page task-page__card" *ngFor="#task of tasks; #i = index" data-index="#i">
+			<ion-card [ngClass]="{ignoredCard: task.ignored}">
+				<ion-card-content *ngIf="!task.ignored" (click)="showTask(task.id)">
+					<ion-card-title> {{task.title}} </ion-card-title>
+					<p>{{task.userName}} · {{task.id}}</p>
+
+					<div class="task-page task-page__card--info">
+						<span>
+							<ion-icon name="calendar"></ion-icon>
+							{{getRelativeTime(task.postedDate)}}
+						</span>
+
+						<span>
+							<ion-icon name="pin"></ion-icon>
+							{{task.addressCountry}}, {{task.addressDistrict}}, {{task.addressZipCode}}
+						</span>
+					</div>
+				</ion-card-content>
+
+				<ion-card-content *ngIf="task.ignored">
+					<div class="task-page task-page__card--info ignore-message" *ngIf="country === 'PT'">
+						<span> Se pretende não voltar a ver pedidos como este, edite as suas preferências de <span class="link" (click)="openLink('https://zaask.pt/profile/localizacao')">localização</span> e <span class="link" (click)="openLink('https://zaask.pt/profile/servicos')">serviços</span>. </span>
+					</div>
+
+					<div class="task-page task-page__card--info ignore-message" *ngIf="country !== 'PT'">
+						<span> Si prefieres no visualizar más pedidos como este, edita tus preferencia de <span class="link" (click)="openLink('https://zaask.es/profile/localizacion')">localización</span> y <span class="link" (click)="openLink('https://zaask.es/profile/servicios')">servicios</span>. </span>
+					</div>
+				</ion-card-content>
+			</ion-card>
+
+			<ion-grid>
+				<ion-row *ngIf="!task.ignored">
+					<ion-col col-6>
+						<button ion-button full class="task-page task-page__button task-page__button--details" (click)="showTask(task.id)">{{translate.details}}</button>
+					</ion-col>
+
+					<ion-col col-6>
+						<button ion-button full class="task-page task-page__button task-page__button--ignore" (click)="ignoreTask(task.id, i)">{{translate.ignore}}</button>
+					</ion-col>
+				</ion-row>
+
+				<ion-row *ngIf="task.ignored">
+					<ion-col col-12>
+						<button ion-button full class="task-page task-page__button task-page__button--abort" (click)="abortIgnoreTask(task.id, i)">Anular</button>
+					</ion-col>
+				</ion-row>
+			</ion-grid>
+		</ionic-item>
+	</ion-list>
+
+	<ion-infinite-scroll *ngIf="showInfinite" threshold="100px" on-infinite="loadMoreTasks($event)">
+		<ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+
+	<div class="task-page__empty" [hidden]="tasks.length">
+		<svg width="107" height="115" viewBox="0 0 107 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M105 113L53.5146 67.132L2 113M105 47.9841V113H2V47.9841L53.5146 2L105 47.9841ZM38.946 81.0868L2 47.9841L38.946 81.0868ZM105 47.9841L68.5202 80.5355L105 47.9841Z" stroke="#1A96D4" stroke-width="4" stroke-linejoin="bevel" />
+		</svg>
+
+		<div class="task-page__empty--title">{{translate.emptyTitle}}</div>
+
+		<div class="task-page__empty--subtitle">{{translate.emptySubtitle}}</div>
+
+		<button ion-button full class="task-page task-page__button" (click)="editCategory()">{{translate.emptyButton}}</button>
+	</div>
 </ion-content>
+
+<div class="task-page__policy" *ngIf="!policyAccepted">
+	<div class="warning">
+		<div class="task-page__policy--title">{{translate.policyWarningTitle}}</div>
+		<div class="task-page__policy--text">
+			<span>{{translate.policyWarningText_0}}</span>
+			<span (click)="displayTerms()" style="text-decoration: underline">{{translate.policyWarningText_1}}</span>
+			<span>{{translate.policyWarningText_2}}</span>
+			<span (click)="displayPrivacyPolicy()" style="text-decoration: underline">{{translate.policyWarningText_3}}</span>
+			<span>{{translate.policyWarningText_4}}</span>
+			<span (click)="openOneSignalPolicy()" style="text-decoration: underline">{{translate.policyWarningText_5}}</span>
+			<span>{{translate.policyWarningText_6}}</span>
+			<span (click)="openOneSignalTerms()" style="text-decoration: underline">{{translate.policyWarningText_7}}</span>
+			<span>{{translate.policyWarningText_8}}</span>
+		</div>
+		<button ion-button full class="task-page task-page__policy--button" (click)="acceptTerms()">{{translate.policyAccept}}</button>
+	</div>
+</div>
+
+<div class="task-page__terms" *ngIf="showPrivacyPolicy">
+	<button ion-button full class="task-page task-page__policy--button" (click)="acceptTerms()">{{translate.policyAccept}}</button>
+</div>
+
+<div class="task-page nav-bar">
+	<div class="selected">
+		<ion-label>
+			<svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M0 0.0635687V26H17.0926L23.3598 19.7066V0H0V0.0635687ZM17.4724 23.8386V20.088H21.2074L17.4724 23.8386ZM22.0937 18.8802H16.8393L16.2063 19.5159V24.7922H1.26611V1.33496H22.0937V18.8802ZM5.76082 15.0024L5.57091 15.066L3.79834 20.1516L4.62132 20.978L9.68578 19.198L9.74908 19.0709H9.939L19.4349 9.53545V8.64548L16.2063 5.40342H15.32L5.82413 14.9389V15.0024H5.76082ZM15.6365 6.61125L17.9788 8.96332L9.43256 17.6088L7.09024 15.2567L15.6365 6.61125ZM8.29305 18.2445L5.44429 19.2616L6.45719 16.401L8.29305 18.2445ZM11.6483 5.33985H3.54512V6.61125H11.6483V5.33985ZM8.29305 8.89976H3.54512V10.1711H8.29305V8.89976ZM10.8253 20.9144H14.497V19.643H10.8253V20.9144ZM5.25438 12.5232H3.54512V13.7946H5.25438V12.5232ZM18.0421 13.7311H19.7514V12.4597H18.0421V13.7311ZM14.9402 17.3545H19.7514V16.0831H14.9402V17.3545ZM16.3329 9.2176L15.4466 8.32763L8.7995 15.0024L9.68578 15.8924L16.3329 9.2176Z"
+					fill="#1096D4"
+				/>
+			</svg>
+		</ion-label>
+		<span>{{translate.msgPedidosDisponiveis}}</span>
+	</div>
+
+	<div (click)="tabRedirect(tabQuotes)">
+		<ion-label>
+			<svg width="29" height="26" viewBox="0 0 29 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M28.3977 10.2742L23.456 6.56989L22.6207 7.68817L26.6577 10.7634L14.3381 17.3333L2.01847 10.7634L14.3381 1.46774L17.9574 4.19355L18.7926 3.07527L14.7557 0H13.9205L0.27841 10.2742L0 10.8333V25.3011L0.696023 26H27.9801L28.6761 25.3011V10.8333L28.3977 10.2742ZM1.39205 12.0215L12.8764 18.1021L1.39205 24.1828V12.0215ZM27.2841 24.6021H3.48011L27.2841 12.0215V24.6021ZM10.0923 6.63978L9.1179 7.61828L14.3381 12.8602L21.4375 5.73118L20.5327 4.75269L14.4077 10.9032L10.0923 6.63978Z"
+					fill="#9F9C9A"
+				/>
+			</svg>
+		</ion-label>
+		<span>{{translate.msgPedidosAdquiridos}}</span>
+	</div>
+
+	<div (click)="tabRedirect(tabAccount)">
+		<ion-label>
+			<svg width="26" height="31" viewBox="0 0 26 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M24.1595 18.5773L16.3223 14.87L12.6951 17.0814L9.06792 14.87L1.23065 18.5773L0 23.9107L1.81358 29.0489L12.5655 30.74H12.6951L23.5766 28.9839L25.3902 23.8456L24.1595 18.5773ZM17.8768 25.7318L23.7061 24.8212L22.605 27.8782L12.6951 29.4391L2.78515 27.8782L1.68404 24.8212L7.51342 25.7318L7.70773 24.431L1.42496 23.4554L2.33175 19.4879L9.00315 16.3659L12.6951 18.6424L16.387 16.3659L23.0584 19.4879L23.9652 23.4554L17.6824 24.431L17.8768 25.7318ZM12.6303 14.6098H12.8246C14.6382 14.6098 16.0632 13.9594 17.1643 12.7236C19.4313 10.122 19.1074 6.8293 19.0426 6.37401C18.9131 3.12196 17.3586 1.56098 16.0632 0.845531C15.0916 0.325204 13.9905 0 12.8246 0H12.6951C12.0474 0 10.6872 0.130081 9.45655 0.845531C8.16113 1.56098 6.60663 3.12196 6.41232 6.37401C6.34755 6.8293 6.02369 10.187 8.29067 12.7236C9.327 13.9594 10.8167 14.5448 12.6303 14.6098ZM7.64296 6.43905C7.7725 3.77237 9.00315 2.5366 10.0395 1.95123C11.0758 1.36586 12.1122 1.30082 12.6951 1.30082H12.7599C13.7314 1.30082 14.6382 1.56098 15.4155 2.01627C16.387 2.60164 17.6177 3.83741 17.7472 6.50409C17.812 6.95938 18.0711 9.73175 16.1927 11.8781C15.3507 12.8537 14.1848 13.309 12.8246 13.309H12.7599H12.6951C11.2701 13.309 10.169 12.7887 9.32701 11.8781C7.25434 9.66671 7.64296 6.63417 7.64296 6.43905Z"
+					fill="#9F9C9A"
+				/>
+			</svg>
+		</ion-label>
+		<span>{{translate.msgMyAccount}}</span>
+	</div>
+</div>
+
+<div class="task-page__terms" *ngIf="showPrivacyPolicy">
+	<div class="main-div" id="terms" *ngIf="getLang() == 'PT'">
+		<h3 class="terms-title">
+			<ion-icon name="ios-arrow-back" style="padding-right: 10px" (click)="closePrivacyPolicy()"></ion-icon>
+			Política de Privacidade da Zaask
+		</h3>
+
+		<p>Este website é operado pela Zaask, marca comercial da YoungStories SA., sociedade comercial por quotas, com o número de pessoa colectiva 509984568, e com sede na Rua da Carvalha 570, 2400-441 Leiria.</p>
+		<p><strong>Importante</strong>: ao fornecer dados pessoais à zaask e/ou através do site <a href="https://zaask.pt" title="zaask.pt">zaask.pt</a> o utilizador autoriza que os seus dados pessoais sejam utilizados tratados pela zaask nos termos e condições abaixo descritos.</p>
+		<hr />
+		<ol class="p-left30 m-top20 indice">
+			<li><a href="#ambito">Âmbito</a></li>
+			<li><a href="#advertencia">Advertência</a></li>
+			<li><a href="#politica-de-privacidade-e-seguranca">Política de Privacidade e Segurança</a></li>
+			<li>
+				<a href="#cookies">Cookies</a>
+				<ol>
+					<li><a href="#o-que-sao-cookies">O que são cookies?</a></li>
+					<li><a href="#porque-se-utilizam-cookies">Porque se utilizam Cookies?</a></li>
+					<li><a href="#beneficios-para-o-cliente-ou-utilizador">Benefícios para o cliente ou utilizador</a></li>
+					<li><a href="#desvantagens">Desvantagens</a></li>
+				</ol>
+			</li>
+			<li>
+				<a href="#tratamento-de-dados-pessoais">Tratamento de Dados Pessoais</a>
+				<ol>
+					<li><a href="#o-que-sao-dados-pessoais">O que são dados pessoais?</a></li>
+					<li><a href="#que-dados-recolhemos-sobre-si-e-como-o-utilizamos">Que dados recolhemos sobre si e como o utilizamos?</a></li>
+					<li><a href="#quem-pode-aceder-aos-seus-dados-pessoais">Quem pode aceder aos seus dados pessoais?</a></li>
+					<li><a href="#onde-armazenamos-os-seus-dados-pessoais">Onde armazenamos os seus dados pessoais?</a></li>
+					<li><a href="#quanto-tempo-guardamos-os-seus-dados-pessoais">Quanto tempo guardamos os seus dados pessoais?</a></li>
+					<li><a href="#informacao-geral-acerca-do-processamento-dos-seus-dados">Informação Geral acerca do Processamento dos seus dados</a></li>
+					<li><a href="#os-seus-direitos-e-escolhas">Os seus Direitos e Escolhas</a></li>
+				</ol>
+			</li>
+			<li><a href="#outras-disposicoes-gerais">Outras disposições gerais</a></li>
+			<li><a href="#contactos">Contactos</a></li>
+		</ol>
+		<hr />
+		<ol class="content p-left30 m-top20">
+			<li id="ambito">
+				<div class="title-list">Âmbito</div>
+				<p>Esta Política Privacidade abrange a plataforma digital ZAASK detida pela Youngstories,SA.</p>
+				<p>A Zaask está acessível através dos domínios zaask.pt, zaask.es, zaask.com e da aplicação móvel disponível na Google Play e App Store.</p>
+			</li>
+			<li id="advertencia">
+				<div class="title-list">Advertência</div>
+				<p>A navegação, registo e uso da plataforma Zaask está pendente da aceitação das condições previstas nesta política. Caso não concorde com a mesma, deve abandonar o sítio.</p>
+			</li>
+			<li id="politica-de-privacidade-e-seguranca">
+				<div class="title-list">Política de Privacidade e Segurança</div>
+				<p>A Zaask preocupa-se com a sua privacidade e protege as informações que lhe forem transmitidas.</p>
+				<p>A Zaask estabelece consigo o cumprimento dos princípios da legislação e proteção de dados, respeitando todas as leis e normas nacionais.</p>
+				<p>Nestas plataformas podem ser disponibilizados links para sites de terceiros para maior conveniência do utilizador. A Zaask não se responsabiliza, aprova ou por qualquer forma apoia ou subscreve o conteúdo formal desses websites nem dos websites neles interligados ou referidos.</p>
+				<p>A Zaask não é responsável perante quaisquer utilizadores deste website por quaisquer danos decorrentes da utilização ou divulgação das informações nele contidas.</p>
+			</li>
+			<li id="cookies">
+				<div class="title-list">Cookies</div>
+				<ol>
+					<li id="o-que-sao-cookies">
+						<div class="title-list">O que são cookies?</div>
+						<p>“Cookies” é uma cadeia de texto arquivada num ficheiro específico e incluída em pedidos e respostas do protocolo de transferência de hipertexto (HTTP – Hypertext Transfer Protocol).</p>
+						<p>Permite o registo das informações de estado enquanto navega e quando regressa a um determinado sítio da Internet, mantendo as sessões HTTP.</p>
+					</li>
+					<li id="porque-se-utilizam-cookies">
+						<div class="title-list">Porque se utilizam Cookies?</div>
+						<ul>
+							<li>Para os websites funcionarem de forma mais eficaz e rápida;</li>
+							<li>Para melhorar o nível de segurança quando utiliza alguma área de acesso restrito;</li>
+							<li>Ajudar a recolher informação que melhor pode servir os seus interesses;</li>
+							<li>Recolher informação estatística para melhorar a forma de se relacionar com os clientes e produtos.</li>
+						</ul>
+					</li>
+					<li id="beneficios-para-o-cliente-ou-utilizador">
+						<div class="title-list">Benefícios para o cliente ou utilizador</div>
+						<ul>
+							<li>Mais segurança</li>
+							<li>Não receber repetidamente perguntas ou informação já visualizada;</li>
+						</ul>
+					</li>
+					<li id="desvantagens">
+						<div class="title-list">Desvantagens</div>
+						<p>Algumas cookies podem ficar instaladas no navegador do utilizador durante algum tempo e além disso existem cookies que podem fazer a monitorização do percurso do utilizador no website das empresas.</p>
+						<p>
+							Que tipo de cookies a Zaask utiliza:
+							<br />
+							<strong>Essencial</strong> - obrigatório para o bom funcionamento do sítio da internet (login de utilizadores por exemplo);
+							<br />
+							<strong>Não-essencial</strong> - Não quebra o bom funcionamento do website, mas utiliza-se para melhorar a interação do utilizador;
+							<br />
+							<strong>Pouco-intrusivo</strong> - utiliza-se na observação do utilizador, mas não fornece qualquer tipo de informação pessoal (Google Analytics);
+							<br />
+							<strong>Muito Intrusivo</strong> - utilizado para a observação do utilizador, fornecendo dados pessoais. Esta classificação apenas serve de referência, podendo criar-se uma totalmente nova ou adaptar esta a outras e vice-versa.
+						</p>
+
+						<table style="white-space: nowrap">
+							<thead>
+								<tr>
+									<th>Cookie</th>
+									<th>Designação</th>
+									<th>Descrição</th>
+									<th>Outras informações</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Google Analytics</td>
+									<td>_gid<br />_ga<br />_gac_</td>
+									<td>Estes cookies têm como finalidade recolher informações sobre como os visitantes utilizam o website da Internet. A informação recolhida tem o objetivo de ajudar a melhorar o website, sendo que toda a informação recolhida é estritamente anónima</td>
+									<td class="wb">Para mais informações visite o sítio da internet: <a href="http://www.google.com/analytics/learn/privacy.html" target="_blank">http://www.google.com/analytics/learn/privacy.html</a></td>
+								</tr>
+								<tr>
+									<td>Sessão do Utilizador</td>
+									<td>PHPSESSID</td>
+									<td>Esta cookie tem como finalidade registar a sessão do utilizador permitindo estar ligado sempre que acede a áreas seguras como a área de cliente e desta forma evitar que seja pedido essa informação repetidamente por cada página em que navega. Esta cookie apenas existe enquanto o utilizador tiver o login efetuado.</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>Mixpanel</td>
+									<td class="wb">mp_e58842e2301dca30326afa95a6801883_mixpanel</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>Google Tag Manager</td>
+									<td>_dc_gtm_</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>__ar_v4</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>zuid</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>CookieIntro</td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<br />
+						<p><strong>Utilização de Cookies pela Zaask</strong></p>
+						<p>
+							Todos os navegadores permitem aceitar, recusar ou apagar cookies, através da alteração dos parâmetros do seu navegador de Internet. A alteração dos parâmetros pode ser feita através das definições específicas do seu navegador de internet. Alertamos para o facto de que a recusa das cookies pode tornar o acesso ao site mais lento e não permitir o acesso a determinadas
+							áreas do website.
+						</p>
+						<p>Para obter mais informações sobre cookies, incluindo para saber que cookies foram instalados e como podem ser geridos e eliminados, visite <a href="http://www.allaboutcookies.org" target="_blank">www.allaboutcookies.org</a>.</p>
+						<p>No caso de não desejar ser detetado ao visitar o nosso site pode fazê-lo através do link <a href="http://tools.google.com/dlpage/gaoptout" target="_blank">http://tools.google.com/dlpage/gaoptout</a>.</p>
+						<p>Pode encontrar a informação acerca do controlo das cookies de acordo com o seu navegador de Internet na seguinte tabela:</p>
+
+						<label>Microsoft Edge</label>
+						<span><a href="https://support.microsoft.com/pt-pt/help/4027947/windows-delete-cookies" target="_blank">https://support.microsoft.com/pt-pt/help/4027947/windows-delete-cookies</a></span>
+						<br />
+						<label>Chrome</label>
+						<span><a href="https://www.google.com/chrome/intl/en-GB/more/privacy.html" target="_blank">https://www.google.com/chrome/intl/en-GB/more/privacy.html</a></span>
+						<br />
+						<label>Firefox</label>
+						<span><a href="http://support.mozilla.org/en-US/kb/Clear%20Recent%20History" target="_blank">http://support.mozilla.org/en-US/kb/Clear%20Recent%20History</a></span>
+						<br />
+						<label>Safari</label>
+						<span><a href="http://support.apple.com/kb/PH5042" target="_blank">http://support.apple.com/kb/PH5042</a></span>
+						<br />
+						<label>Opera</label>
+						<span><a href="http://www.opera.com/browser/tutorials/security/privacy/" target="_blank">http://www.opera.com/browser/tutorials/security/privacy/</a></span>
+					</li>
+				</ol>
+			</li>
+			<br /><br />
+			<li id="tratamento-de-dados-pessoais">
+				<div class="title-list">Tratamento de Dados Pessoais</div>
+				<ol>
+					<li id="o-que-sao-dados-pessoais">
+						<div class="title-list">O que são dados pessoais?</div>
+						<p>“Dado pessoal” é qualquer informação que possa identificá-lo quer diretamente (por exemplo, o seu nome) ou indiretamente (por exemplo, dados apresentados sob um pseudónimo, tal como um número de identificação único).</p>
+					</li>
+					<li id="que-dados-recolhemos-sobre-si-e-como-o-utilizamos">
+						<div class="title-list">Que dados recolhemos sobre si e como o utilizamos?</div>
+						<p>A Zaask pode recolher os seus dados ao abrigo de um imperativo legal ou normativo, de uma relação contratual, de um interesse legítimo da mesma (no sentido de melhorar os seus produtos e serviços) e/ou de um consentimento informado.</p>
+					</li>
+					<li id="quem-pode-aceder-aos-seus-dados-pessoais">
+						<div class="title-list">Quem pode aceder aos seus dados pessoais?</div>
+						<p>Podemos partilhar os seus dados pessoais para cumprir as obrigações legais ou contratuais, para melhorar os nossos produtos e serviços ou após ter obtido o seu consentimento.</p>
+						<p>Dependendo da finalidade para as quais são recolhidos, e exclusivamente na medida da necessidade de conhecimento, a Zaask pode ter acesso a alguns dos seus dados pessoais; quando possível os dados são apresentados sob um pseudónimo (não permitindo a identificação direta), e, sempre que necessário para lhe fornecer os serviços solicitados.</p>
+						<p>Existem entidades externas que auxiliam a Zaask, no fornecimento de serviços de IT, tais como serviços de Alojamento WEB e manutenção, bem como ao software e aplicações que podem conter dados sobre si (tais serviços podem por vezes implicar acesso aos seus dados para a realização das tarefas necessárias).</p>
+						<p>Pontualmente poderemos divulgar os seus dados pessoais a outras entidades, no âmbito de serviços prestados por estas. Nesses casos, exigimos que estas entidades em questão tenham em vigor as medidas técnicas e organizativas adequadas a garantir a segurança da sua informação de forma a proteger os seus dados pessoais.</p>
+					</li>
+					<li id="onde-armazenamos-os-seus-dados-pessoais">
+						<div class="title-list">Onde armazenamos os seus dados pessoais?</div>
+						<p>Os dados que recolhemos de si e pelos quais somos responsáveis estão armazenados num local na União Europeia.</p>
+					</li>
+					<li id="quanto-tempo-guardamos-os-seus-dados-pessoais">
+						<div class="title-list">Quanto tempo guardamos os seus dados pessoais?</div>
+						<p>Só armazenamos os seus dados pessoais pelo tempo necessário para atingir a finalidade associada ao tratamento dos mesmos. Para determinar o período de retenção dos dados, usamos os seguintes critérios:</p>
+						<p>Quando se registar na Plataforma Zaask armazenaremos os seus dados durante o período em que for nosso cliente.</p>
+						<p>Quando enviar uma candidatura para trabalhar na Zaask, os dados fornecidos serão mantidos pelo período de dois anos.</p>
+						<p>Quando são colocados cookies no seu computador, a Zaask irá conservar as mesmas enquanto for necessário para atingir os seus objetivos (por exemplo cookies de sessão de identificação) definido no capítulo de cookies;</p>
+						<p>Quando enviar os documentos exigidos para verificação e validação de contas manteremos os mesmos pelo tempo suficiente para a execução do seu objetivo. Após isso serão totalmente eliminados de todos os nossos sistemas.</p>
+						<p>A Zaask pode reter alguns dos seus dados pessoais para cumprir as suas obrigações legais ou regulamentares, bem como para administrar os seus direitos (por exemplo para fazer valer as petições em Tribunais) ou para efeitos estatísticos ou históricos.</p>
+						<p>Quando já não seja necessária a utilização dos seus dados pessoais, estes serão removidos do sistema da Zaask ou mantido de forma anónima para que não possa ser identificado a partir dos dados.</p>
+						<p>A Zaask está empenhada em manter os seus dados pessoais protegidos e toma todas as precauções adequadas para o fazer. Como tal, é exigido contratualmente que as entidades externas de confiança que tratam dos seus dados pessoais em nosso nome, façam o mesmo.</p>
+					</li>
+					<li id="informacao-geral-acerca-do-processamento-dos-seus-dados">
+						<div class="title-list">Informação Geral acerca do Processamento dos seus dados</div>
+						<table>
+							<thead>
+								<tr>
+									<th><strong>Dados pessoais</strong></th>
+									<th><strong>Finalidade</strong></th>
+									<th><strong>Fundamento</strong></th>
+									<th><strong>Responsável pelo tratamento</strong></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Nome, E-mail</td>
+									<td>Acesso à Área Cliente</td>
+									<td>Obrigação contratual</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Nome, Apelido, Telemóvel, E-mail, CV</td>
+									<td>Receção de Candidaturas</td>
+									<td>Interesse legítimo</td>
+									<td>Recruiter Box</td>
+								</tr>
+								<tr>
+									<td>E-mail</td>
+									<td>Responder a pedido de contacto</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>IP, browser, etc.</td>
+									<td>Tracking das visitas via Google Analytics</td>
+									<td>Interesse legítimo</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Utilização de cookies</td>
+									<td>Aceder a métricas sobre os visitantes de forma a entender, de forma, genérica quem são os visitantes</td>
+									<td>Interesse legítimo</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Dados de pagamento</td>
+									<td>Para proceder ao pagamento pelos serviços oferecidos</td>
+									<td>Obrigação contratual</td>
+									<td>Stripe<br />Paypal<br />Hipay</td>
+								</tr>
+								<tr>
+									<td>Dados dos documentos de Identificação</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Número de Identificação Fiscal</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Morada (Comprovativo)</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Dados do seguro de responsabilidade civil</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Dados de seguro de acidente de trabalho</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Registo Criminal</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+								<tr>
+									<td>Dados associados às Licenças Profissionais</td>
+									<td>Validação de perfis para maior segurança do utilizador</td>
+									<td>Consentimento</td>
+									<td>Zaask</td>
+								</tr>
+							</tbody>
+						</table>
+						<br />
+					</li>
+					<li id="os-seus-direitos-e-escolhas">
+						<div class="title-list">Os seus Direitos e Escolhas</div>
+						<p>A Zaask respeita o seu direito à privacidade e à proteção dos seus dados: é importante que seja capaz de controlar os seus dados pessoais.</p>
+						<p>Tem os seguintes direitos:</p>
+						<table>
+							<thead>
+								<tr>
+									<th>Os seus direitos</th>
+									<th>O que significa?</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>O direito a ser informado</td>
+									<td>Tem direito a obter informação clara, transparente e facilmente compreensível acerca da forma como usamos os seus dados pessoais e acerca dos seus direitos. É por essa razão que lhe fornecemos informação na presente Política.</td>
+								</tr>
+								<tr>
+									<td>O direito de acesso</td>
+									<td>
+										<p>Tem direito de acesso aos dados pessoais que detemos sobre si (sujeito a determinadas limitações).</p>
+										<p>Podemos cobrar uma taxa razoável tendo em consideração o custo administrativo do fornecimento da informação.</p>
+										<p>Pedidos manifestamente infundados, excessivos ou repetitivos poderão não ser respondidos.</p>
+										Para o fazer, contacte-nos por favor para os dados infra referidos.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito de retificação</td>
+									<td>
+										<p>Tem direito à retificação dos seus dados pessoais se estiverem incorretos ou desatualizados e/ou a completá-los se estes estiverem incompletos.</p>
+										Para o fazer, use a capacidade de edição do seu perfil na Zaask.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito de apagamento/direito a ser esquecido</td>
+									<td>
+										Em alguns casos, tem direito a que os seus dados pessoais sejam apagados ou eliminados. Tenha em consideração que este não é um direito absoluto, uma vez que podemos ter fundamentos legais ou legítimos para a retenção dos seus dados pessoais. Se deseja que eliminemos os seus dados contacte-nos por favor para os dados abaixo ou use a funcionalidade presente
+										na nossa plataforma.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito de oposição a marketing direto, inclusive à criação de perfis</td>
+									<td>
+										<p>Pode eliminar a subscrição ou optar por ser removido das nossas comunicações diretas de marketing a qualquer momento.</p>
+										A forma indicada para o fazer é desativar essa opção no espaço dedicado “Notificações”.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito de, a qualquer momento, retirar o consentimento para o tratamento de dados baseado no consentimento</td>
+									<td>Pode retirar o seu consentimento ao nosso tratamento dos seus dados quando o referido tratamento for baseado no seu consentimento. A retirada do consentimento não afeta a legalidade do tratamento baseado no consentimento antes da respetiva retirada.</td>
+								</tr>
+								<tr>
+									<td>O direito a opor-se ao tratamento tendo como base interesses legítimos</td>
+									<td>
+										<p>
+											Pode opor-se em qualquer momento ao tratamento dos seus dados quando o referido tratamento tem por base um interesse legítimo. Remetemos para a tabela inserida na secção “que dados recolhemos e como os utilizamos”, especialmente a coluna “Qual é a base legal para o tratamento dos seus dados?” para identificar quando o nosso tratamento é baseado em
+											interesses legítimos.
+										</p>
+										Para o fazer, contacte-nos por favor para os dados presentes no fim desta Política.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito a apresentar uma queixa junto da autoridade supervisora</td>
+									<td>
+										<p>Tem direito de contatar a autoridade para a proteção de dados do seu país de forma a apresentar uma queixa contra as práticas de proteção de dados e privacidade da Zaask.</p>
+										Não hesite em contactar-nos para os dados infra referidos antes de apresentar qualquer queixa junto da autoridade de proteção de dados competente, nomeadamente a Comissão Nacional de Proteção de Dados.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito à portabilidade dos dados</td>
+									<td>
+										<p>Tem direito de mover, copiar ou transferir os dados da nossa base de dados para outra. O presente aplica-se apenas a dados que forneceu, quando o tratamento se basear no seu consentimento ou em contrato e o tratamento for realizado por meios automatizados.</p>
+										<p>Remetemos para as tabelas inseridas na seção “que dados recolhemos e como os usamos”, especialmente a coluna “Qual é a base legal para o tratamento dos seus dados?” para identificar quando o tratamento é baseado na execução de um contrato ou no consentimento.</p>
+										Para mais informações, contacte-nos por favor para os dados presentes no fim desta Política.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito à restrição</td>
+									<td>
+										<p>Tem direito a solicitar a restrição do tratamento dos seus dados. Este direito significa que o nosso tratamento dos seus dados é restrito, portanto podemos armazená-los, mas não os podemos utilizar, nem os submeter a tratamento adicional.</p>
+										Aplica-se em circunstâncias limitadas enumeradas pelo Regulamento Geral de Proteção de Dados.
+									</td>
+								</tr>
+								<tr>
+									<td>O direito a desativar os Cookies</td>
+									<td>
+										<p>Tem direito a desativar os Cookies. As configurações dos motores de busca da Internet estão normalmente programadas para, por defeito, aceitar Cookies, mas pode facilmente ajustá-las pela alteração das configurações do seu motor de busca.</p>
+										<p>Muitos cookies são usados para melhorar a utilização e funcionalidade os websites/apps.</p>
+										Se deseja restringir ou bloquear todos os cookies que estão configurados pelos nossos websites/apps (que podem impedi-lo de utilizar certas partes do site), ou quaisquer outros websites/apps, pode fazê-lo através das configurações do seu motor de busca, cuja a explicação se encontra exposta nesta Política
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</li>
+				</ol>
+			</li>
+			<li id="outras-disposicoes-gerais">
+				<div class="title-list">Outras disposições gerais</div>
+				<p>A Zaask reserva o direito de, a todo o momento e sem aviso prévio, alterar a presente Política de Privacidade, mas compromete-se a avisar todos os seus utilizadores numa fase posterior.</p>
+			</li>
+			<li id="contactos">
+				<div class="title-list">Contactos</div>
+				<p>Para qualquer questão relacionada com esta Política de Privacidade e para exercício de qualquer direito referido anteriormente pode entrar em contacto com o Encarregado da Proteção de Dados da Zaask, através de:</p>
+				<address>
+					Nome: Gonçalo Ribeiro
+					<br />Morada: Avenida Casal Ribeiro n.º28 8ºA <br />Código Postal: 1000-994, Lisboa <br />Tel: <a href="tel:+351211450355">(+351) 211 450 355</a> <br />E-mail: <a href="mailto:dpo@zaask.com">dpo@zaask.com</a>
+				</address>
+			</li>
+		</ol>
+		<hr />
+		<small>Política de Privacidade revista dia 25 de Maio de 2018</small>
+	</div>
+	<div class="main-div" id="terms" *ngIf="getLang() == 'ES'">
+		<div class="clearfix m-top20">
+			<h3 class="terms-title">
+				<ion-icon name="ios-arrow-back" style="padding-right: 10px" (click)="closePrivacyPolicy()"></ion-icon>
+				Política de Privacidad de Zaask
+			</h3>
+			<p>Esta página web es operada por Zaask, marca comercial de YoungStories SA., con número de identificación fiscal 509984568, y con domicilio social en Rua da Carvalha 570, 2400-441 Leiria, Portugal.</p>
+			<p><strong>Importante</strong>: al facilitar datos personales a Zaask y/o a través de la página web <a href="https://zaask.es" title="zaask.es">zaask.es</a>, el usuario autoriza que sus datos personales sean utilizados y tratados por Zaask en los términos y condiciones abajo indicadas.</p>
+			<hr />
+			<ol class="p-left30 m-top20 indice">
+				<li><a href="#ambito">Ámbito</a></li>
+				<li><a href="#advertencia">Advertencia</a></li>
+				<li><a href="#politica-de-privacidad-y-seguridad">Política de Privacidad y Seguridad</a></li>
+				<li>
+					<a href="#cookies">Cookies</a>
+					<ol>
+						<li><a href="#que-son-las-cookies">¿Qué son las cookies?</a></li>
+						<li><a href="#por-que-se-utilizan-cookies">¿Por qué se utilizan cookies?</a></li>
+						<li><a href="#beneficios-para-el-cliente-o-utilizador">Beneficios para el cliente o utilizador</a></li>
+						<li><a href="#desventajas">Desventajas</a></li>
+					</ol>
+				</li>
+				<li>
+					<a href="#tratamiento-de-datos-personales">Tratamiento de datos personales</a>
+					<ol>
+						<li><a href="#que-son-los-datos-personales">¿Qué son los datos personales?</a></li>
+						<li><a href="#que-datos-recogemos-y-como-los-utilizamos">¿Qué datos recogemos y cómo los utilizamos?</a></li>
+						<li><a href="#quien-puede-acceder-a-los-datos-personales">¿Quién puede acceder a los datos personales?</a></li>
+						<li><a href="#donde-se-almacenan-los-datos-personales">¿Dónde se almacenan los datos personales?</a></li>
+						<li><a href="#cuanto-tiempo-guardamos-los-datos-personales">¿Cuánto tiempo guardamos los datos personales?</a></li>
+						<li><a href="#informacion-general-sobre-el-procesamiento-de-los-datos">Información general sobre el procesamiento de los datos</a></li>
+						<li><a href="#derechos-del-usuario">Derechos del usuario</a></li>
+					</ol>
+				</li>
+				<li><a href="#otras-disposiciones-generales">Otras disposiciones generales</a></li>
+				<li><a href="#contacto">Contacto</a></li>
+			</ol>
+			<hr />
+			<ol class="content p-left30 m-top20">
+				<li id="ambito">
+					<div class="title-list">Ámbito</div>
+					<p>Esta Política de Privacidad corresponde a la plataforma digital ZAASK, de la entidad Youngstories, S.A.</p>
+					<p>Zaask está accesible a través de los dominios zaask.pt, zaask.es, zaask.com y la aplicación móvil disponible en Google Play y App Store.</p>
+				</li>
+				<li id="advertencia">
+					<div class="title-list">Advertencia</div>
+					<p>La navegación, registro y uso de la plataforma Zaask, está sujeta a la aceptación de las condiciones previstas en esta política. En caso de no estar de acuerdo con la misma, debe abandonar el sitio web.</p>
+				</li>
+				<li id="politica-de-privacidad-y-seguridad">
+					<div class="title-list">Política de Privacidad y Seguridad</div>
+					<p>Zaask se preocupa por su privacidad y protege la información que le es transmitida.</p>
+					<p>Zaask establece el cumplimiento de los principios de la legislación y protección de datos, respetando todas las leyes y normas nacionales.</p>
+					<p>En estas plataformas pueden ser facilitados enlaces para sitios web de terceros para facilitar la experiencia del usuario. Zaask no se responsabiliza, aprueba o de cualquier forma apoya o suscribe el contenido formal de estos sitios web ni de las páginas por ellos conectadas o referidas.</p>
+					<p>Zaask no es responsable por cualquier usuario de este sitio web ni por cualquiera de los daños realizados durante la utilización o divulgación de la información recogida en el mismo.</p>
+				</li>
+				<li id="cookies">
+					<div class="title-list">Cookies</div>
+					<ol>
+						<li id="que-son-las-cookies">
+							<div class="title-list">¿Qué son las cookies?</div>
+							<p>“Cookies” es una cadena de texto archivada en un fichero específico e incluida en pedidos y respuestas del Protocolo de transferencia de hipertexto (HTTP – Hypertext Transfer Protocol).</p>
+							<p>Permite el registro de las informaciones de estado durante la navegación y en el regreso a un determinado sitio web, manteniendo las sesiones HTTP.</p>
+						</li>
+						<li id="por-que-se-utilizan-cookies">
+							<div class="title-list">¿Por qué se utilizan cookies?</div>
+							<ul>
+								<li>Para que los sitios web funcionen de forma más eficaz y rápida;</li>
+								<li>Para mejorar el nivel de seguridad cuando utiliza algún área de acceso restringido;</li>
+								<li>Para ayudar a recoger información que pueda servir mejor a sus intereses;</li>
+								<li>Para recoger información estadística para mejorar la forma de relacionarse con los clientes y los productos.</li>
+							</ul>
+						</li>
+						<li id="beneficios-para-el-cliente-o-utilizador">
+							<div class="title-list">Beneficios para el cliente o utilizador</div>
+							<ul>
+								<li>Mayor seguridad</li>
+								<li>No recibir repetidamente preguntas o información ya visualizada</li>
+							</ul>
+						</li>
+						<li id="desventajas">
+							<div class="title-list">Desventajas</div>
+							<p>Algunas cookies pueden mantenerse instaladas en el navegador del usuario durante un tiempo. Así mismo, hay cookies que pueden realizar la monitorización del recorrido del usuario en el sitio web de las empresas.</p>
+							<p>
+								Qué tipo de cookies utiliza Zaask:
+								<br />
+								<strong>Cookies de sesión</strong> - Necesarias para el buen funcionamiento del sitio web (login de los usuarios, por ejemplo);
+								<br />
+								<strong>No esenciales</strong> - No interfieren en el correcto funcionamiento del sitio web, se utiliza para mejorar la interacción del usuario;
+								<br />
+								<strong>Poco intrusivas</strong> - Se utilizan en la observación del usuario, pero no facilita ningún tipo de información personal (Google Analytics);
+								<br />
+								<strong>Intrusivas</strong> - Utilizado para observar al usuario, facilitando datos personales.
+							</p>
+							<p>Esta clasificación sirve como referencia, pudiéndose crear una totalmente nueva o adaptar la presente a otras.</p>
+
+							<table style="white-space: nowrap">
+								<thead>
+									<tr>
+										<th>Cookie</th>
+										<th>Designación</th>
+										<th>Descripción</th>
+										<th>Outra información</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Google Analytics</td>
+										<td>_gid<br />_ga<br />_gac_</td>
+										<td>Estas cookies tienen como finalidad recoger información sobre cómo los visitantes utilizan el sitio web. La información recogida tiene como objetivo ayudar a la mejora del sitio web, siendo que toda la información recogida es estrictamente anónima.</td>
+										<td class="wb">Para más información consultar el sitio web: <a href="http://www.google.com/analytics/learn/privacy.html" target="_blank">http://www.google.com/analytics/learn/privacy.html</a></td>
+									</tr>
+									<tr>
+										<td>Sesión de usuario</td>
+										<td>PHPSESSID</td>
+										<td>Esta cookie tiene como finalidad registrar la sesión del usuario, permitiéndole estar conectado siempre que accede a áreas seguras como a el área de cliente y de esta manera evitar que sea solicitada esa información en cada página en la que navega. Esta cookie solamente existe cuando el usuario tenga el login efectuado.</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Mixpanel</td>
+										<td class="wb">mp_e58842e2301dca30326afa95a6801883_mixpanel</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Google Tag Manager</td>
+										<td>_dc_gtm_</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>__ar_v4</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>zuid</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>CookieIntro</td>
+										<td></td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+
+							<br />
+							<p><strong>Utilización de Cookies por Zaask</strong></p>
+							<p>
+								Todos los navegadores dan la posibilidad de aceptar, rechazar o eliminar cookies, mediante el ajuste de los parámetros del navegador. El ajuste de los parámetros puede ser realizado a través de las definiciones del navegador. Es importante tener en cuenta que el rechazo de las cookies puede hacer que la utilización del sitio web sea más lenta y no permitir el acceso
+								a determinadas áreas del sitio web.
+							</p>
+							<p>Para consultar más información sobre cookies, como saber qué cookies han sido instaladas y cómo pueden ser gestionadas o eliminadas, visite <a href="http://www.allaboutcookies.org" target="_blank">www.allaboutcookies.org</a>.</p>
+							<p>En el caso de no desear ser detectado al visitar nuestro sitio web, puede indicarlo a través del siguiente enlace: <a href="http://tools.google.com/dlpage/gaoptout" target="_blank">http://tools.google.com/dlpage/gaoptout</a>.</p>
+							<p>Para obtener más información acerca del control de las cookies según su navegador, puede consultar la siguiente tabla:</p>
+
+							<label>Microsoft Edge</label>
+							<span><a href="https://support.microsoft.com/pt-pt/help/4027947/windows-delete-cookies" target="_blank">https://support.microsoft.com/pt-pt/help/4027947/windows-delete-cookies</a></span>
+							<br />
+							<label>Chrome</label>
+							<span><a href="https://www.google.com/chrome/intl/en-GB/more/privacy.html" target="_blank">https://www.google.com/chrome/intl/en-GB/more/privacy.html</a></span>
+							<br />
+							<label>Firefox</label>
+							<span><a href="http://support.mozilla.org/en-US/kb/Clear%20Recent%20History" target="_blank">http://support.mozilla.org/en-US/kb/Clear%20Recent%20History</a></span>
+							<br />
+							<label>Safari</label>
+							<span><a href="http://support.apple.com/kb/PH5042" target="_blank">http://support.apple.com/kb/PH5042</a></span>
+							<br />
+							<label>Opera</label>
+							<span><a href="http://www.opera.com/browser/tutorials/security/privacy/" target="_blank">http://www.opera.com/browser/tutorials/security/privacy/</a></span>
+						</li>
+					</ol>
+				</li>
+				<br /><br />
+				<li id="tratamiento-de-datos-personales">
+					<div class="title-list">Tratamiento de datos personales</div>
+					<ol>
+						<li id="que-son-los-datos-personales">
+							<div class="title-list">¿Qué son los datos personales?</div>
+							<p>“Dato personal” es cualquier información que pueda identificarlo, ya sea directamente (como el nombre) o indirectamente (como los datos relacionados con un pseudónimo o un número de identificación personal).</p>
+						</li>
+						<li id="que-datos-recogemos-y-como-los-utilizamos">
+							<div class="title-list">¿Qué datos recogemos y cómo los utilizamos?</div>
+							<p>Zaask puede recoger los datos de los usuarios al resguardo de un imperativo legal o normativo, de una relación contractual, de un interés legítimo de los mismos (para mejorar sus productos y servicios) y/o de un consentimiento informado.</p>
+						</li>
+						<li id="quien-puede-acceder-a-los-datos-personales">
+							<div class="title-list">¿Quién puede acceder a los datos personales?</div>
+							<p>Podemos compartir los datos personales de los usuarios para cumplir obligaciones legales o contractuales, para mejorar nuestros productos y servicios o después de haber obtenido su consentimiento.</p>
+							<p>En función de la finalidad para la cual han sido recogidos, y exclusivamente en la medida de la necesidad de conocimiento, Zaask puede tener acceso a algunos de sus datos personales. Cuando sea posible se presentarán en forma de pseudónimo (que no permita la identificación directa), y, siempre que sea necesario para facilitarle el servicio solicitado.</p>
+							<p>Hay entidades externas que facilitan la labor de Zaask, a través la prestación de servicios de IT, como servicios de Alojamiento web y manutención, así como al software y aplicaciones que pueden contener datos sobre los usuarios. Tales servicios pueden implicar el acceso a sus datos para la realización de las tareas necesarias.</p>
+							<p>Puntualmente podremos facilitar sus datos personales a otras entidades, en el ámbito de los servicios prestados por estas. En tales casos, exigiremos que dichas entidades tengan en vigor medidas técnicas y organizativas adecuadas para garantizar la seguridad de su información, de forma que se protejan sus datos personales.</p>
+						</li>
+						<li id="donde-se-almacenan-los-datos-personales">
+							<div class="title-list">¿Dónde se almacenan los datos personales?</div>
+							<p>Los datos recogidos de los usuarios y por los cuales somos responsables, están almacenados en un local de la Unión Europea.</p>
+						</li>
+						<li id="cuanto-tiempo-guardamos-los-datos-personales">
+							<div class="title-list">¿Cuánto tiempo guardamos los datos personales?</div>
+							<p>Solamente almacenamos los datos personales de los usuarios por el tiempo necesario para conseguir la finalidad asociada al tratamiento de los mismos. Para determinar el periodo de retención de los datos, usamos los siguientes criterios:</p>
+							<p>Cuanto se registra en la Plataforma Zaask almacenamos sus datos durante el periodo en el cual sea nuestro cliente.</p>
+							<p>Cuando se presente a una oferta de empleo para trabajar en Zaask, los datos facilitados serán almacenados durante dos años.</p>
+							<p>Cuando son colocadas cookies en su ordenador, Zaask conservará las mismas hasta cuando sea necesario para poder alcanzar sus objetivos (por ejemplo, cookies de sesión de identificación) definidas en el capítulo de cookies.</p>
+							<p>Cuando envíe los documentos solicitados para verificación y validación de cuentas, mantendremos los mismos el tiempo suficiente para la realización de su objetivo. Posteriormente, serán totalmente eliminados de todos nuestros sistemas.</p>
+							<p>Zaask puede retener algunos de sus datos personales para cumplir sus obligaciones legales o reglamentarias, así como para administrar sus derechos (por ejemplo, en caso de tener que justificar un proceso en tribunal) o para usos estadísticos o históricos.</p>
+							<p>Cuando ya no sea necesaria la utilización de sus datos personales, estos serán eliminados del sistema de Zaask o se mantendrán de manera anónima para que no pueda ser identificado a partir de estos datos.</p>
+							<p>Zaask se compromete a mantener sus datos personales protegidos y toma todas las precauciones necesarias para hacerlo. Como tal, exigimos contractualmente que las entidades externas de confianza que tratan sus datos personales en nuestro nombre hagan lo mismo.</p>
+						</li>
+						<li id="informacion-general-sobre-el-procesamiento-de-los-datos">
+							<div class="title-list">Información general sobre el procesamiento de los datos</div>
+							<table>
+								<thead>
+									<tr>
+										<th><strong>Datos personales</strong></th>
+										<th><strong>Finalidad</strong></th>
+										<th><strong>Fundamento</strong></th>
+										<th><strong>Responsable del tratamiento</strong></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Nombre, correo electrónico</td>
+										<td>Acceso al área de cliente</td>
+										<td>Obligación contractual</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Nombre, apellidos, teléfono, correo electrónico, curriculum vitae</td>
+										<td>Recepción de candidaturas</td>
+										<td>Interés legítimo</td>
+										<td>Recruiter Box</td>
+									</tr>
+									<tr>
+										<td>Correo electrónico</td>
+										<td>Responder a pedidos de contacto</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>IP, browser, etc.</td>
+										<td>Tracking de las visitas via Google Analytics</td>
+										<td>Interés legítimo</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Utilización de cookies</td>
+										<td>Acceder a métricas sobre los visitantes para entender, de manera genérica, quienes son los visitantes</td>
+										<td>Interés legítimo</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Datos de pago</td>
+										<td>Proceder al pago de los servicios ofrecidos</td>
+										<td>Obligación contractual</td>
+										<td>Stripe<br />Paypal<br />Hipay</td>
+									</tr>
+									<tr>
+										<td>Documentos de identificación</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Número de identificación fiscal</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Dirección</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Seguro de responsabilidad civil</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Seguro de accidentes de trabajo</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Registro criminal</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+									<tr>
+										<td>Datos asociados a licencias profesionales</td>
+										<td>Validación de perfiles para mejorar la seguridad del usuario</td>
+										<td>Consentimiento</td>
+										<td>Zaask</td>
+									</tr>
+								</tbody>
+							</table>
+							<br />
+						</li>
+						<li id="derechos-del-usuario">
+							<div class="title-list">Derechos del usuario</div>
+							<p>Zaask respeta el derecho a la privadad y a la protección de los datos de los usuarios: es importante que sea capaz de controlar sus datos personales.</p>
+							<p>Los usuarios de Zaask, tienen los siguientes derechos:</p>
+							<table>
+								<thead>
+									<tr>
+										<th>Derechos</th>
+										<th>¿Qué significa?</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Derecho a ser informado</td>
+										<td>Derecho a obtener información clara, transparente y fácilmente comprensible acerca de cómo utilizamos sus datos personales y sobre sus derechos. Por esta razón, le proporcionamos información en la presente Política.</td>
+									</tr>
+									<tr>
+										<td>Derecho de acesso</td>
+										<td>
+											<p>Derecho de acceso a los datos personales que almacenamos sobre su persona (sujeto a determinadas limitaciones).</p>
+											<p>Podemos cobrar una tasa razonable teniendo en consideración del coste administrativo del suministro de la información.</p>
+											<p>Pedidos manifiestamente infundados, excesivos o repetitivos pueden no ser atendidos.</p>
+											Para ello, puede contactarnos a través de los contactos contenidos en este documento.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho de rectificación</td>
+										<td>
+											<p>Derecho a rectificar los datos personales si son incorrectos u obsoletos y/o completarlos si éstos están incompletos.</p>
+											Los datos se pueden editar directamente desde el perfil del usuario en Zaask.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho a borrar datos personales y derecho al olvido</td>
+										<td>
+											En algunos casos, tiene derecho a que los datos personales sean borrados o eliminados. Es importante tener en cuenta que este no es un derecho absoluto, ya que podemos tener fundamentos legales o legítimos para la retención de los datos personales. Si desea que eliminemos sus datos, póngase en contacto con nosotros o utilice la funcionalidad presente en
+											nuestra plataforma.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho de oposición a marketing directo, incluída la creación de perfiles</td>
+										<td>
+											<p>El usuario puede eliminar la suscripción o optar por dejar de recibir nuestras comunicaciones directas de marketing en cualquier momento.</p>
+											La forma indicada para hacerlo es desactivar esta opción en el apartado "Notificaciones" del perfil de usuario.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho de retirar, en cualquier momento, el consentimiento para el tratamiento de datos basado en el consentimiento</td>
+										<td>El usuario puede retirar su consentimiento al tratamiento de sus datos cuando este tratamiento se base en su consentimiento. La retirada del consentimiento no afecta a la legalidad del tratamiento basado en el consentimiento antes de la retirada.</td>
+									</tr>
+									<tr>
+										<td>Derecho a oponerse al tratamiento basado en intereses legítimos</td>
+										<td>El usuario puede oponerse en todo momento al tratamiento de sus datos cuando dicho tratamiento se base en un interés legítimo. Nos remitimos a la tabla del punto 6.6, Información general sobre el procesamiento de los datos, particularmente la columna Fundamento, para identificar cuándo nuestro tratamiento se basa en intereses legítimos.</td>
+									</tr>
+									<tr>
+										<td>Derecho a presentar una queja en la autoridad competente</td>
+										<td>
+											<p>El usuario tiene derecho a ponerse en contacto con la autoridad de protección de datos correspondiente para presentar una queja contra las prácticas de protección de datos y privacidad de Zaask.</p>
+											No dude en ponerse en contacto con nosotros antes de presentar una queja ante la autoridad de protección de datos competente, la Agencia Española de Protección de Datos.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho a la portabilidad de los datos</td>
+										<td>
+											<p>El usuario tiene derecho a mover, copiar o transferir los datos de nuestra base de datos a otra. El derecho se aplica únicamente a los datos que proporcionó, cuando el tratamiento se basa en su consentimiento o contrato y el tratamiento se realiza por medios automatizados.</p>
+											<p>Nos remitimos a la tabla del punto 6.6, Información general sobre el procesamiento de los datos, particularmente la columna Fundamento, para identificar cuándo nuestro tratamiento se basa en una obligación contractual o en el consentimiento.</p>
+											Para más información, póngase en contacto con nosotros a través de los contactos presentes en esta Política.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho de limitación</td>
+										<td>
+											<p>El usuario tiene derecho a solicitar la limitación del tratamiento de sus datos. Este derecho significa que nuestro tratamiento de datos es limitado, por lo que podemos almacenarlos, pero no los podemos utilizar, ni someterlos a tratamiento adicional.</p>
+											Se aplica en circunstancias limitadas enumeradas por el Reglamento General de Protección de Datos.
+										</td>
+									</tr>
+									<tr>
+										<td>Derecho a desactivar cookies</td>
+										<td>
+											<p>El usuario tiene derecho a desactivar las cookies. La configuración de los motores de búsqueda de Internet normalmente está programada para aceptar cookies, si bien se puede ajustar fácilmente en la configuración del motor de búsqueda.</p>
+											<p>Muchas cookies se utilizan para mejorar el uso y la funcionalidad de los sitios web/apps.</p>
+											Si desea restringir o bloquear todas las cookies que están configuradas por nuestros sitios web/apps (que pueden impedirle utilizar ciertas partes del sitio web), o cualquier otro sitio web/app, puede hacerlo a través de la configuración de su motor de búsqueda, cuya explicación se encuentra expuesta en esta Política.
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</li>
+					</ol>
+				</li>
+				<li id="otras-disposiciones-generales">
+					<div class="title-list">Otras disposiciones generales</div>
+					<p>Zaask se reserva el derecho, en todo momento y sin aviso previo, a modificar la presente Política de Privacidad, y se compromete a notificarlo a todos sus usuarios en una fase posterior.</p>
+				</li>
+				<li id="contacto">
+					<div class="title-list">Contacto</div>
+					<p>Para cualquier cuestión relacionada con esta Política de Privacidad y para el ejercicio de cualquiera de los derechos mencionados anteriormente, puede entrar en contacto con el Responsable de la Protección de Datos de Zaask.</p>
+					<address>
+						Nombre: Gonçalo Ribeiro
+						<br />Dirección: Avenida Casal Ribeiro n.º28 8ºA <br />Código postal: 1000-994, Lisboa (Portugal) <br />Teléfono: <a href="tel:+351211450355">(+351) 211 450 355</a> <br />Correo electrónico: <a href="mailto:dpo@zaask.com">dpo@zaask.com</a>
+					</address>
+				</li>
+			</ol>
+			<hr />
+			<small>Política de Privacidad revisada el día 25 de mayo de 2018</small>
+		</div>
+	</div>
+	<div class="terms-button-div">
+		<button ion-button full class="terms-button" (click)="acceptTerms()">{{translate.policyAccept}}</button>
+	</div>
+</div>
+
+<div class="task-page__terms" *ngIf="showTerms">
+	<div class="main-div" id="terms" *ngIf="getLang() == 'PT'">
+		<div class="clearfix m-bottom20 p-bottom10 m-bottom40 m-top20">
+			<h3 class="terms-title">
+				<ion-icon name="ios-arrow-back" style="padding-right: 10px" (click)="closeTerms()"></ion-icon>
+				Acordo de Utilização
+			</h3>
+			<hr />
+			<p class="font13">
+				<strong>Aviso:</strong> O presente Acordo de Utilização, que inclui, nomeadamente, os termos e condições e a política de privacidade deste website, constitui um contrato celebrado entre a Zaask e aqueles que dele usufruem, pelo que o mesmo deve ser lido cuidadosamente.<br />A utilização dos serviços disponibilizados por este website implica a aceitação dos seus Termos e Condições,
+				incluindo da sua política de privacidade pelo que, em caso de discordância com algumas das suas disposições, a utilização do serviço não é permitida.
+			</p>
+			<p class="font13">A última alteração ao presente Acordo de Utilização data de 15.07.2019.</p>
+			<hr />
+			<p class="p-left15 m-top20">
+				<a href="#condicoes-gerais">1.Definições e Condições Gerais</a><br />
+				<a href="#privacidade"> 2.Política de Privacidade</a><br />
+				<a href="#renuncia"> 3.Garantias</a><br />
+				<a href="#info-client"> 4.Direitos e Obrigações</a><br />
+				<a href="#obrigacoes"> 5.Responsabilidade</a><br />
+				<a href="#qualifies"> 6.Conflitos</a><br />
+				<a href="#direitos"> 7.Penalidades</a><br />
+				<a href="#payments"> 8.Pagamentos</a><br />
+				<a href="#indeminizacao"> 9.Disposições Transitórias e Finais</a><br />
+			</p>
+			<hr />
+			<h3 id="condicoes-gerais">1. Definições e Condições Gerais</h3>
+			<h4 class="m-bottom20 m-top40">a) Definições</h4>
+			<p class="font13">
+				"Zaask" - website da marca registada “Zaask”, propriedade da sociedade YOUNGSTORIES, S.A., pessoa colectiva número 509984568, sob este número matriculada na Conservatória do Registo Comercial de Lisboa, com sede na Rua da Carvalha, 570, 2400-441 Leiria.<br />
+				<br />
+				"Cliente/s" - aquele/s que utiliza/m o website da Zaask para efectuar pedidos com vista à prestação de determinados serviços por profissionais inscritos para o efeito.<br />
+				<br />
+				"Informação do Cliente" - qualquer informação prestada pelo Cliente, quer durante a fase do respectivo registo e inscrição no website, quer relativamente à descrição dos seus pedidos, à avaliação feita dos profissionais prestadores de serviços ou outra resultante da utilização do website.<br />
+				<br />
+				"Política de Privacidade" - descrição dos tipos de informações recolhidas do simples utilizador, do Cliente e do prestador de serviços e a forma do respectivo tratamento.<br />
+				<br />
+				"Pedido" - requisição descrição feita pelo Cliente do serviço que pretende ver prestado por profissional inscrito no website.<br />
+				<br />
+				"Sistema" - equipamentos de computação, armazenamento e transmissão de dados, programa e aplicações informáticas, sequências de comandos e processos automáticos de análise e tratamento de dados que são utilizados pela Zaask.<br />
+				<br />
+				"Termos e Condições" - são as regras a que se vinculam a Zaask, os Clientes e os prestadores de serviços, bem como os simples utilizadores, constantes do presente Acordo de utilização e dos termos da Política de Privacidade.<br />
+				<br />
+				"Profissional" - pessoas singulares ou colectivas, prestadoras de serviços, inscritas no website Zaask, que pretendem, por esta via, receber pedidos de potenciais interessados na prestação daqueles serviços.<br />
+				<br />
+				"Utilizador" - toda a pessoa singular ou colectiva que aceda ao website até ao momento em que adquira a condição de Cliente ou de prestador de serviço.<br />
+				<br />
+				"Website" (da Zaask) - sítio da internet e respectivo domínio, espaço de alojamento, página ou conjunto de páginas da internet, seus conteúdos, gráficos de demais informação neles contida, cujo conteúdo é gerido pela Zaask.<br />
+			</p>
+		</div>
+		<h4 class="m-bottom20 m-top40">b) Condições Gerais</h4>
+		<p class="p-left15">
+			1.1 O website da Zaask é uma plataforma on-line onde os Clientes fazem constar os seus pedidos e interesse na prestação de determinado serviço, e onde os Profissionais prestadores de serviços vários se inscrevem com vista a ter acesso aos pedidos apresentados.
+			<br /><br />
+			1.2 Cada pedido deve representar uma necessidade real do Cliente. A Zaask poderá, a seu exclusivo critério, excluir todos os pedidos e/ou conteúdos publicados na plataforma que não estejam em conformidade com os termos e condições ou conteúdo que possa prejudicar a marca Zaask ou a imagem de profissionais e clientes que utilizam os serviços.
+			<br /><br />
+			1.3 Os pedidos apresentados pelos Clientes são divulgados aos Profissionais registados cuja actividade seja com eles compatíveis, para, se assim o entenderem, apresentarem, directamente aos Clientes, propostas para os serviços requisitados e respectivos orçamentos.
+			<br /><br />
+			1.4 Compete ao Cliente avaliar as propostas de orçamento e serviços apresentadas pelos Profissionais, sendo a selecção do Profissional da sua inteira e exclusiva responsabilidade.
+			<br /><br />
+			1.5 A Zaask limita-se, na sua intervenção, a recolher os pedidos dos Clientes e as inscrições dos Profissionais prestadores de serviços, divulgando aqueles a estes, de forma a permitir o processo de escolha do Cliente.
+			<br /><br />
+			1.6 O Cliente pode, inclusivamente, optar por não seleccionar nenhum dos Profissionais que o contacte para a apresentação dos respectivos orçamentos, reconhecendo que a Zaask é terceiro na relação contratualmente estabelecida entre Cliente e Profissional, não podendo nem garantido o cumprimento da prestação por parte do Profissional nem de qualquer transacção que venha, entre eles, a
+			ser acordada.
+			<br /><br />
+			1.7 A informação respeitante a pedidos e a Profissionais que consta do website é fornecida, respectivamente, por Clientes e Profissionais.
+			<br id="privacidade" /><br />
+			1.8 A Zaask não selecciona Profissionais específicos; a aquisição do pedido de orçamento acontece sempre que, por sua iniciativa, os e as Profissionais entenderem utilizar os seus créditos para esse efeito
+			<br /><br />
+			1.9 Os Clientes terão unicamente direito de avaliar, assinando ou anonimamente, o contacto efectuado e/ou serviço prestado por qualquer Profissional, registado na Zaask, que os escolher contactar através da plataforma. Na Zaask, os Clientes poderão deixar uma “Avaliação” e os Profissionais terão direito de lhes responder, escrevendo um “Comentário”. As Avaliações e os Comentários
+			reflectem a opinião dos utilizadores (Clientes e Profissionais, respectivamente) e não a opinião da Zaask. As Avaliações e os Comentários não são verificados, nem filtrados pela Zaask, nem é da sua responsabilidade apurar a respectiva exactidão, podendo estes ser incorrectos ou enganosos.
+			<br /><br />
+			1.10 As Avaliações e os Comentários efectuados pelos Clientes e Profissionais devem ser justos, verdadeiros e factuais, não podendo conter terminologia ou linguagem difamatória ou que se possa considerar ofensiva.
+			<br /><br />
+			1.11 Os Utilizadores (Clientes e Profissionais) estão proibidos de manipular de qualquer forma o sistema de Avaliações e Comentários, tal como dando indicações a um terceiro para escrever um Comentário positivo ou negativo, sobre outro Membro.
+			<br /><br />
+			1.12 Os Clientes e Profissionais obrigam-se a incluir no website apenas informação verdadeira e correcta, bem como e sempre que necessário em função do serviço a prestar, os documentos comprovativos para o exercício da actividade respectiva.
+			<br /><br />
+			1.13 A Zaask não se responsabiliza pela informação referida no número anterior, devendo o Cliente, previamente à selecção do Profissional, avaliar e comprovar a veracidade, correcção e integridade dos mesmos.
+			<br /><br />
+			1.14 A apresentação, pelo Profissional ao Cliente, de propostas fraudulentas ou de documentos falsos ou incorrectos, em caso algum pode ser imputada à Zaask, pertencendo ao Cliente a responsabilidade pela selecção dos Profissionais e pela confirmação das informações por eles fornecidas.
+			<br /><br />
+		</p>
+		<hr />
+		<h3 id="privacidade">2. Política de Privacidade</h3>
+		<p class="p-left15">2.1 A Política de Privacidade encontra-se pormenorizadamente descrita <a href="https://www.zaask.pt/privacidade">aqui</a>.<br /><br /></p>
+		<hr />
+		<h3 id="renuncia">3. Garantias</h3>
+		<p class="p-left15">
+			3.1 A Zaask garante o funcionamento contínuo e correcto do seu website, excepto nas situações em que, por motivos que lhe sejam alheios, tal cumprimento não lhe possa ser exigível.<br />
+			<br />
+			3.2 Sem prejuízo do disposto anteriormente, a Zaask reserva-se o direito, como proprietária do Website, de suspender ou fazer cessar o seu funcionamento sempre que entenda que razões justificadas (relacionadas quer com terceiros, quer com o seu modelo de negócio) o justifiquem, o que, em todo o caso, será, logo que possível, comunicado aos seus utilizadores.<br id="info-client" />
+			<br />
+			3.3 Os Clientes e Profissionais estão obrigados, na inclusão de informação, a ter em conta o cumprimento da legislação em vigor, nomeadamente a respeitante a concorrência, protecção de direitos do consumidor, publicidade enganosa e descriminação, sendo igualmente proibidas informações de carácter obsceno ou com conteúdos indecorosos, atentatórios dos bons costumes ou pornográficos, bem
+			como são também proibidas as remissões e referências a outros sites, seja de que natureza forem.<br />
+			<br />
+			3.4 Os Clientes e Profissionais comprometem-se a assegurar que nenhuma da informação disponibilizada à Zaask contém vírus informáticos, macro vírus, cavalos de tróia, worms ou algo que cause interferência ou possa interromper ou de qualquer forma perturbar os procedimentos operacionais de um computador.<br />
+			<br />
+			3.5 Estão ainda impedidos de aceder ao sistema sem expressa autorização, bem como a intercalar ou interceptar clandestinamente dados ou informações de qualquer natureza, designadamente de carácter pessoal.<br />
+			<br />
+			3.6 A Zaask não se considera responsável por qualquer erro, omissão, incorrecção ou falsidade das informações transmitidas pelos Clientes e Profissionais.<br />
+			<br />
+			3.7 A Zaask reserva-se o direito de não utilizar, por qualquer forma, qualquer informação que viole o presente Acordo de Utilização.<br />
+			<br />
+		</p>
+		<hr />
+		<h3 id="info-client">4. Direitos e Obrigações</h3>
+		<p class="p-left15">
+			4.1 A adesão na qualidade de Cliente ou Profissional ao Acordo de Utilização constitui a celebração de um contrato entre estes e a Zaask, resultando direitos e obrigações para cada uma das partes, designadamente:<br />
+			<br />
+			4.1.1 O Cliente tem direito a usufruir do Website, nos termos e condições constantes do presente Acordo de Utilização, com respeito pela correspondente política de privacidade.<br />
+			<br />
+			4.1.2 A Zaask tem a obrigação de recolher os pedidos dos Clientes e demais informação a eles respeitante e comunicá-los aos Profissionais inscritos que prestem serviços correspondentes com os desejados pelos Clientes.<br />
+			<br />
+			4.1.3 O acesso dos Profissionais aos pedidos dos Clientes depende da prévia aquisição de créditos de recebimento de pedidos de acordo com o capítulo 8.<br />
+			<br />
+			4.1.4 Os Clientes obrigam-se a não submeter pedidos não admitidos por lei ou pelos termos do presente Acordo de Utilização.<br />
+			<br />
+			4.1.5 Os Clientes são os únicos responsáveis pelo conteúdo e rigor de qualquer informação prestada.<br />
+			<br />
+			4.1.6 Os Clientes e Profissionais obrigam-se a não copiar, reproduzir, modificar ou por qualquer forma utilizar qualquer conteúdo do website, bem como a não utilizar trabalhos e pedidos de que tenham tido conhecimento por este meio para fins diversos do contrato negociado e/ou celebrado através dos contactos disponibilizados pelo website, bem como se obriga a não enviar a terceiros ou
+			por outra forma divulgar pedidos constantes do website, distribuir ou exibir publicamente qualquer conteúdo do website sem prévia e expressa autorização da Zaask.<br id="obrigacoes" />
+			<br />
+			4.1.7 Clientes e Profissionais obrigam-se a não utilizar o website da Zaask, os seus conteúdos ou serviços para um fim distinto daquele a que o mesmo se destina, nomeadamente para fins ilícitos, ilegais ou de qualquer forma capazes de colidir com direitos alheios legalmente protegidos.<br />
+			<br />
+			4.1.8 Os Profissionais obrigam-se a prestar os serviços e a executar os trabalhos de acordo com as boas práticas das respectivas actividades profissionais e a respeitar os códigos deontológicos e regulamentos técnicos que as enquadram.<br />
+			<br />
+			4.1.9 Os Profissionais obrigam-se a não utilizar quaisquer dados e informações pessoais dos Clientes para outro fim que não o da prestação de serviços pretendidos através da plataforma.
+		</p>
+		<hr />
+		<h3 id="obrigacoes">5. Responsabilidade</h3>
+		<p class="p-left15">
+			5.1 A Zaask não é parte, a qualquer título, na relação contratualmente estabelecida entre Cliente e Profissional, pelo que estes reconhecem que não lhe pode ser imputada qualquer responsabilidade, nomeadamente no que respeita à concretização do contrato e ao cumprimento dos deveres contratuais das partes.<br /><br />
+			5.2 De igual modo, não pode ser imputada à Zaask qualquer responsabilidade pelo incumprimento contratual de alguma das partes ou extracontratual, e, bem assim, por quaisquer perdas ou danos que daí possam resultar para alguma das partes. <br id="qualifies" /><br />
+		</p>
+		<hr />
+		<h3 id="qualifies">6. Conflitos</h3>
+		<p class="p-left15">
+			6.1 Os conflitos emergentes das relações estabelecidas entre Clientes e Profissionais devem ser reportados à Zaask.<br /><br />
+			6.2 A informação recolhida por efeito do número anterior destina-se a permitir à Zaask o aperfeiçoamento e actualização das informações respeitantes aos incritos no seu website.<br id="direitos" /><br />
+		</p>
+
+		<hr />
+		<h3 id="direitos">7. Penalidades</h3>
+		<p class="p-left15">
+			7.1 A Zaask tem o direito de esclarecer e apurar, por sua iniciativa e sempre que entenda necessário, as reclamações de que tenha conhecimento tendo em vista avaliar e decidir da permanência dos Clientes e profissionais no seu website.<br /><br />
+			7.2 A utilização do website pode ser suspensa por determinado período sempre que se demonstre ter sido violada alguma das obrigações dos clientes e/ou profissionais resultantes do presente acordo de utilização, caso em que a possibilidade de utilização dos créditos dos Profissionais envolvidos fica igualmente suspensa durante o mesmo período.<br />A possibilidade de uso dos créditos
+			disponíveis fica suspensa até haver confirmação de que a questão está resolvida, por ambas as partes – profissional e cliente. No caso de não haver resolução do problema, os créditos disponíveis ficarão suspensos.<br /><br />
+			7.3 Os Clientes e Profissionais podem ser definitivamente impedidos de utilizar o website sempre que a violação do presente Acordo de Utilização que se demonstre ter sido suficientemente grave, quer em função dos comportamentos, quer em função dos meios utilizados ou dos danos provocados. A Zaask reserva-se ainda no direito de reter os créditos adquiridos, noutras contas criadas, a
+			Profissionais impedidos de utilizar a plataforma.<br id="intelectual-rights" /><br />
+			7.4 A Zaask reserva-se o direito de suspender ou terminar o serviço prestado pela utilização do seu website a um Cliente ou Profissional sempre que houver suspeita do mesmo estar a violar ou pretender violar o disposto no presente Acordo de Utilização ou em legislação aplicável.<br /><br />
+			7.5 A possibilidade de retenção dos créditos já pagos e os casos em que se prevê a devolução dos mesmos aos respectivos profissionais constam da política de devolução de créditos que se encontra <a rel="nofollow" href="https://zaask.zendesk.com/hc/pt/articles/205250135">aqui.</a><br /><br />
+		</p>
+		<hr />
+		<h3 id="payments">8. Pagamentos</h3>
+		<p class="p-left15">
+			8.1 Pela utilização do website na qualidade de Profissional a Zaask cobra os valores constantes presentes nesta <a href="https://zaask.zendesk.com/hc/pt/articles/200937085-Que-pacotes-de-Cr%C3%A9ditos-Zaask-existem-" rel="nofollow" title="pacotes de créditos">página</a>. <br /><br />
+			8.2 A facturação na Zaask é feita de forma electrónica, por programa certificado pela Autoridade Tributária, ao abrigo da legislação aplicável (Código do IVA e Decreto-Lei n.º 28/2019) e as facturas são enviadas por correio electrónico.
+			<br /><br />
+			8.3 A utilização do website pelos Clientes é gratuita.
+			<br /><br />
+		</p>
+		<hr />
+		<h3 id="indeminizacao">9.Disposições Transitórias e finais</h3>
+		<p class="p-left15" id="responsabilidade">
+			9.1 No caso de alguma ou algumas das cláusulas e disposições do presente Acordo de Utilização ser considerada(s) inválida(s), a(s) mesma(s) não será utilizada mas tal invalidade não põe em causa a validade e aplicação do restante.<br />
+			<br />
+			9.2 A violação implícita ou explícita de um Cliente ou Profissional de qualquer disposição do presente Acordo, determina a cessação, com efeitos imediatos, do acesso ao website.<br />
+			<br />
+			9.3 O presente Acordo de Utilização constitui o acordo integral entre a Zaask e os Clientes e Profissionais, substituindo todos os restantes documentos precedentes, incluindo comunicações, trocas de intenções ou outro tipo de acordos respeitantes ao mesmo conteúdo.<br />
+			<br />
+			9.4 Qualquer comunicação efectuada no âmbito ou para efeitos da execução ou cumprimento do presente Acordo pode ser feita via email, correio simples ou fax para os contactos constantes do website e das informações recolhidas dos utilizadores.<br />
+			<br />
+			9.5 Quaisquer alterações aos termos do presente Acordo de Utilização carecem de ser escritas e levadas ao conhecimento da contraparte, presumindo-se a aceitação do mesmo se, após tomada de conhecimento dos mesmos, a utilização do website se mantiver.<br />
+			<br />
+			9.6 Nenhuma disposição constante do presente Acordo constitui ou é passível de ser confundida com a constituição de qualquer relação de parceria, joint ventures, mandato, comissão ou outra além da que emergir do vínculo contratual constante do celebrado pela adesão ao presente acordo.<br />
+			<br />
+		</p>
+	</div>
+	<div class="main-div" id="terms" *ngIf="getLang() == 'ES'">
+		<div class="clearfix m-bottom20 small-border-bottom-light p-bottom10 m-bottom40 m-top20">
+			<h3 class="terms-title">
+				<ion-icon name="ios-arrow-back" style="padding-right: 10px" (click)="closeTerms()"></ion-icon>
+				Acuerdo de Uso - Cliente
+			</h3>
+			<hr />
+			<p class="font13">
+				<strong>Aviso:</strong> Por favor, lea atentamente el siguiente Acuerdo. El servicio se proporciona bajo los términos y condiciones que figuran a continuación, que deben ser leídos en conjunto con nuestra Política de Privacidad. El uso del Servicio implica la aceptación por parte del usuario de los Términos y Condiciones de Uso aquí estipulados por Zaask. El usuario que no está de
+				acuerdo con cualquiera de los Términos y Condiciones establecidos en este documento por Zaask no se le permitirá utilizar el Servicio.
+			</p>
+			<p class="font13">La última modificación de este Acuerdo de Uso se celebró el 15 de julio de 2019.</p>
+			<hr />
+			<p class="p-left15 m-top20">
+				<a href="#condicoes-gerais">1. Condiciones generales</a><br />
+				<a href="#privacidade"> 2. Confidencialidad, protección de datos e intercambio de informaciones</a><br />
+				<a href="#renuncia"> 3. Exclusión de garantías</a><br />
+				<a href="#info-client"> 4. Información al Cliente</a><br />
+				<a href="#obrigacoes"> 5.Obligaciones del Cliente</a><br />
+				<a href="#qualifies"> 6.Calificaciones del Prestador de Servicios</a><br />
+				<a href="#direitos"> 7. Derechos de Zaask</a><br />
+				<a href="#intelectual-rights"> 8. Derechos de propiedad intelectual </a><br />
+				<a href="#indeminizacao"> 9. Indemnización</a><br />
+				<a href="#responsabilidade"> 10. Exclusión de Responsabilidad</a><br />
+				<a href="#conflitos"> 11. Conflictos</a><br />
+				<a href="#suspension"> 12. Suspensión y terminación</a><br />
+				<a href="#payments">13. Pagos</a><br />
+				<a href="#general"> 14. General</a><br />
+			</p>
+			<hr />
+			<h3>Definiciones</h3>
+			<p class="font13">
+				'Zaask' significa:<br />Youngstories SA (NIF: 509984568) con domicilio social en Rua da Carvalha, 570 2400-441 Leiria, incluso en situaciones en las que se aplique, sus accionistas, empleados, socios, subcontratistas y sus empleados, asociaciones o empresas prestadores de servicios a Zaask.<br /><br />'Correo(s) electrónico(s)' significa:<br />Mensaje de correo electrónico recibida
+				o enviada por Zaask, creada y enviada por un miembro de Zaask o generada automáticamente y enviada en nombre de Zaask.<br /><br />'Cliente(s)' significa:<br />Persona, personas, empresas u otras organizaciones que utilicen los servicios de Zaask para publicar informaciones sobre Tareas a ejecutar por parte de Prestadores de Servicios y/o sus subcontratistas.
+				<br /><br />'Información del Cliente' significa:<br />Cualquier información relacionada con el Servicio prestado por Zaask que el cliente proporcione a Zaask, u a otros usuarios de la página Web, incluso información facilitada durante el registro y la inscripción, listados de Tareas, evaluación de los Proveedores de Servicios y cualesquiera otros procesos de comunicación que surjan
+				como consecuencia de la utilización por parte del Cliente de los Servicios o de la página Web.<br /><br />“Política de Confidencialidad’ significa:<br />La Política de Confidencialidad de Zaask se modifica puntualmente, como se indica en la cláusula 2 de este Acuerdo de Uso.<br /><br />'Tarea' significa:<br />Tareas y Servicios realizados por los Prestadores de Servicios y/o sus
+				Subcontratistas, para o en beneficio de los Clientes. <br /><br />'Servicio(s)' significa:<br />Los Servicios, procedimientos e informaciones proporcionadas y utilizadas por Zaask en beneficio de los Clientes y Prestadores de Servicios e incluye, entre otros: Información, productos y Servicios prestados por teléfono, fax o correo electrónico, en la página web y a través de correo
+				electrónico y la publicación de una página de perfil exclusiva en la página web para un Prestador de Servicios. Más detalles acerca de los Servicios se describen en los Términos y Condiciones bien como en otras partes de la página web. <br /><br />‘Subcontratista (s)’ significa: <br />Contratistas, subcontratistas y empresarios en nombre individual, o cualquier otra persona que
+				trabaje para Zaask, o en nombre del Prestador de Servicios para la realización de una Tarea específica. <br /><br />'Suspender o suspendido' significa: <br />La suspensión de la cuenta del Prestador de Servicios de Zaask.<br /><br />'Sistema(s)' significa:<br />Equipos de computación, almacenamiento y transmisión de datos, programas y aplicaciones informáticas, secuencias de
+				comandos y procesos automáticos de análisis y tratamiento de datos, que son utilizados por Zaask con el fin de proporcionar los componentes del Servicio.<br /><br />Términos y Condiciones' significa: <br />Este acuerdo de Uso, las Condiciones de Pago, la Estructura de Tasas y la Política de Confidencialidad. <br /><br />'Tercero(s)' significa:<br />Persona, personas, páginas web o
+				cualquier otra asociación o empresa a la que se haga referencia, en el contexto de los Términos y Condiciones, que no se confunda con Zaask o con el Prestador de Servicios o con un subcontratista o un Cliente. <br /><br />'Prestador(es) de Servicios' significa:<br />Profesionales independientes, subcontratistas, empresas, asociaciones o cualquier otra persona o personas que
+				utilicen los Servicios de Zaask, con el fin de recibir informaciones que potencien la obtención de Tareas de Clientes y potenciales Clientes de Zaask.<br /><br />'Acuerdo de Uso – Prestador de Servicios' significa: <br />El Acuerdo de Uso aplicado a los Prestadores de Servicios y a Zaask, pudiendo este ser modificado puntualmente.<br /><br />'Website' significa: <br />El Sitio y
+				correspondiente dominio, el espacio de alojamiento, la página o conjunto de páginas, los contenidos, los gráficos y otra información variada contenida en dicho espacio o páginas, accesible a través de ordenador u otros medios electrónicos y que están bajo el control de los miembros autorizados de Zaask.<br /><br /><br />
+				<br />
+			</p>
+		</div>
+		<h3 id="condicoes-gerais" class="m-bottom20 m-top40">1. Condiciones generales</h3>
+		<p class="p-left15">
+			1) El website de Zaask es una plataforma online donde los Clientes realizan solicitudes de presupuesto, haciendo constar su interés en la prestación de un determinado servicio y, donde los Profesionales prestadores de servicios se inscriben con la intención de tener acceso a los pedidos presentados.
+			<br />
+			<br />
+			2) Cada solicitud debe representar una necesidad real del Cliente. Zaask podrá, según su criterio exclusivo, excluir los pedidos y/o contenidos publicados en la plataforma que no cumplan los Términos y Condiciones o incluyan contenido que pueda perjudicar a Zaask o a la imagen de los Profesionales y Clientes que utilizan sus servicios.
+			<br />
+			<br />
+			3) El Cliente reconoce que es su responsabilidad seleccionar un Proveedor de Servicios (o cualquiera de sus subcontratistas) y negociar con él los términos relativos a la realización de cualquier Tarea. A su vez, Zaask no ofrece garantías relativas a productos o Servicios adquiridos a través de esta página Web o de los Servicios, así como a todas las transacciones realizadas desde esta
+			página Web.
+			<br />
+			<br />
+			4) La información contenida en la página Web de Zaask es facilitada por Clientes y Proveedores de Servicios e integran una base de datos accesible al usuario. Zaask no recomienda ni indica Proveedores de Servicios específicos.
+			<br />
+			<br />
+			5) Aunque Zaask haga esfuerzos para garantizar lo anterior, no garantiza que un Proveedor de Servicios, apropiado para realizar la Tarea, entre en contacto con el Cliente que solicitó el Servicio, ya sea por razones geográficas o de otro tipo.
+			<br />
+			<br />
+			6) Zaask no ofrece ninguna garantía de que un Proveedor de Servicios, que recibió información acerca de una Tarea por parte del Cliente, se comunicará con él.
+			<br />
+			<br />
+			7) Zaask no selecciona profesionales especificamente; la adquisión del pedido de presupuesto se produce siempre que, por propia iniciativa, los y las Profesionales consideren utilizar sus créditos para tal efecto.
+			<br />
+			<br />
+			8) Zaask no asume ninguna responsabilidad en relación con cualquier contrato u otro Acuerdo celebrado entre el Cliente y el Proveedor de Servicios. Además, pero sin limitación, Zaask se exime de cualquier responsabilidad en relación con la calidad o adecuación de cualquier Tarea realizada, o no realizada, por un Proveedor de Servicios (o cualquiera de sus subcontratistas). En
+			consecuencia, Zaask no es responsable ante el Cliente en cualquier situación de conflicto, acto u omisión resultante de la relación entre los Clientes y los Proveedores de Servicios (o cualquiera de sus subcontratistas), incluyendo, pero no limitado a, pérdidas directas, indirectas, consecuentes o inconsecuentes sufridas por el Cliente.
+			<br />
+			<br />
+			9) Zaask no asume ninguna responsabilidad por la exactitud de los datos o documentos proporcionados por el Proveedor de Servicios, así como por daños a una persona, propiedad u otros, resultantes de la presentación de una propuesta de negocio fraudulenta.
+			<br />
+			<br />
+			10) El Cliente reconoce que es de su responsabilidad revisar en esta página Web la veracidad de todas las informaciones o documentos presentados por el Proveedor de Servicios, antes de aceptar cualquiera de los productos o Servicios del Proveedor de Servicios.
+			<br />
+			<br />
+			11) Los clientes tendrán únicamente derecho de valorar, incluyendo su nombre o de forma anónima, el contacto efectuado y/o el servicio prestado por cualquier Profesional registrado en Zaask, que le haya contactado a través de la plataforma. En Zaask, los Clientes podrán dejar una “Valoración” a los Profesionales, que tendrán derecho a responderles escribiendo un “Comentario”. Las
+			Valoraciones y Comentarios reflejan la opinión de los utilizadores (Clientes y Profesionales, respectivamente) y no la opinión de Zaask. Las Valoraciones y Comentarios no son verificados ni filtrados por Zaask, ni es de su responsabilidad garantizar la exactitud de los mismos, pudiendo los mismos ser incorrectos o engañosos.
+			<br />
+			<br />
+			12) Las Valoraciones y Comentarios efectuados por los clientes y Profesionales deben de ser justos, verdaderos y corresponderse con hechos reales, no pudiendo contener terminología ni lenguaje difamatorio o que pueda ser considerado como ofensivo.
+			<br />
+			<br />
+			13) Los Utilizadores (Clientes y Profesionales) tienen prohibido manipular de cualquier forma el sistema de Valoraciones y Comentarios, así como dar indicaciones a un tercero para escribir un Comentario positivo o negativo, sobre otro Miembro.
+			<br />
+			<br />
+			14) Los y las Profesionales tienen la obligación de no utilizar cualquier dato o información personal de los Clientes y Clientas para otro fin que no sea la prestación de los servicios pretendidos a través de la plataforma.
+			<br />
+			<br />
+		</p>
+		<hr />
+		<h3 id="privacidade">2. Confidencialidad, protección de datos e intercambio de información</h3>
+		<p class="p-left15">
+			1) Al aceptar este Acuerdo de uso, el Cliente autoriza expresamente el uso y divulgación de sus informaciones de acuerdo con las disposiciones de la Política de Confidencialidad de Zaask, que aquí se incorpora como referencia.<br /><br />2) La Política de Confidencialidad de Zaask está disponible en esta página Web.<br /><br />3) Zaask Cliente retiene informaciones del Cliente en una
+			base de datos, como parte del sistema de negocio y estrictamente de Acuerdo con su Política de Confidencialidad.<br /><br />4) Zaask se empeña con relación a la publicación detallada de los pedidos de los Clientes para realización de Tareas por parte de Proveedores de Servicios. El Proveedor de Servicios expresa interés en enviar un presupuesto para una Tarea, existiendo posteriormente
+			un intercambio de contactos entre el Cliente y este Proveedor de Servicios.<br /><br />5) Zaask efectúa el registro y actualización de la información en el perfil del usuario, incluyendo las evaluaciones y comentarios que los usuarios de la página web publican y que están disponibles en el histórico de Tareas, accesible a todos los usuarios de la página Web.<br /><br />6) Si el Cliente
+			no pretende que parte o la totalidad de su información se utilice de Acuerdo con los Términos y Condiciones, debe terminar de inmediato la utilización de los Servicios de Zaask.<br /><br />
+			7) A los Clientes sólo se les permite usar la información de contacto obtenida a través de la página web o de comunicaciones con Zaask si el objetivo es para aclarar dudas relacionadas con una Tarea específica que se haya comunicado al Cliente a través del Servicio o de la página Web.<br /><br />
+			8) El cliente se compromete a no utilizar ningún contacto e información personal de otro Cliente o Proveedor de Servicios, obtenida a partir del Servicio o de la página Web, para enviar mensajes no autorizados o con contenido comercial, con excepción de lo expresamente permitido en los Términos y Condiciones, o cuando expresamente autorizado por un Cliente o Prestador de Servicios
+			específico, después de la adecuada divulgación de la finalidad para que se pretende esta información. Además, todo Cliente debe estar de acuerdo en utilizar la información únicamente en conformidad con la legislación y los reglamentos vigentes, incluyendo, sin ninguna limitación, la protección de datos y las leyes de confidencialidad.<br /><br />9) Además, en ningún caso, excepto como
+			se define en esta sección, el Cliente puede revelar a terceros información personal de otro Cliente o Proveedor de Servicios, obtenida a través de este Servicio, sin el consentimiento de Zaask y sin el consentimiento del respectivo Cliente o Prestador de Servicios.<br /><br />
+		</p>
+		<hr />
+		<h3 id="renuncia">3. Exclusión de garantías</h3>
+		<p class="p-left15">
+			1) La página Web y los Servicios se proporcionan "tal y como se encuentran" y "según esté disponible", y Zaask no ofrece ninguna garantía o representación, expresa o implícita, con respecto a la página Web o a los Servicios, incluyendo, pero sin limitación, garantías implícitas o condiciones de integridad, exactitud, calidad satisfactoria e idoneidad para un propósito particular.<br /><br />
+			2) Zaask no garantiza que la página Web o que el uso de los Servicios cumplirá con sus necesidades o que esté libre de interrupciones, presentado en tiempo útil, seguro o libre de errores.<br /><br />
+			3) Zaask No otorga cualquier garantía con respecto a la obtención de resultados o a la exactitud de cualquier información obtenida de esta página Web o Servicios, aunque cualquier anormalidad en la página Web o en los Servicios sea corregida. El Cliente entiende y acepta que cualquier material o datos obtenidos a través del uso de la página Web o de los Servicios son de su
+			responsabilidad y bajo su propio riesgo.<br /><br />
+		</p>
+		<hr />
+		<h3 id="info-client">4. Información al Cliente</h3>
+		<p class="p-left15">
+			1) Sólo el Cliente es responsable por la información que facilita. Los Clientes acuerdan en proporcionar información verdadera, precisa, actualizada y completa al facilitar información detallada a Zaask. Los clientes están de acuerdo a no hacerse pasar por otra persona o entidad, o al uso de identidades falsas o que no estén autorizados a usar.<br /><br />
+			2) Las informaciones del Cliente y sus actividades en la página Web no deben ser falsas, incorrectas, engañosas, ofensivas, amenazantes, abusivas, difamatorias, o que violen los derechos de autor, la confianza, la confidencialidad o cualquier otro derecho.<br /><br />3) Las informaciones del Cliente no deben infringir ningunos derechos de autor, patentes, marcas registradas, secretos
+			comerciales, derechos de propiedad, de publicidad o confidencialidad. Los Clientes también no deben aplicar fraudes, violar cualquier ley o regulación vigente, incluyendo, pero sin limitación, la protección del consumidor, la competencia desleal, la legislación contra la discriminación y la publicidad engañosa. Además, no debe asumir conductas obscenas e indecentes o exhibir contenidos
+			pornográficos.<br /><br />
+			4) Las informaciones facilitadas por el Cliente no deben conllevar responsabilidades para Zaask o hacer que Zaask pierda (en su totalidad o en parte) los Servicios de sus Proveedores de Servicios de Internet (ISPs) o de otros proveedores. Las informaciones del Cliente no deben estar conectadas, directa o indirectamente, a cualquier otra página Web.<br /><br />5) Para Zaask pueda
+			utilizar la información proporcionada por los Clientes, éstos, deben conceder a Zaask una licencia relativa a esta información que sea no exclusiva, universal, perpetua, irrevocable, gratuita, que permita sublicenciar (a varios niveles), para que Zaask pueda tener derecho a utilizar material bajo derechos de autor, marcas registradas, publicidad y bases de datos referentes a los
+			Clientes, en cualquier medio de comunicación conocido y no conocido. Los Clientes tienen la prerrogativa de renunciar a todos los derechos morales, contenidos en su registro en Zaask, en la medida permitida por la ley.<br /><br />
+			6) El Cliente debe asegurarse de que cualquier información que facilite a Zaask no contiene cualquier virus informático, virus de macro, caballos de Troya, worms o algo que interfiera con, interrumpa o perturbe los procedimientos normales de funcionamiento de un ordenador. Además, no debe acceder al sistema sin estar autorizado, ni subrepticiamente interceptar datos o información
+			personales.<br /><br />
+			7) El cliente debe asegurarse de que la información facilitada no interrumpirá el Servicio de la página Web, dañe, cause pérdida de eficiencia o que la eficacia o funcionalidad de la página Web quede de alguna manera en peligro.<br /><br />8) Los Clientes reconocen que Zaask, tiene el derecho absoluto de editar, modificar o eliminar cualquier parte o partes de la información que estos
+			registren en la página Web si no se cumplen las disposiciones de los Términos y Condiciones.<br /><br />
+		</p>
+		<hr />
+		<h3 id="obrigacoes">5. Obligaciones del Cliente</h3>
+		<p class="p-left15">Para Zaask pueda mantener la página Web y Servicios a disposición de los Clientes, éstos deben:</p>
+		<p class="p-left15">
+			1) Aceptar que no deben someter Tareas prohibidas por la ley;<br /><br />
+			2) Ser responsables de cualquier contenido que pongan a disposición en la página Web;<br /><br />3) Aceptar no copiar, reproducir, modificar, crear trabajos a partir de otros, distribuir o exhibir públicamente cualquier contenido (excepto la información contenida en el Registro de Cliente) de la página Web sin el permiso previo y por escrito de Zaask;<br /><br />4) Aceptar no utilizar
+			la página Web o los Servicios de cualquier otra forma, excepto cuándo expresamente permitido por los Términos y Condiciones de Zaask. Por ejemplo, los Clientes aceptan no utilizar la página Web o los Servicios para ningún propósito ilegal o para transmitir o publicar cualquier material difamatorio, abusivo, malicioso, engañoso, obsceno, amenazador, o que pueda causar molestias,
+			inconvenientes o ansiedad innecesaria.<br /><br />
+		</p>
+		<hr />
+		<h3 id="qualifies">6. Calificaciones del Prestador de Servicios</h3>
+		<p class="p-left15">
+			1) Zaask cree que su específico sistema de evaluación asegura a los Clientes una respuesta independiente sobre la calidad, el valor y la fiabilidad de un Prestador de Servicios. Además, la buena voluntad que un Prestador de Servicios presenta al ser evaluado puede contribuir a un mayor nivel de confianza de los Clientes con relación a la capacidad del Prestador de Servicios.<br /><br />
+			2) Zaask realiza algunas verificaciones a los Prestadores de Servicios, bajo las disposiciones del Acuerdo de Uso del Prestador de Servicios, si bien no puede garantizar al Cliente ninguna información acerca de un específico Prestador de Servicios, acreditaciones comerciales o de registro, así como toda la documentación válida aplicable al Prestador de Servicios o subcontratista que
+			realice la Tarea solicitada.<br /><br />3) Independientemente de los controles efectuados por Zaask, los Clientes tienen la responsabilidad de verificar, antes de aceptar una oferta, que el Prestador de Servicios es solvente y que tiene personal debidamente capacitado y certificado o subcontratistas para completar la Tarea.<br /><br />
+			4) Cuando se requiere una específica acreditación comercial o registro, necesarios para la ejecución de una Tarea por parte del Prestador de Servicios, Zaask aconseja, fuertemente, al Cliente que solicite una prueba de acreditación o registro al Prestador de Servicios antes de que comience la Tarea.<br /><br />
+			5) Zaask no es responsable por cualquier fallo por parte del Cliente en relación con el establecimiento de un control adecuado sobre el Prestador de Servicios.<br /><br />
+		</p>
+
+		<hr />
+		<h3 id="direitos">7. Derechos de Zaask</h3>
+		<p class="p-left15">
+			1) Zaask se reserva el derecho de modificar o suspender total o parcialmente, de manera temporal o permanentemente la página Web o el Servicio, con o sin previo aviso a los Clientes. Éstos, deben aceptar que Zaask no es responsable ante ellos o cualquier tercero por cualquier modificación o interrupción de la página Web o de los Servicios.<br /><br />
+			2) Zaask podrá ocasionalmente modificar los Términos y Condiciones, pero debe publicar los cambios en la página Web y actualizar la fecha en que los Términos y Condiciones fueron modificados por última vez, en el inicio del documento.<br /><br />3) Si el Cliente no está de acuerdo con los cambios en los Términos y Condiciones deberá dejar de utilizar la página Web y el Servicio. Si
+			continua utilizando la página Web y el Servicio después de la fecha en la que se publican los cambios, está de acuerdo con los Términos y Condiciones modificados.<br /><br />4) Si, eventualmente, está limitado o impedido de publicar en la página Web de Zaask por cualquier imposición legal o cualquier otra situación que no esté controlado por Zaask podrá, en cualquier momento, sin que
+			nada de lo contenido en este Acuerdo lo impida, rescindirlo inmediatamente en la totalidad o parcialmente.<br /><br />5) Zaask se reserva el derecho de investigar y monitorear cualquier situación negativa, o sospechosa de serlo, y las evaluaciones que podrán ser fraudulentas. Zaask puede también eliminar las evaluaciones y comentarios, si lo considera apropiado.<br /><br />
+		</p>
+		<hr />
+		<h3 id="intelectual-rights">8. Derechos de propiedad intelectual</h3>
+		<p class="p-left15">
+			1) En la medida en que todos los derechos de autor y otros derechos de propiedad intelectual universal, que aparezcan en el registro del Cliente, no pertenecen a Zaask, por requisitos legales u otras disposiciones del presente Acuerdo, el Cliente concede gratuitamente a Zaask una licencia exclusiva, perpetua y gratuita para que Zaask pueda utilizar toda la información para cualquier
+			propósito.<br /><br />
+			2) El Cliente reconoce y acepta que todos los derechos de autor, presentes y futuros, y otros derechos de propiedad intelectual persisten o se utilizan en conexión con la página Web, incluyendo la manera en que la página Web se presenta o aparece. Toda la información y documentación relacionada es propiedad de Zaask y nada de lo que se expresa aquí debe ser interpretado de modo a
+			transferir esos derechos al Cliente.<br /><br />3) Sin perjuicio de la generalidad de lo anteriormente mencionado, si, y en la medida en que el Cliente es propietario de cualquiera o de todos los derechos, debe irrevocable e incondicionalmente asignar a Zaask los derechos, con garantía de título completo, para todo el período de vigencia de los derechos de autor y correspondientes
+			extensiones de renovación y/o repeticiones, de modo perpetuo y universal.<br /><br />
+		</p>
+		<hr />
+		<h3 id="indeminizacao">9. Indemnización</h3>
+		<p class="p-left15" id="responsabilidade">
+			El Cliente acepta indemnizar inmediatamente Zaask y asegurarse de que no se cargan a Zaask cualquier gastos, daños o pérdidas de cualquier naturaleza (incluyendo tasas y honorarios legales) incurridos por Zaask en el seguimiento de cualquier reclamación, real o potencial, de ningún tipo. Esto incluye, sin limitación, cualquier presunta violación de los derechos de autor o marca
+			registrada, así como calumnia, difamación, violación de confidencialidad, publicidad falsa o engañosa o prácticas comerciales, decurrentes de la información proporcionada por el Cliente o a través del uso de la página Web o de los Servicios.
+		</p>
+		<hr />
+		<h3 id="responsabilidade">10. Exclusión de Responsabilidad</h3>
+		<p class="p-left15">
+			1) El Cliente acepta que Zaask, excepto debido a fallecimiento y daños personales derivados de la negligencia de Zaask, no será responsable, ya sea por contrato, infracción, negligencia, deber legal u otra situación, por cualquier pérdida o daño resultante de cualquier evento relacionado con este contrato, incluyendo, sin ninguna limitación, daños por pérdida e interrupción de
+			negocios, pérdida de beneficios, pérdida de informaciones, pérdida de datos, o cualquier otra pérdida pecuniaria (incluso si Zaask ha sido advertida de la posibilidad de tales pérdidas o daños).<br /><br />2) Zaask no está y no puede ser involucrada en transacciones relativas a los Clientes y Prestadores de Servicios (o cualquiera de sus subcontratistas) y si un Cliente está en litigio
+			con uno o más Prestadores de Servicios (o cualquiera de sus subcontratistas). De esta manera, el Cliente exime Zaask (y sus agentes y empleados) de cualquier y todas reclamaciones, exigencias y daños (directos o resultantes) de cualquier tipo y naturaleza, conocidos y desconocidos, sospechados e insospechados, revelados y no revelados, que surjan de dichos conflictos o que estén
+			relacionados con ellos de alguna manera.<br /><br />3) Zaask no garantiza la precisión o verificación exhaustiva o total de toda la información contenida en la página Web o en cualquier comunicación de Zaask, celebrada, pero no limitada, por conversaciones telefónicas, correos electrónicos y por correo. Es posible que las informaciones tengan imprecisiones, errores de ortografía,
+			errores humanos de omisión o de ordenadores. Zaask no será responsable en ningún caso de daños directos, indirectos o consecuentes o de daños específicos derivados del uso de la página Web o de los Servicios de Zaask.<br /><br />4) Las comunicaciones por correo electrónico o por otra vía, automáticamente generadas a partir de la información proporcionada por los Clientes y Prestadores
+			de Servicios, no están sujetas a control editorial por parte de Zaask.<br /><br />
+			5) Las comunicaciones se pueden realizar de forma automática y sin previo control y edición por parte de Zaask y, por lo tanto, no reflejan necesariamente las opiniones y/o creencias de Zaask. Por lo tanto, Zaask no es responsable, y no puede ser responsabilizada por los asuntos relacionados con incorrecciones, validez, fiabilidad, falsedad, distorsión, lenguaje o palabras
+			difamatorias, calumnia, actividades fraudulentas o cualquier otra palabra que cause daño, frase o declaración contenida en los correos electrónicos. Estas situaciones no están bajo el control editorial de Zaask.<br /><br />6) Sin limitar la generalidad de la Cláusula 1 de este Acuerdo de Uso, los Clientes aceptan no responsabilizar a Zaask de ningún daño u otras obligaciones que surjan
+			de una Tarea realizada por cualquier Prestador de Servicios.<br /><br />
+			7) Excepto se disponga expresamente en el presente documento, todas las condiciones, garantías y obligaciones que pueden estar implícitas o incorporadas en este Acuerdo, ya sea por estatuto, ley común o por otra forma, excluyen expresamente las responsabilidades decurrentes, de conformidad con la legislación en vigor.<br /><br />
+			8) A pesar de tomar todas las precauciones con respecto a toda las informaciones facilitadas por el Cliente, Zaask no es responsable de la publicación u omisión de estas informaciones en la página Web (ya sean, o no, este tipo de situaciones derivadas de fallo o negligencia por parte de Zaask).<br /><br />9) Zaask no puede garantizar el día o la hora de respuesta a cualquier correo
+			electrónico, contacto telefónico, mensaje escrito o comunicación a través de la página Web. Sin perjuicio de lo anterior, Zaask asume ninguna responsabilidad por cualquier fallo o retraso resultante de cualquier asunto más allá del control razonable por parte de Zaask.<br /><br />
+			10) Cada una de las disposiciones contenidas en la Sección 10 se interpretará por separado e independientemente de las otras.<br /><br />
+		</p>
+		<hr />
+		<h3 id="conflitos">11. Conflictos:</h3>
+		<p class="p-left15">1) Siempre que exista un conflicto entre un Cliente y un Prestador de Servicios (o cualquiera de sus subcontratistas), el Cliente debe, en primera instancia, resolver el conflicto directamente con el especifico Prestador de Servicios y comunicar los resultados a Zaask.<br /><br /></p>
+		<p class="p-left15">2) Zaask puede investigar por su cuenta y sin obligaciones legales, todas las reclamaciones realizadas por los Clientes o Prestadores de Servicios y podrá también debatir cualquier investigación con todas las partes involucradas. Sin embargo, existen apenas tres resultados posibles de una investigación resultante de reclamación:</p>
+		<p class="p-left30">
+			2.1) El Prestador de Servicios y/o o cliente puede ser autorizado a continuar utilizando los servicios de Zaask;<br />
+			2.2) El Prestador de Servicios y/o el cliente puede ser suspendido de utilizar los servicios de Zaask por un determinado período de tempo, bajo el criterio de Zaask;<br />
+			2.3) El Prestador de Servicios y/o el cliente puede ser impedido, por tiempo indeterminado, de utilizar los servicios de Zaask.<br />
+		</p>
+		<p></p>
+		<br />
+		<p class="p-left15">3) El Cliente exonera a Zaask de responsabilidad por todos los daños o reclamaciones (incluso daños punitivos, indirectos e incidentales) de cualquier especie o naturaleza, sospechados o insospechados, conocidos o desconocidos, divulgados o no divulgados, decurrentes de, o de alguna manera relacionados con tales litigios</p>
+		<br />
+		<p class="p-left15">4) El usuario acepta que Zaask no se hace responsable por cualquier daño o reclamación (incluyendo daños punitivos, incidentales e indirectos) de cualquier tipo o naturaleza, sospechados e insospechados, conocidos y desconocidos, revelado o no revelado, que surja de alguna manera de relacion con este tipo de conflictos</p>
+		<br /><br />
+		<hr />
+		<h3 id="suspension">12. Suspensión y terminación</h3>
+		<p class="p-left15">
+			1) Zaask se reserva el derecho de suspender o interrumpir su Servicio a un Cliente, con efectos inmediatos, como desee, en todas circunstancias, incluyendo pero sin limitar, la sospecha que un Cliente está en infracción material sobre cualquier aspecto que conste en los Términos y Condiciones.
+			<br /><br />
+			2) Cualquier una de las partes podrá terminar este Acuerdo, de modo inmediato, a través de notificación escrita, si la otra parte incurre en incumplimiento material de alguna de las cláusulas de este documento. Si es posible reparar el incumplimiento pero este no fue reparado en el periodo de 30 días, se debe remitir una solicitud escrita para que se resuelva esta infracción.
+			<br /><br />
+			3) Si el servicio está suspendido de conformidad con la cláusula 12, el Cliente no podrá seguir presentando solicitudes de nuevas Tareas.
+			<br /><br />
+			4) Zaask se reserva el derecho de retener los créditos adquiridos por el profesional en su cuenta creada, a Profesionales impedidos de utilizar la Plataforma.
+			<br /><br />
+		</p>
+
+		<hr />
+		<h3 id="payments">13. Pagos</h3>
+		<p class="p-left15">1) Para utilizar el sitio web en calidad de Profesional, Zaask cobra los valores constantes en esta <a href="https://zaask.zendesk.com/hc/es/articles/115005478386" title="pacotes de créditos">página</a>.</p>
+		<p class="p-left15">2) La facturación en Zaask es realizada de forma electrónica por lo que las facturas son enviadas por correo electrónico.</p>
+		<p class="p-left15">3) El uso del sitio web por parte de los Clientes y Clientas es gratuito.</p>
+
+		<hr />
+		<h3 id="general">14. General</h3>
+		<p class="p-left15">
+			1) Los títulos de las cláusulas se insertan para la conveniencia y no afectan a la construcción de los mismos. <br />
+			<br />
+			2) Si alguna disposición de este Acuerdo es considerada ilegal, invalido o inejecutable, dicha disposición será aplicable en la medida posible o si no es aplicable, se considerará retirado y eliminado de este Acuerdo. No ha cambiado sustancialmente los efectos de este Acuerdo, el resto permanecerá operativo y en vigor.<br />
+			<br />
+			3) El Cliente en virtud de este Acuerdo, usted no podrá ceder, transferir o traspasar cualquiera de sus derechos, sin el consentimiento previo escrito Zaask. El Zaask podrá en cualquier momento, sin su consentimiento del Cliente ceder, transferir o traspasar, todos o cualquiera de sus derechos. <br />
+			<br />
+			4) La renuncia expresa o implícita de cualquier término o condición de este Acuerdo por cualquiera de las partes o cualquier violación o incumplimiento del cliente, pueden dar lugar a la terminación inmediata de la misma Zaask. Dicha renuncia no impedirá la Zaask actuando en este o cualquier infracción o incumplimiento posterior para hacer cumplir cualquier término o condición de este
+			Acuerdo. <br />
+			<br />
+			5) Este Acuerdo constituye el acuerdo completo entre el Cliente y Zaask (usuar io) y sustituye a todos los acuerdos anteriores, incluyendo, comunicaciones, representaciones o acuerdos, orales o por escrito, con respecto a la cuestión de su fondo (excepto representaciones fraudulentas). <br />
+			<br />
+			6) El cliente reconoce que ninguna apelación será presentada por cualquier motivo del recurso, algo previamente acordados, y no se incorpora en el presente Acuerdo. <br /><br />
+			7) Las disposiciones de las secciones 1, 2, 3, 8, 9, 10 y 14 siguen siendo la terminación del presente Acuerdo. <br />
+			<br />
+			8) Cualquier comunicación realizada en virtud del presente Acuerdo podrá ser efectuada a través de correo electrónico, correo ordinario, fax, en persona en la dirección indicada en Sitio Web, o de otro modo acordado previamente entre las partes. <br />
+			<br />
+			9) De conformidad con la cláusula 7, cualquiera de los términos, las condiciones, o una variación del mismo, más allá de lo establecido aquí será vinculante para Zaask. Cualquier alteración o modificación de los términos y condiciones de este Acuerdo siempre se harán por escrito y firmado por ambas partes. <br />
+			<br />
+			10) Nada de lo contenido en este Acuerdo implica, y no serán consideradas como tales, cualquier relación con la constitución asociación, empresa conjunta (joint ventures), principal / agente, contratista / comisionista entre las partes <br /><br />
+			11) Y esta relación no deben ser objeto de publicidad como tal <br />
+			<br />
+			12) No obstante lo cualquier otra disposición de este documento, una persona que no es parte en el presente Acuerdo no tiene derecho a invocar o hacer cumplir los términos de este Acuerdo. <br />
+			<br />
+			13) El presente Acuerdo está sujeto a la Ley de Inglés y las partes se someterán a la jurisdicción exclusiva de los tribunales ingleses, con renuncia expresa a cualquier otro. <br />
+			<br />
+		</p>
+	</div>
+	<div class="terms-button-div">
+		<button ion-button full class="terms-button" (click)="acceptTerms()">{{translate.policyAccept}}</button>
+	</div>
+</div>

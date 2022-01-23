@@ -1,3 +1,104 @@
 page-quotes {
+	.quotes {
+		.requestsPage {
+			margin-bottom: 70px;
+		}
 
+		.quote-state {
+			width: fit-content;
+			height: 22px;
+			border: 1px solid;
+			padding: 3px 5px;
+			text-transform: uppercase;
+			border-radius: 2px;
+			font-size: 12px;
+			line-height: 14px;
+			display: flex;
+
+			&-bided {
+				color: #01c851;
+				border-color: #01c851;
+			}
+			&-not-bided {
+				color: #ffbb34;
+				border-color: #ffbb34;
+			}
+			&-won {
+				color: #01c851;
+				border-color: #01c851;
+			}
+			&-lost {
+				color: #f44;
+				border-color: #f44;
+			}
+			&-refunded {
+				color: #9f9c9a;
+				border-color: #9f9c9a;
+			}
+		}
+
+		.quote-icon {
+			margin-right: 5px;
+			font-size: 1.2em;
+			vertical-align: bottom;
+
+			&-bided {
+				color: #01c851;
+			}
+			&-not-bided {
+				color: #ffbb34;
+			}
+			&-won {
+				color: #01c851;
+			}
+			&-lost {
+				color: #f44;
+			}
+			&-refunded {
+				color: #9f9c9a;
+			}
+		}
+
+		.task-quote-edit-info {
+			margin-top: 30px;
+
+			.task-quote-title {
+				height: 20px;
+				width: 80%;
+				margin: auto;
+				margin-top: 10px;
+				text-align: center;
+				line-height: 19px;
+				font-size: 17px;
+				letter-spacing: -0.02em;
+				color: #3e3934;
+			}
+
+			.task-quote-edit-button {
+				width: 130px;
+				height: 32px;
+				position: relative;
+				top: 40px;
+				margin: auto;
+				border: 1px solid #676460;
+				box-sizing: border-box;
+				border-radius: 4px;
+				text-align: center;
+				text-transform: uppercase;
+
+				label {
+					position: relative;
+					top: 8px;
+					font-size: 12px;
+					line-height: normal;
+					color: #676460;
+					border-radius: 4px;
+				}
+			}
+		}
+	}
+
+	ion-title {
+		padding: $safeArea;
+	}
 }

@@ -1,15 +1,97 @@
 <!--
-  Generated template for the RequestDetailsPage page.
+Generated template for the RequestDetailsPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
+See http://ionicframework.com/docs/v2/components/#navigation for more info on
+Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar>
-    <ion-title>request-details</ion-title>
-  </ion-navbar>
+	<ion-navbar primary *navbar>
+		<ion-title>Pedido de {{askerName}} ({{requestID}})</ion-title>
+		<ion-buttons end [hidden]="requestIgnored">
+			<button (click)="ignoreRequest('item-index')"><ion-icon name="trash"></ion-icon></button>
+		</ion-buttons>
+	</ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="TaskDetailsPage">
+	<!-- START directive task-details -->
+	<ion-card class="task-card">
+		<ion-card-content>
+			<div class="task-card-header">
+				<div class="task-card-avatar">
+					<img src="{{askerPhoto}}" />
+				</div>
 
+				<div class="task-card-name">
+					<h2 class="h1">{{askerName}}</h2>
+					<h3>{{taskTitle}}</h3>
+				</div>
+			</div>
+
+			<div class="task-card-about">
+				<div class="task-card-item-icon">
+					<ion-icon name="time"></ion-icon>
+					<strong class="task-card-item-icon-title">{{postAgo}}</strong>
+					<span class="task-card-item-icon-text">{{postDate}}</span>
+					<!--{{postDate}}-->
+				</div>
+
+				<div class="task-card-item-icon task-card-item-icon--credits">
+					<span class="icon-spr"></span>
+					<strong class="task-card-item-icon-title">{{taskCredits}}</strong>
+					<span class="task-card-item-icon-text">{{msgCredits}}</span>
+				</div>
+
+				<div class="task-card-item-icon">
+					<ion-icon *ngIf="askerPhoneValid == 0 && askerPhone != '' " name="eye-off"></ion-icon>
+					<span *ngIf="askerPhoneValid == 0 && askerPhone != '' ">{{msgPhone}}<br />{{msgNotValidated}}</span>
+					<ion-icon *ngIf="!askerPhoneValid == 0 && askerPhone != '' " name="eye"></ion-icon>
+					<span *ngIf="!askerPhoneValid == 0 && askerPhone!= '' ">{{msgPhone}}<br />{{msgValidated}}</span>
+					<ion-icon *ngIf="askerPhoneValid == 0 && askerPhone == '' " name="eye-off"></ion-icon>
+					<span *ngIf="askerPhoneValid == 0 && askerPhone == '' ">{{msgPhone}}<br />{{msgNotAvailable}}</span>
+				</div>
+			</div>
+		</ion-card-content>
+	</ion-card>
+
+	<ion-list class="task-details">
+		<ion-item-group>
+			<ion-item-divider class="t-q-divider">
+				<ion-icon name="md-create" class="t-q-divider-icon"></ion-icon>
+				<h4 class="t-q-divider-title">{{msgWhat}}</h4>
+			</ion-item-divider>
+			<ion-list class="task-questions">
+				<ion-item text-wrap class="t-q-item" *ngFor="#item of questions">
+					<p class="t-q-item-question">{{item.question}}</p>
+					<strong class="t-q-item-answer">{{item.answer}}</strong>
+				</ion-item>
+			</ion-list>
+		</ion-item-group>
+
+		<ion-item-group>
+			<ion-item-divider class="t-q-divider">
+				<ion-icon name="calendar" class="t-q-divider-icon"></ion-icon>
+				<h4 class="t-q-divider-title">{{msgWhen}}</h4>
+			</ion-item-divider>
+			<ion-item class="t-q-item">
+				<strong class="t-q-item-answer">{{when}}</strong>
+			</ion-item>
+		</ion-item-group>
+
+		<ion-item-group>
+			<ion-item-divider class="t-q-divider">
+				<ion-icon name="pin" class="t-q-divider-icon"></ion-icon>
+				<h4 class="t-q-divider-title">{{msgHere}}</h4>
+			</ion-item-divider>
+			<ion-item class="t-q-item-map">
+				<strong class="t-q-item-answer">{{here}}</strong>
+				<img src="{{googleMapPoint}}" alt="" />
+			</ion-item>
+		</ion-item-group>
+	</ion-list>
+	<!-- END directive task-details -->
 </ion-content>
+
+<ion-footer (click)="showModal(1, -1)" class="toolbar-btn-full" [hidden]="requestIgnored">
+	<button full primary>{{msgContactClient}}</button>
+</ion-footer>

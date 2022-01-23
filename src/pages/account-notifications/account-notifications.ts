@@ -1,25 +1,93 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component } from "@angular/core";
+import { FormBuilder } from "@angular/forms";
+import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
+import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 
-/**
- * Generated class for the AccountNotificationsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+declare var window: any;
 
 @IonicPage()
 @Component({
-  selector: 'page-account-notifications',
-  templateUrl: 'account-notifications.html',
+	selector: "page-account-notifications",
+	templateUrl: "account-notifications.html"
 })
 export class AccountNotificationsPage {
+	userID;
+	notifsForm;
+	notifStatus = true;
+	notifTitle = "Notificações";
+	msgNotifsWhen = "Enviar notificações quando";
+	msgNewTask = "Novas tarefas";
+	constructor(public nav: NavController, public params: NavParams, public platform: Platform, public zaaskServices: ZaaskServices, public form: FormBuilder) {
+		this.userID = this.params.data.userID;
+		this.initScreen();
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+		this.notifsForm = this.form.group({
+			notif: [""]
+		});
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AccountNotificationsPage');
-  }
+		this.setText();
+	}
 
+	onPageWillEnter() {
+		//Google Analytics
+		this.platform.ready().then(() => {
+			// GoogleAnalytics.trackView("AccountNotifications Screen", "account-notifications.html");
+		});
+	}
+
+	initScreen() {
+		console.log("-----------getNotifications--------");
+		this.zaaskServices.getNotifs().subscribe(
+			(data) => {
+				console.log(data);
+				if (data.status == true) {
+					this.notifStatus = data.isactive;
+				} else {
+					this.notifStatus = false;
+				}
+			},
+			(err) => {
+				this.notifStatus = false;
+				// var alert = Alert.create({
+				//     title: "Erro",
+				//     subTitle: 'Erro no acesso à Zaask!',
+				//     buttons: ["close"]
+				// });
+				// this.nav.present(alert);
+				console.log("notifs error: " + err);
+			}
+		);
+	}
+
+	setNotifications() {
+		console.log("-----------setNotifications--------");
+		console.log(this.notifsForm.controls.notif.value);
+		this.notifStatus = this.notifsForm.controls.notif.value;
+
+		window.plugins.OneSignal.setSubscription(this.notifsForm.controls.notif.value);
+
+		this.zaaskServices.setNotifs(this.notifsForm.controls.notif.value).subscribe(
+			(data) => {
+				console.log(data);
+			},
+			(error) => {
+				// var alert = Alert.create({
+				//     title: "Erro",
+				//     subTitle: 'Erro no acesso à Zaask!',
+				//     buttons: ["close"]
+				// });
+				// this.nav.present(alert);
+				console.log("notifs error: " + error);
+			}
+		);
+	}
+
+	setText() {
+		if (this.zaaskServices.getUserCountry() == "PT") {
+		} else {
+			this.notifTitle = "Notificaciones";
+			this.msgNotifsWhen = "Enviar notificaciones cuando";
+			this.msgNewTask = "Nuevas tareas";
+		}
+	}
 }

@@ -1,3 +1,274 @@
 page-quote-details {
+	/*------------------------------------*\
+  QUOTE-DETAILS
+\*------------------------------------*/
 
+	.ios {
+		.toolbar[primary] {
+			.toolbar-title,
+			.bar-button-default,
+			.bar-button {
+				padding: 0 $safeArea/3;
+			}
+		}
+	}
+
+	.tollbar-editprice {
+		padding: 0;
+		// min-height: 3.4rem;
+		min-height: 4.4rem;
+		padding-top: 1rem;
+
+		button {
+			height: 100%;
+			width: auto;
+			margin: auto;
+			padding: $safeArea/2 $safeArea;
+
+			ion-icon {
+				margin-right: $safeArea/2;
+			}
+		}
+	}
+
+	.toolbar-segment {
+		padding: 0;
+		min-height: 4.3rem; //I didn't figure out another way to have the same height as the segment :/
+	}
+
+	.md.segment-button.segment-activated {
+		border-width: 3px;
+	}
+
+	// SCROLL INVERT FOR CHAT
+	.quote-details {
+		@extend %pageBackground;
+
+		scroll-content {
+			overflow: hidden;
+		}
+	}
+
+	#chat-autoscroll,
+	.content-scroll {
+		height: 100%;
+		overflow: auto;
+		overflow-x: hidden;
+	}
+
+	// CHAT
+	.chat {
+		background: color($colors, lighter);
+		@include flexbox;
+		flex-direction: column;
+		justify-content: flex-end;
+		overflow: auto;
+		padding: 0;
+		margin: 0;
+		min-height: 100%;
+	}
+
+	$bgClr: (Success, color($colors, successSoft)), (Info, color($colors, infoSoft)), (Error, color($colors, errorSoft));
+
+	.chat-message {
+		padding: $safeArea;
+		border-width: 0 !important; // ionic markup
+
+		.item-inner,
+		.input-wrapper,
+		ion-label {
+			margin: 0;
+			padding: 0;
+			border: 0;
+		}
+
+		ion-label {
+			@include flexbox;
+			flex-direction: row;
+			white-space: normal;
+		}
+
+		&.tasker {
+			ion-label {
+				flex-direction: row-reverse;
+			}
+
+			.chat-text {
+				color: color($colors, gray);
+			}
+		}
+
+		&.zaask {
+			text-align: center;
+			justify-content: center;
+
+			&:last-child {
+				margin-bottom: $safeArea; //some space from textarea
+			}
+
+			* {
+				width: 100%;
+				text-align: inherit;
+			}
+
+			.chat-text {
+				color: inherit;
+			}
+
+			@each $bgClass, $clr in $bgClr {
+				&.bg#{$bgClass} {
+					background: $clr;
+					color: darken($clr, 70%);
+					border-left: 1px solid $clr;
+					border-right: 5px solid $clr;
+				}
+			}
+		}
+
+		// chat-text and chat-about has to be on 2nd and 3rd level
+		// because ionic markup "item p"
+		.chat-text {
+			font-size: 1.4rem;
+			color: color($colors, dark);
+		}
+
+		.chat-link {
+			font-size: 1.4rem;
+			display: block;
+		}
+
+		.chat-about {
+			font-size: 1rem;
+			color: color($colors, gray);
+		}
+	}
+
+	.chat-avatar {
+		display: block;
+		min-width: $safeArea;
+		width: $safeArea;
+		min-height: $safeArea;
+		height: $safeArea;
+		border-radius: 50%;
+		overflow: hidden;
+		margin-right: $safeArea;
+		background: color($colors, graylighter);
+
+		.tasker & {
+			margin-right: 0;
+			margin-left: $safeArea;
+		}
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	.chat-content {
+		flex-grow: 1;
+	}
+
+	// .chat-attach-full {
+	//     position: fixed;
+	//     width: 100%;
+	//     height: 100%;
+	//     overflow: hidden;
+	//
+	//     img {
+	//         width: auto;
+	//         height: auto;
+	//     }
+	// }
+
+	//// toolbar bottom write message
+	.toolbar-chat {
+		padding: $safeArea/2 0;
+		border-top: 1px solid color($colors, graylighter);
+
+		.toolbar-background {
+			background: color($colors, lighter);
+		}
+	}
+
+	.chat-write {
+		@include flexbox;
+		justify-content: space-between;
+		align-items: center;
+
+		.chat-write-content {
+			flex-grow: 1;
+		}
+
+		textarea {
+			width: 100%;
+			border: 0;
+			resize: none;
+			font-size: 1.3rem;
+			line-height: 1.2;
+			background: transparent;
+			padding-left: $safeArea/4 * 3;
+			// background: color($colors, graylightest);
+		}
+
+		[type="submit"] {
+			font-weight: 600;
+			opacity: 1;
+			transition: opacity $speed/2 ease;
+
+			&.collapse {
+				opacity: 0;
+			}
+		}
+	}
+
+	.buttonNoNet {
+		border-radius: 0;
+		box-shadow: none;
+		background: transparent;
+		margin: $safeArea/2 $safeArea;
+		padding: $safeArea/2 0;
+		font-size: 1rem;
+		width: calc(100% - #{$safeArea * 2});
+		white-space: normal;
+		height: auto;
+		text-align: right;
+
+		&:hover,
+		&:focus {
+			box-shadow: none;
+		}
+
+		ion-spinner {
+			margin-left: $safeArea/2;
+			color: color($colors, light);
+			width: $safeArea;
+		}
+
+		ion-icon {
+			margin-right: $safeArea/2;
+			font-size: 1.3rem;
+		}
+
+		.spinner-crescent circle {
+			stroke: color($colors, primary);
+		}
+
+		.button-inner {
+			flex-wrap: wrap;
+			justify-content: flex-end;
+		}
+
+		&-message {
+			display: block;
+			width: 100%;
+			font-size: 1.4rem;
+			text-align: right;
+			font-weight: 400;
+			text-transform: none;
+			background: color($colors, lighter);
+			margin-bottom: $safeArea/2;
+			color: color($colors, danger);
+		}
+	}
 }
