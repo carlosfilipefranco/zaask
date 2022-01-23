@@ -1,0 +1,198 @@
+// Ionic Variables and Theming. For more info, please see:
+// http://ionicframework.com/docs/theming/
+
+// Font path is used to include ionicons,
+// roboto, and noto sans fonts
+$font-path: "../assets/fonts";
+
+// The app direction is used to include
+// rtl styles in your app. For more info, please see:
+// http://ionicframework.com/docs/theming/rtl-support/
+$app-direction: ltr;
+
+@import "ionic.globals";
+
+// Shared Variables
+// --------------------------------------------------
+// To customize the look and feel of this app, you can override
+// the Sass variables found in Ionic's source scss files.
+// To view all the possible Ionic variables, see:
+// http://ionicframework.com/docs/theming/overriding-ionic-variables/
+
+// Named Color Variables
+// --------------------------------------------------
+// Named colors makes it easy to reuse colors on various components.
+// It's highly recommended to change the default colors
+// to match your app's branding. Ionic uses a Sass map of
+// colors so you can add, rename and remove colors as needed.
+// The "primary" color is the only required color in the map.
+
+@font-face {
+	font-family: "Graphik Web";
+	src: url("../assets/fonts/Graphik-Regular.ttf");
+}
+
+* {
+	font-family: "Graphik Web", sans-serif;
+}
+
+@font-face {
+	font-family: "Material Icons";
+	font-style: normal;
+	font-weight: 400;
+	src: url("../assets/fonts/MaterialIcons-Regular.woff2") format("woff2");
+}
+
+.material-icons {
+	font-family: "Material Icons";
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px; /* Preferred icon size */
+	display: inline-block;
+	line-height: 1;
+	text-transform: none;
+	letter-spacing: normal;
+	word-wrap: normal;
+	white-space: nowrap;
+	direction: ltr;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	-moz-osx-font-smoothing: grayscale;
+	font-feature-settings: "liga";
+}
+
+// App Shared Color Variables
+// --------------------------------------------------
+// It's highly recommended to change the default colors
+// to match your app's branding. Ionic uses a Sass map of
+// colors so you can add, rename and remove colors as needed.
+// The "primary" color is the only required color in the map.
+// Both iOS and MD colors can be further customized if colors
+// are different per mode.
+
+$colors: (
+	primary: #0096d7,
+	primarydark: darken(#0096d7, 10%),
+	secondary: #fc8427,
+	credits: #f7bf31,
+	creditsdark: darken(#f7bf31, 10%),
+	danger: #b94a48,
+	lighter: #ffffff,
+	light: #f4f4f4,
+	light50: rgba(#f4f4f4, 0.5),
+	favorite: #69bb7b,
+	graylightest: lighten(#000000, 95),
+	graylighter: lighten(#000000, 85),
+	graylight: lighten(#000000, 70),
+	gray: lighten(#000000, 50),
+	graydarke: lighten(#000000, 60),
+	graydark: lighten(#000000, 30),
+	dark: lighten(#000000, 10),
+	successSoft: lighten(#27b875, 47%),
+	errorSoft: lighten(#b94a48, 42%),
+	infoSoft: lighten(#0096d7, 50%)
+);
+
+$safeArea: 1.6rem;
+$speed: 250ms;
+
+@mixin centerxy {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+@mixin centerx {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+@mixin centery {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+@mixin flexbox {
+	display: flex;
+
+	& > * {
+		flex-grow: 0;
+		flex-shrink: 1;
+		flex-basis: auto;
+		// this is to prevent bugs on IE9 10 11
+	}
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+%pageBackground {
+	background: darken(#0096d7, 10%);
+}
+
+.keyboard-open ion-tabbar-section {
+	display: none;
+}
+// .keyboard-open .has-tabs{
+//     bottom:0;
+// }
+
+@mixin bgImg2x($file, $type) {
+	// ex: @include bgImg2x('../../media/images/passenger-back', jpg);
+
+	background-image: url($file + "." + $type);
+
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+		& {
+			background-image: url($file + "@2x." + $type);
+		}
+	}
+}
+
+// App iOS Variables
+// --------------------------------------------------
+// iOS only Sass variables can go here
+
+// App Material Design Variables
+// --------------------------------------------------
+// Material Design only Sass variables can go here
+
+// App Windows Variables
+// --------------------------------------------------
+// Windows only Sass variables can go here
+
+// App Theme
+// --------------------------------------------------
+// Ionic apps can have different themes applied, which can
+// then be future customized. This import comes last
+// so that the above variables are used and Ionic's
+// default are overridden.
+
+@import "ionic.theme.default";
+
+// Ionicons
+// --------------------------------------------------
+// The premium icon font for Ionic. For more info, please see:
+// http://ionicframework.com/docs/ionicons/
+
+@import "ionic.ionicons";
+
+// Fonts
+// --------------------------------------------------
+
+@import "roboto";
+@import "noto-sans";
+@import "app.core";
+@import "app.ios";
+@import "app.md";

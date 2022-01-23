@@ -1,0 +1,90 @@
+// http://ionicframework.com/docs/v2/theming/
+
+// App Shared Variables
+// --------------------------------------------------
+// Shared Sass variables go in the app.variables.scss file
+
+// App iOS Variables
+// --------------------------------------------------
+// iOS only Sass variables can go here
+
+// Ionic iOS Sass
+// --------------------------------------------------
+// Custom App variables must be declared before importing Ionic.
+// Ionic will use its default values when a custom variable isn't provided.
+
+// App iOS Only Sass
+// --------------------------------------------------
+// CSS that should only apply to the iOS app
+.toolbar {
+	padding-top: $safeArea;
+	min-height: 60px;
+}
+
+.toolbar-background {
+	border: 0;
+}
+
+ion-navbar-section {
+	min-height: 60px;
+}
+
+ion-title {
+	padding: $safeArea/4 * 3 $safeArea * 5 1px;
+}
+
+.ios button {
+	text-transform: none;
+}
+
+.segment-button {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+	padding: 0 6px;
+	width: 0;
+	height: 4.2rem;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: rgba(0, 0, 0, 0.1);
+	font-size: 1.2rem;
+	font-weight: 500;
+	line-height: 4rem;
+	text-transform: uppercase;
+	color: #0096d7;
+	background-color: transparent;
+	opacity: 0.7;
+	-webkit-transition: 100ms all linear;
+	transition: 100ms all linear;
+	border-width: 0px 0px 2px 0px;
+}
+
+.segment-button.segment-activated {
+	border-color: #0096d7;
+	background-color: transparent;
+	opacity: 1;
+}
+
+.md button {
+	text-transform: none;
+}
+
+.segment-button {
+	text-transform: none;
+}
+
+searchbar-ios-cancel disable-hover button button-clear {
+	display: none !important;
+}
+
+.searchbar-focused .searchbar-ios-cancel {
+	display: none !important;
+}
+
+ion-page.modal {
+	-webkit-animation-name: zoom;
+	-webkit-animation-duration: 0.2s;
+	animation-name: zoom;
+	animation-duration: 0.2s;
+}

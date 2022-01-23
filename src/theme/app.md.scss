@@ -1,0 +1,54 @@
+// App Material Design Only Sass
+// --------------------------------------------------
+// CSS that should only apply to the Material Design app
+
+.tab-button {
+	padding: 1rem 1rem 0 1rem;
+	font-size: 1.2rem;
+	transition: font 250ms;
+
+	&[aria-selected="true"] {
+		font-size: 1.4rem;
+	}
+}
+
+[role="tablist"] {
+	.animate {
+		display: none;
+	}
+}
+
+// .button {
+//     height: 4.6rem !default;
+// }
+
+.alert-wrapper {
+	max-width: 95%;
+	min-width: auto;
+}
+
+.alert-button-group {
+	padding: $safeArea/2;
+}
+
+.alert-button {
+	&:last-child {
+		margin: 0;
+	}
+}
+
+[item-left] {
+	color: color($colors, graydark);
+}
+
+.md button {
+	text-transform: none;
+}
+
+.segment-button {
+	text-transform: none;
+}
+
+.toolbar-btn-full button {
+	font-size: 16px;
+}
