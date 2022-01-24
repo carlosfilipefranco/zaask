@@ -6,6 +6,8 @@ import moment from "moment-timezone";
 import "moment/locale/pt";
 import "moment/locale/es";
 import { Utils } from "../../providers/utils/utils";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -28,7 +30,7 @@ export class QuotesPage {
 	closeButtonText: string;
 	alertTitleSuccess: string;
 	alertTitleError: string;
-	constructor(public nav: NavController, public zaaskServices: ZaaskServices, public platform: Platform, public user: User, public navParams: NavParams, public Alert: AlertController, public Toast: ToastController, public Utils: Utils, public modal: ModalController) {
+	constructor(public nav: NavController, public zaaskServices: ZaaskServices, public platform: Platform, public user: User, public navParams: NavParams, public Alert: AlertController, public Toast: ToastController, public Utils: Utils, public modal: ModalController, public ga: GoogleAnalytics) {
 		this.nav = nav;
 		this.platform = platform;
 		this.zaaskServices = zaaskServices;
@@ -55,7 +57,7 @@ export class QuotesPage {
 	onPageWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
-			// GoogleAnalytics.trackView("Quotes Screen", "quotes.html");
+			this.ga.trackView("Quotes Screen", "quotes.html");
 		});
 	}
 

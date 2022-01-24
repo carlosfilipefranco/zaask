@@ -2,6 +2,8 @@ import { Component } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform } from "ionic-angular";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -17,7 +19,7 @@ export class PassRecoverPage {
 	msgRecoverPass = "Recuperar palavra-chave";
 	msgEmailSent = "Foi lhe enviado um email para recuperar a sua palavra-chave.";
 	emailLabel = "E-mail";
-	constructor(public nav: NavController, public params: NavParams, public form: FormBuilder, public loading: LoadingController, public platform: Platform, public zaaskServices: ZaaskServices, public Alert: AlertController) {
+	constructor(public nav: NavController, public params: NavParams, public form: FormBuilder, public loading: LoadingController, public platform: Platform, public zaaskServices: ZaaskServices, public Alert: AlertController, public ga: GoogleAnalytics) {
 		this.emailUser = params.data.emailUser;
 		this.userCountry = params.data.userCountry;
 
@@ -34,7 +36,7 @@ export class PassRecoverPage {
 		this.setText();
 
 		//Google Analytics
-		// GoogleAnalytics.trackView("PasswordRecover Screen - " + APP_VERSION, "pass-recover.html");
+		this.ga.trackView("PasswordRecover Screen - " + APP_VERSION, "pass-recover.html");
 	}
 
 	onSubmit(value) {

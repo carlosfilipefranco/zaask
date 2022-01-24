@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams, ViewController } from "ionic-angular";
 import { User } from "../../providers/user/user";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({

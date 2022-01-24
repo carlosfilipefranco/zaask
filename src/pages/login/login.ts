@@ -8,9 +8,12 @@ import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 import { AppVersion } from "@ionic-native/app-version";
 import { Device } from "@ionic-native/device";
 import { Utils } from "../../providers/utils/utils";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
+import { Facebook } from "@ionic-native/facebook";
+import { Globalization } from "@ionic-native/globalization";
 
-declare var navigator: any;
-declare var Facebook: any;
+declare var cordova: any;
 
 @IonicPage()
 @Component({
@@ -56,7 +59,23 @@ export class LoginPage {
 	msgClose = "Fechar";
 	initialHeight;
 	hideFooter = false;
-	constructor(public nav: NavController, public form: FormBuilder, public http: HttpClient, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public quotesList: QuotesListProvider, public app: AppVersion, public loading: LoadingController, public device: Device, public alert: AlertController, public utils: Utils) {
+	constructor(
+		public nav: NavController,
+		public form: FormBuilder,
+		public http: HttpClient,
+		public platform: Platform,
+		public zaaskServices: ZaaskServices,
+		public user: User,
+		public quotesList: QuotesListProvider,
+		public app: AppVersion,
+		public loading: LoadingController,
+		public device: Device,
+		public alert: AlertController,
+		public utils: Utils,
+		public ga: GoogleAnalytics,
+		public facebook: Facebook,
+		private globalization: Globalization
+	) {
 		this.loginForm = this.form.group({
 			email: ["", [Validators.required, Validators.minLength(1), checkFirstCharacterValidator]],
 			password: ["", [Validators.required, Validators.minLength(1)]]
@@ -70,8 +89,8 @@ export class LoginPage {
 		let lang = localStorage.getItem("language");
 		if (lang == null) {
 			let defaultLang = "PT"; //default lang
-			if (typeof navigator.globalization !== "undefined") {
-				navigator.globalization.getPreferredLanguage(function (language) {
+			if (typeof cordova !== "undefined") {
+				this.globalization.getPreferredLanguage().then((language) => {
 					lang = language.value.split("-")[1];
 					console.log("Device Language: " + lang);
 					this.languageChange(lang);
@@ -109,7 +128,7 @@ export class LoginPage {
 		//    this.hideFooter = this.initialHeight !== window.innerHeight;
 		// })
 
-		// GoogleAnalytics.trackView("Login Screen - " + APP_VERSION, "login.html");
+		this.ga.trackView("Login Screen - " + APP_VERSION, "login.html");
 	}
 
 	onPageWillEnter() {
@@ -360,7 +379,8 @@ export class LoginPage {
 	}
 
 	facebookLogin() {
-		Facebook.login(["email"])
+		this.facebook
+			.login(["email"])
 			.then((response) => {
 				if (typeof this.device !== "undefined") {
 					this.uuid = this.device.uuid;

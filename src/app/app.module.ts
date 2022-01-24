@@ -17,12 +17,16 @@ import { Device } from "@ionic-native/device";
 import { AppVersion } from "@ionic-native/app-version";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Utils } from "../providers/utils/utils";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { Facebook } from "@ionic-native/facebook";
+import { Globalization } from "@ionic-native/globalization";
+import { OneSignal } from "@ionic-native/onesignal";
 
 @NgModule({
 	declarations: [MyApp, TabsPage],
 	imports: [BrowserModule, IonicModule.forRoot(MyApp), IonicStorageModule.forRoot(), HttpClientModule, FormsModule, ReactiveFormsModule],
 	bootstrap: [IonicApp],
 	entryComponents: [MyApp, TabsPage],
-	providers: [StatusBar, SplashScreen, { provide: ErrorHandler, useClass: IonicErrorHandler }, QuotesListProvider, User, ZaaskServices, Device, AppVersion, InAppBrowser, Utils]
+	providers: [StatusBar, SplashScreen, { provide: ErrorHandler, useClass: IonicErrorHandler }, QuotesListProvider, User, ZaaskServices, Device, AppVersion, InAppBrowser, Utils, GoogleAnalytics, Facebook, Globalization, OneSignal]
 })
 export class AppModule {}

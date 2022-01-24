@@ -2,6 +2,8 @@ import { Component } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { OneSignal } from "@ionic-native/onesignal";
 
 declare var window: any;
 
@@ -17,7 +19,7 @@ export class AccountNotificationsPage {
 	notifTitle = "Notificações";
 	msgNotifsWhen = "Enviar notificações quando";
 	msgNewTask = "Novas tarefas";
-	constructor(public nav: NavController, public params: NavParams, public platform: Platform, public zaaskServices: ZaaskServices, public form: FormBuilder) {
+	constructor(public nav: NavController, public params: NavParams, public platform: Platform, public zaaskServices: ZaaskServices, public form: FormBuilder, public ga: GoogleAnalytics, public oneSignal: OneSignal) {
 		this.userID = this.params.data.userID;
 		this.initScreen();
 
@@ -31,7 +33,7 @@ export class AccountNotificationsPage {
 	onPageWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
-			// GoogleAnalytics.trackView("AccountNotifications Screen", "account-notifications.html");
+			this.ga.trackView("AccountNotifications Screen", "account-notifications.html");
 		});
 	}
 
@@ -64,7 +66,7 @@ export class AccountNotificationsPage {
 		console.log(this.notifsForm.controls.notif.value);
 		this.notifStatus = this.notifsForm.controls.notif.value;
 
-		window.plugins.OneSignal.setSubscription(this.notifsForm.controls.notif.value);
+		this.oneSignal.setSubscription(this.notifsForm.controls.notif.value);
 
 		this.zaaskServices.setNotifs(this.notifsForm.controls.notif.value).subscribe(
 			(data) => {

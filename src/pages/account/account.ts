@@ -1,8 +1,10 @@
 import { Component } from "@angular/core";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { Utils } from "../../providers/utils/utils";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -53,7 +55,7 @@ export class AccountPage {
 	msgOtherNotifications = "Outras notificações";
 	msgSettings = "Definições";
 
-	constructor(public nav: NavController, public navParams: NavParams, public zaaskServices: ZaaskServices, public platform: Platform, public utils: Utils, public user: User) {
+	constructor(public nav: NavController, public navParams: NavParams, public zaaskServices: ZaaskServices, public platform: Platform, public utils: Utils, public user: User, public ga: GoogleAnalytics) {
 		this.userId = this.user.getUserId();
 		this.name = this.user.getName();
 		this.subtitle = this.user.getSubTitle();
@@ -112,7 +114,7 @@ export class AccountPage {
 	onPageWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
-			// GoogleAnalytics.trackView("Account Screen - " + APP_VERSION, "account.html");
+			this.ga.trackView("Account Screen - " + APP_VERSION, "account.html");
 		});
 	}
 

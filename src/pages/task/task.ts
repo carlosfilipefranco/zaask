@@ -3,8 +3,12 @@ import { FormBuilder } from "@angular/forms";
 import { AlertController, IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
-import moment from "moment";
+import moment from "moment-timezone";
 import { Utils } from "../../providers/utils/utils";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
+import { Facebook } from "@ionic-native/facebook";
+import { OneSignal } from "@ionic-native/onesignal";
 
 @IonicPage()
 @Component({
@@ -45,7 +49,7 @@ export class TaskPage {
 		policyWarningText_8: string;
 		policyAccept: string;
 	};
-	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController) {
+	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal) {
 		this.passwordType = "password";
 		this.tasks = [];
 		this.country = this.user.getCountry();
@@ -113,8 +117,8 @@ export class TaskPage {
 			//disable onesignal plugin until user accept privacy policy
 			if (this.policyAccepted) this.initOneSignal();
 			else {
-				window["plugins"].OneSignal.setRequiresUserPrivacyConsent(true);
-				window["plugins"].OneSignal.userProvidedPrivacyConsent((providedConsent) => {
+				this.oneSignal.setRequiresUserPrivacyConsent(true);
+				this.oneSignal.userProvidedPrivacyConsent((providedConsent) => {
 					if (providedConsent) this.initOneSignal();
 				});
 			}
@@ -124,9 +128,9 @@ export class TaskPage {
 	onPageWillEnter() {
 		this.platform.ready().then(() => {
 			//Google Analytics
-			// GoogleAnalytics.trackView("Tasks Screen - " + APP_VERSION, "task.html");
+			this.ga.trackView("Tasks Screen - " + APP_VERSION, "task.html");
 			//Facebook Analytics
-			// Facebook.logEvent("VIEW_CONTENT", { page: "task.html", version: APP_VERSION });
+			this.facebook.logEvent("VIEW_CONTENT", { page: "task.html", version: APP_VERSION });
 		});
 	}
 
@@ -152,18 +156,20 @@ export class TaskPage {
 		//
 		//
 		if (this.country === "PT") {
-			window["plugins"].OneSignal.startInit("03f9ed5c-4a94-4db5-a692-f507940e2702", "170479296785")
+			this.oneSignal
+				.startInit("03f9ed5c-4a94-4db5-a692-f507940e2702", "170479296785")
 				.iOSSettings(iosSettings) // only needed if added Optional OneSignal code for iOS above
 				.handleNotificationOpened(funcaoRetorno)
 				.endInit();
 		} else {
-			window["plugins"].OneSignal.startInit("ad86c96f-3bb4-4351-8a31-134829e60e39", "170479296785")
+			this.oneSignal
+				.startInit("ad86c96f-3bb4-4351-8a31-134829e60e39", "170479296785")
 				.iOSSettings(iosSettings) // only needed if added Optional OneSignal code for iOS above
 				.handleNotificationOpened(funcaoRetorno)
 				.endInit();
 		}
 		//
-		window["plugins"].OneSignal.getIds(getPlayerIdCallback);
+		this.oneSignal.getIds().then(getPlayerIdCallback);
 	}
 
 	isToSetPUshs(osUserId, osPushToken) {
@@ -355,7 +361,7 @@ export class TaskPage {
 		this.showPrivacyPolicy = false;
 		this.showTerms = false;
 		//enable onesignal plugin
-		window["plugins"].OneSignal.provideUserConsent(true);
+		this.oneSignal.provideUserConsent(true);
 	}
 
 	getLang() {

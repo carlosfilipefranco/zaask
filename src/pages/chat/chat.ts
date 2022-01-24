@@ -6,6 +6,8 @@ import { Utils } from "../../providers/utils/utils";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 import io from "socket.io-client";
 import moment from "moment-timezone";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -44,7 +46,7 @@ export class ChatPage {
 	response;
 	alertTitleError;
 	closeButtonText;
-	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public form: FormBuilder, public params: NavParams, public utils: Utils, public Alert: AlertController) {
+	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public form: FormBuilder, public params: NavParams, public utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics) {
 		this.country = this.user.getCountry();
 
 		this.userId = this.user.getUserField("id");
@@ -148,7 +150,7 @@ export class ChatPage {
 		//
 
 		//Google Analytics
-		// GoogleAnalytics.trackView("Chat Screen - " + APP_VERSION, "chat.html");
+		this.ga.trackView("Chat Screen - " + APP_VERSION, "chat.html");
 	}
 
 	backButtonAction() {

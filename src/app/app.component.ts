@@ -11,6 +11,7 @@ import { Storage } from "@ionic/storage";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { Device } from "@ionic-native/device";
 import { AppVersion } from "@ionic-native/app-version";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
 
 @Component({
 	templateUrl: "app.html"
@@ -31,7 +32,7 @@ export class MyApp {
 	platformId: any;
 	appVersion: any = "";
 
-	constructor(public statusBar: StatusBar, public splashScreen: SplashScreen, public user: User, public zaaskServices: ZaaskServices, public quotesList: QuotesListProvider, public platform: Platform, public storage: Storage, public iab: InAppBrowser, public device: Device, private app: AppVersion) {
+	constructor(public statusBar: StatusBar, public splashScreen: SplashScreen, public user: User, public zaaskServices: ZaaskServices, public quotesList: QuotesListProvider, public platform: Platform, public storage: Storage, public iab: InAppBrowser, public device: Device, private app: AppVersion, public ga: GoogleAnalytics) {
 		this.initializeApp();
 	}
 
@@ -62,7 +63,7 @@ export class MyApp {
 
 			// console.log("app::initializeApp - device: " + window.device);
 
-			// GoogleAnalytics.startTrackerWithId("UA-82619047-1");
+			this.ga.startTrackerWithId("UA-82619047-1");
 
 			if (typeof this.device !== "undefined") {
 				this.uuid = this.device.uuid;

@@ -1,6 +1,8 @@
 import { Component } from "@angular/core";
 import { AlertController, IonicPage, NavController, NavParams, Platform, ToastController } from "ionic-angular";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -15,7 +17,7 @@ export class RequestsPage {
 	closeButtonText: any;
 	msgNoResults: string;
 	msgNewRequests: string;
-	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public Alert: AlertController, public Toast: ToastController) {
+	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public Alert: AlertController, public Toast: ToastController, public ga: GoogleAnalytics) {
 		this.nav = nav;
 		this.platform = platform;
 		this.zaaskServices = zaaskServices;
@@ -40,7 +42,7 @@ export class RequestsPage {
 	onPageWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
-			// GoogleAnalytics.trackView("Requests Screen", "requests.html");
+			this.ga.trackView("Requests Screen", "requests.html");
 		});
 
 		console.log("requests page display");

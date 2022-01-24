@@ -3,8 +3,11 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform, ToastController } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
-import moment from "moment";
+import moment from "moment-timezone";
 import { Utils } from "../../providers/utils/utils";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
+import { Facebook } from "@ionic-native/facebook";
 
 @IonicPage()
 @Component({
@@ -63,7 +66,7 @@ export class TaskDetailsPage {
 	sendQuoteForm: any;
 	source: string;
 	msgAlert: string;
-	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public navParams: NavParams, public utils: Utils, public Alert: AlertController, public Toast: ToastController, public Loading: LoadingController) {
+	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public navParams: NavParams, public utils: Utils, public Alert: AlertController, public Toast: ToastController, public Loading: LoadingController, public ga: GoogleAnalytics, public facebook: Facebook) {
 		this.passwordType = "password";
 		this.tasks = [];
 		this.country = this.user.getCountry();
@@ -154,7 +157,7 @@ export class TaskDetailsPage {
 		//
 		this.setTime();
 		//GoogleAnalytics
-		// GoogleAnalytics.trackView("Task Details Screen - " + APP_VERSION, "task-details.html");
+		this.ga.trackView("Task Details Screen - " + APP_VERSION, "task-details.html");
 	}
 
 	setTime() {
@@ -243,7 +246,7 @@ export class TaskDetailsPage {
 						loading.dismiss().then(() => {
 							if (data.status) {
 								this.nav.push("ChatPage", { id: taskId });
-								// Facebook.logPurchase(this.taskInfo.credits[0].credits, "EUR");
+								this.facebook.logPurchase(this.taskInfo.credits[0].credits, "EUR");
 							} else {
 								var alert = this.Alert.create({
 									title: "Erro",

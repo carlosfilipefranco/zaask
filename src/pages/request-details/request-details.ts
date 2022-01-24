@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { AlertController, IonicPage, ModalController, NavController, NavParams, Platform, Toast, ToastController } from "ionic-angular";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
 
 @IonicPage()
 @Component({
@@ -33,7 +34,7 @@ export class RequestDetailsPage {
 	msgHere: string;
 	msgSend: string;
 	msgContactClient: string;
-	constructor(public nav: NavController, public params: NavParams, public zaaskServices: ZaaskServices, public platform: Platform, public Alert: AlertController, public modalController: ModalController, public toast: ToastController) {
+	constructor(public nav: NavController, public params: NavParams, public zaaskServices: ZaaskServices, public platform: Platform, public Alert: AlertController, public modalController: ModalController, public toast: ToastController, public ga: GoogleAnalytics) {
 		this.requestID = params.data.requestID;
 		this.requestIndex = params.data.requestIndex;
 		// this.requests = requests;
@@ -87,7 +88,7 @@ export class RequestDetailsPage {
 	onPageWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
-			// GoogleAnalytics.trackView("RequestDetails Screen", "request-details.html");
+			this.ga.trackView("RequestDetails Screen", "request-details.html");
 		});
 	}
 

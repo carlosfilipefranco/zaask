@@ -3,6 +3,8 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { AlertController, IonicPage, NavController, NavParams, Platform, ToastController } from "ionic-angular";
 import { QuotesListProvider } from "../../providers/quotes-list/quotes-list";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -56,7 +58,7 @@ export class QuoteDetailsPage {
 	msgChat: string;
 	msgRequest: string;
 	msgWriteMessage: string;
-	constructor(public nav: NavController, public params: NavParams, public zaaskServices: ZaaskServices, public form: FormBuilder, keyboard, public platform: Platform, public quotesList: QuotesListProvider, public Alert: AlertController, public Toast: ToastController) {
+	constructor(public nav: NavController, public params: NavParams, public zaaskServices: ZaaskServices, public form: FormBuilder, keyboard, public platform: Platform, public quotesList: QuotesListProvider, public Alert: AlertController, public Toast: ToastController, public ga: GoogleAnalytics) {
 		this.requestID = params.data.requestID;
 		this.askerName = params.data.askerName;
 		this.taskPrice = params.data.taskPrice;
@@ -245,7 +247,7 @@ export class QuoteDetailsPage {
 	onPageWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
-			// GoogleAnalytics.trackView("QuotesDetails Screen", "quote-details.html");
+			this.ga.trackView("QuotesDetails Screen", "quote-details.html");
 		});
 	}
 
@@ -550,12 +552,13 @@ export class QuoteDetailsPage {
 				elem.rows = ++rows;
 				this.tryRows(elem, true);
 			}
-		} else if (false && !increment) {
-			console.log("hey");
-			var rows = elem.getAttribute("rows");
-			elem.rows = --rows;
-			this.tryRows(elem, false);
 		}
+		// else if (false && !increment) {
+		// 	console.log("hey");
+		// 	var rows = elem.getAttribute("rows");
+		// 	elem.rows = --rows;
+		// 	this.tryRows(elem, false);
+		// }
 	}
 
 	setText() {

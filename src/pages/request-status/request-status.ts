@@ -3,9 +3,11 @@ import { FormBuilder } from "@angular/forms";
 import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
-import moment from "moment";
+import moment from "moment-timezone";
 import Jquery from "jquery";
 import "jquery-datetimepicker";
+import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { APP_VERSION } from "../../env";
 
 @IonicPage()
 @Component({
@@ -24,7 +26,7 @@ export class RequestStatusPage {
 	translate: { header: string; msgPedidosDisponiveis: string; msgPedidosAdquiridos: string; msgMyAccount: string; submitButton: string; personalTitle: string };
 	questions: { title: string; options: { label: string; value: number }[]; value: any }[];
 	personalMessage: string;
-	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public navParams: NavParams, public form: FormBuilder) {
+	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public navParams: NavParams, public form: FormBuilder, public ga: GoogleAnalytics) {
 		this.country = this.user.getCountry();
 		this.form = form;
 		this.jobIsDone = navParams.data.jobIsDone;
@@ -111,7 +113,7 @@ export class RequestStatusPage {
         ${this.user.name}`;
 
 		//Google Analytics
-		// GoogleAnalytics.trackView("RequestStatus Screen - " + APP_VERSION, "request-status.html");
+		this.ga.trackView("RequestStatus Screen - " + APP_VERSION, "request-status.html");
 	}
 
 	tabRedirect(name) {
