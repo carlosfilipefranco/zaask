@@ -99,11 +99,6 @@ export class ChatPage {
 						}
 				  ];
 
-		this.requestForm = this.form.group({
-			request: [""]
-		});
-		this.request = this.requestForm.controls["request"];
-
 		this.showTask(this.taskId);
 
 		this.translate =
@@ -154,7 +149,7 @@ export class ChatPage {
 	}
 
 	backButtonAction() {
-		this.nav.setRoot("Quotes", { filter: this.params.data.filter });
+		this.nav.setRoot("QuotesPage", { filter: this.params.data.filter });
 	}
 
 	chatLogin() {
@@ -248,13 +243,11 @@ export class ChatPage {
 		loading.present();
 
 		this.zaaskServices.showProTask(id).subscribe(
-			(response: any) => {
-				const _response = JSON.parse(response._body);
+			(data: any) => {
 				//console.log(_response);
-				this.response = _response;
-				this.taskInfo = _response.task;
-				this.lead_id = _response.lead.id;
-				this.messages = _response.messages;
+				this.taskInfo = data.task;
+				this.lead_id = data.lead.id;
+				this.messages = data.messages;
 				this.autoScroll();
 				this.other_user_id = null;
 
@@ -270,7 +263,7 @@ export class ChatPage {
 				//check if pro was reviewed
 				this.checkProReviews();
 				//
-				this.other_user_name = _response.task.owner_name;
+				this.other_user_name = data.task.owner_name;
 				loading.dismiss();
 				this.getUsersOnlineStatus();
 			},

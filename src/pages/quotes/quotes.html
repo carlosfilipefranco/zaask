@@ -1,5 +1,5 @@
 <ion-header>
-	<ion-navbar *navbar primary class="task-page navbar">
+	<ion-navbar color="primary" class="task-page navbar">
 		<ion-title>{{translate.title}}</ion-title>
 	</ion-navbar>
 	<ion-searchbar placeholder="{{searchPlaceholder}}" (click)="clearQuery()" (input)="updateSearch($event.value)" (clear)="openFilter($event)" cancelText=""> </ion-searchbar>
@@ -7,7 +7,7 @@
 
 <ion-content class="task-page task-page__heigth">
 	<ion-list class="task-page task-page-list">
-		<ionic-item class="task-page task-page__card" *ngFor="#task of quotesToShow; #i = index" data-index="#i">
+		<ion-item class="task-page task-page__card" *ngFor="let task of quotesToShow">
 			<ion-card>
 				<ion-card-content>
 					<ion-card-title> {{task.title}} </ion-card-title>
@@ -60,7 +60,7 @@
 					</ion-col>
 				</ion-row>
 			</ion-grid>
-		</ionic-item>
+		</ion-item>
 
 		<div class="task-quote-edit-info" *ngIf="!quotesToShow.length">
 			<div class="task-quote-title">{{translate.noRequestsToShow}}</div>

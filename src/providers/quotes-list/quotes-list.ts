@@ -21,7 +21,6 @@ export class QuotesListProvider {
 	}
 
 	setText() {
-		console.log("QuotesMenu::country = " + this.zaaskServices.getUserCountry());
 		if (this.zaaskServices.getUserCountry() == "PT") {
 			this.quotesName = ["Orçamentos Não Enviados", "Orçamentos Enviados", "Clientes Ganhos", "Clientes Perdidos", "Pedidos Reembolsados", "Pedidos Arquivados"];
 		} else {
@@ -80,9 +79,8 @@ export class QuotesListProvider {
 
 	getQuotesNew(filter) {
 		this.zaaskServices.getQuotesNew(filter).subscribe(
-			(data) => {
-				const responseData = JSON.parse(data._body);
-				this.quotes = responseData.data;
+			(data: any) => {
+				this.quotes = data.data;
 			},
 			(error) => {
 				var alert = this.alert.create({

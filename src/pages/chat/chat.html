@@ -1,10 +1,10 @@
 <ion-header>
-	<ion-navbar *navbar primary class="chat-page navbar" hideBackButton="true">
+	<ion-navbar color="primary" class="chat-page navbar" hideBackButton="true">
 		<ion-buttons>
-			<button left (click)="backButtonAction()">
+			<button ion-button left (click)="backButtonAction()">
 				<ion-icon name="arrow-back"></ion-icon>
 			</button>
-			<button>
+			<button ion-button>
 				<div class="chat-info">
 					<p class="name">{{other_user_name}}</p>
 					<p class="status" *ngIf="isOtherUserOnline"><span class="online"></span> Online</p>
@@ -19,8 +19,8 @@
 					<ion-icon name="md-more"></ion-icon>
 					<span>{{translate.selectTitle}}</span>
 				</ion-label>
-				<ion-select okText="{{okText}}" cancelText="{{cancelText}}" id="request-status" [ngFormControl]="request" (ngModelChange)="openRequestStatus($event)">
-					<ion-option *ngFor="#option of RequestTabs" value="{{option.id}}">{{option.key}}</ion-option>
+				<ion-select okText="{{okText}}" cancelText="{{cancelText}}" id="request-status" [(ngModel)]="request" (ngModelChange)="openRequestStatus($event)">
+					<ion-option *ngFor="let option of RequestTabs" value="{{option.id}}">{{option.key}}</ion-option>
 				</ion-select>
 			</ion-item>
 		</ion-buttons>
@@ -30,12 +30,12 @@
 <!--bid_type: "fixed"-->
 <ion-content class="chat-page">
 	<div id="chat-autoscroll">
-		<div *ngFor="#message of messagesPerDay; #i = index;" [attr.data-index]="i">
+		<div *ngFor="let message of messagesPerDay; let i = index;" [attr.data-index]="i">
 			<div class="chat-msg">
 				<span class="chat-msg-date">{{message.date}}</span>
 			</div>
 
-			<div *ngFor="#message of message.messages; #j = index;" [attr.data-index]="j">
+			<div *ngFor="let message of message.messages; let j = index;" [attr.data-index]="j">
 				<div [ngClass]="setStyleClass(message.notification_from)">
 					<!-- Message -->
 					<span class="chat-message--inner chat-message--inner__flex" *ngIf="!message.bid && !message.attachment">
@@ -48,7 +48,7 @@
 						<span [innerHTML]="message.notification_description"></span>
 						<!-- reviews (if applicable) -->
 						<div *ngIf="isAReviewMessage(message)">
-							<span *ngFor="#r of reviewsRange">
+							<span *ngFor="let r of reviewsRange">
 								<ion-icon *ngIf="reviewsAvg>=r" name="star"></ion-icon>
 								<ion-icon *ngIf="reviewsAvg<r" name="star-outline"></ion-icon>
 							</span>

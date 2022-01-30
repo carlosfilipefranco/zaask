@@ -101,4 +101,46 @@ page-quotes {
 	ion-title {
 		padding: $safeArea;
 	}
+
+	.nav-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		height: 70px;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+
+		div {
+			display: flex;
+			width: 33.3333%;
+			align-items: center;
+			justify-content: center;
+			flex-flow: column;
+			padding: 1rem 1rem 0 1rem;
+			color: #9f9c9a;
+			font-size: 10px;
+			text-transform: uppercase;
+
+			span {
+				margin: 7px 0;
+				text-transform: uppercase;
+				text-align: center;
+			}
+
+			&.selected {
+				color: #3e3934;
+			}
+
+			ion-label {
+				margin: 0;
+			}
+
+			ion-icon {
+				font-size: 24px;
+			}
+		}
+	}
 }

@@ -2,8 +2,6 @@ import { Component } from "@angular/core";
 import { Platform } from "ionic-angular";
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
-
-import { TabsPage } from "../pages/tabs/tabs";
 import { User } from "../providers/user/user";
 import { ZaaskServices } from "../providers/zaask-services/zaask-services";
 import { QuotesListProvider } from "../providers/quotes-list/quotes-list";
@@ -13,11 +11,13 @@ import { Device } from "@ionic-native/device";
 import { AppVersion } from "@ionic-native/app-version";
 import { GoogleAnalytics } from "@ionic-native/google-analytics";
 
+declare var cordova: any;
+
 @Component({
 	templateUrl: "app.html"
 })
 export class MyApp {
-	rootPage: any = "TabsPage";
+	rootPage: any = "";
 	asd: any;
 	msgTitle = "Pedidos Adquiridos";
 	msgOrcamNaoEnviados = "Orçam. Não Enviados";
@@ -58,33 +58,33 @@ export class MyApp {
 		this.platform.ready().then(() => {
 			// Okay, so the platform is ready and our plugins are available.
 			// Here you can do any higher level native things you might need.
-			this.statusBar.styleDefault();
-			this.splashScreen.hide();
+			if (typeof cordova != "undefined") {
+				this.statusBar.styleDefault();
+				this.splashScreen.hide();
 
-			// console.log("app::initializeApp - device: " + window.device);
+				this.app.getVersionNumber().then((s) => {
+					console.log("ver: " + s);
+					this.appVersion = s;
+				});
 
-			this.ga.startTrackerWithId("UA-82619047-1");
+				this.ga.startTrackerWithId("UA-82619047-1");
 
-			if (typeof this.device !== "undefined") {
-				this.uuid = this.device.uuid;
-				this.versionId = this.device.version;
-				this.platformId = this.device.platform;
-			} else {
-				if (typeof this.platform.versions().ios !== "undefined") {
-					this.platformId = "IOS";
-					this.versionId = this.platform.versions().ios.str;
-				} else if (typeof this.platform.versions().android !== "undefined") {
-					this.platformId = "Android";
-					this.versionId = this.platform.versions().android.str || "6";
+				if (typeof this.device !== "undefined") {
+					this.uuid = this.device.uuid;
+					this.versionId = this.device.version;
+					this.platformId = this.device.platform;
+				} else {
+					if (typeof this.platform.versions().ios !== "undefined") {
+						this.platformId = "IOS";
+						this.versionId = this.platform.versions().ios.str;
+					} else if (typeof this.platform.versions().android !== "undefined") {
+						this.platformId = "Android";
+						this.versionId = this.platform.versions().android.str || "6";
+					}
 				}
 			}
 
-			this.appVersion;
-
-			this.app.getVersionNumber().then((s) => {
-				console.log("ver: " + s);
-				this.appVersion = s;
-			});
+			// console.log("app::initializeApp - device: " + window.device);
 
 			this.loadUserFromLocalStorageNew();
 		});
@@ -96,15 +96,14 @@ export class MyApp {
 			//  const event = { email: user.email, password: user.password };
 			this.zaaskServices.authRequestWithTokenParam(user.api_token).subscribe(
 				(data: any) => {
+					console.log(data);
 					this.zaaskServices.storeMobileLogin(user.api_token, this.uuid, this.platformId, this.versionId, "autologin").subscribe();
 
-					const userResponse = JSON.parse(data._body);
-
-					userResponse.user.api_token = user.api_token;
+					data.user.api_token = user.api_token;
 					// userResponse.user.password = user.password;
-					userResponse.user.email = user.email;
-					userResponse.user.id = user.id;
-					this.user.setUserNew(userResponse.user);
+					data.user.email = user.email;
+					data.user.id = user.id;
+					this.user.setUserNew(data.user);
 					//console.log(userResponse);
 					this.setText();
 					this.zaaskServices.saveUserData(data);

@@ -1,7 +1,21 @@
 {
-  "name": "zaask",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "ionic-angular"
+	"name": "Mobile-Pros",
+	"integrations": {
+		"cordova": {}
+	},
+	"type": "ionic-angular",
+	"proxies": [
+		{
+			"path": "/api",
+			"proxyUrl": "https://www.zaask.pt/api/v1"
+		},
+		{
+			"path": "/api-es",
+			"proxyUrl": "https://www.zaask.es/api/v1"
+		},
+		{
+			"path": "/api-dev",
+			"proxyUrl": "https://staging.zaask.pt/api/v1"
+		}
+	]
 }

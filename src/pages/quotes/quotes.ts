@@ -35,7 +35,7 @@ export class QuotesPage {
 		this.platform = platform;
 		this.zaaskServices = zaaskServices;
 		this.taskPage = "TaskPage";
-		this.tabAccount = "Account";
+		this.tabAccount = "AccountPage";
 		this.user = user;
 		this.navParams = navParams;
 		//
@@ -63,7 +63,7 @@ export class QuotesPage {
 
 	openQuoteDetailsPage(quote, id) {
 		this.zaaskServices.getChatMessages(id).subscribe(
-			(data) => {
+			(data: any) => {
 				this.nav.push("QuoteDetailsPage", { requestID: id, askerName: data.askerName, taskPrice: data.taskPrice, chat: data.list, filter: this.filter, quote: quote });
 			},
 			(err) => {
@@ -188,7 +188,7 @@ export class QuotesPage {
 		const loading = this.Utils.createZaaskLoading();
 		loading.present();
 		this.zaaskServices.getQuotesNew(filter).subscribe(
-			(res) => {
+			(res: any) => {
 				this.initialQuotes = res.data;
 				this.quotesToShow = this.initialQuotes;
 			},

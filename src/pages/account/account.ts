@@ -65,7 +65,7 @@ export class AccountPage {
 		this.numReviews = this.user.getUserField("nreviews");
 		this.userActivation = this.user.getUserActivation();
 		this.tabTask = "TaskPage";
-		this.tabQuotes = "Quotes";
+		this.tabQuotes = "QuotesPage";
 		this.country = this.user.getCountry();
 		// this.pushNotificationToggle = this.user.notifications;
 		this.osUserId = this.user.getUserField("osUserId");
@@ -89,13 +89,12 @@ export class AccountPage {
 		// Check Push Notifications status
 		this.zaaskServices.authRequest().subscribe(
 			(data: any) => {
-				const responseData = JSON.parse(data._body).user;
 				//set notification alert's flags
-				this.alertAllNewOportunities = responseData.notifEvent1 == 1 || false;
-				this.alertNewOportunities = responseData.notifEvent2 == 1 || false;
-				this.alertLastHourResume = responseData.notifEvent3 == 1 || false;
-				this.alertDailyResume = responseData.notifEvent4 == 1 || false;
-				this.alertOtherNotifications = responseData.notifEvent5 == 1 || false;
+				this.alertAllNewOportunities = data.notifEvent1 == 1 || false;
+				this.alertNewOportunities = data.notifEvent2 == 1 || false;
+				this.alertLastHourResume = data.notifEvent3 == 1 || false;
+				this.alertDailyResume = data.notifEvent4 == 1 || false;
+				this.alertOtherNotifications = data.notifEvent5 == 1 || false;
 			},
 			(error) => {
 				console.log("auth error", error);

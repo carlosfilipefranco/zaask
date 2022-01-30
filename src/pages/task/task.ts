@@ -53,8 +53,8 @@ export class TaskPage {
 		this.passwordType = "password";
 		this.tasks = [];
 		this.country = this.user.getCountry();
-		this.tabQuotes = "Quotes";
-		this.tabAccount = "Account";
+		this.tabQuotes = "QuotesPage";
+		this.tabAccount = "AccountPage";
 		this.userTimeZone = moment.tz.guess();
 		moment.locale(this.country.toLowerCase());
 		this.showInfinite = true;
@@ -208,10 +208,9 @@ export class TaskPage {
 		loading.present();
 		//
 		this.zaaskServices.getProTasksAvailable(this.pagination).subscribe(
-			(response: any) => {
-				const responseData = JSON.parse(response._body);
-				if (responseData.data.length > 0) {
-					responseData.data.forEach((task) => {
+			(data: any) => {
+				if (data.data.length > 0) {
+					data.data.forEach((task) => {
 						this.tasks.push(task);
 					});
 					this.pagination += 1;

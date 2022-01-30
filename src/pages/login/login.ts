@@ -77,8 +77,8 @@ export class LoginPage {
 		private globalization: Globalization
 	) {
 		this.loginForm = this.form.group({
-			email: ["", [Validators.required, Validators.minLength(1), checkFirstCharacterValidator]],
-			password: ["", [Validators.required, Validators.minLength(1)]]
+			email: ["francisco+bid@zaask.com", [Validators.required, Validators.minLength(1), checkFirstCharacterValidator]],
+			password: ["Zaask123", [Validators.required, Validators.minLength(1)]]
 		});
 
 		this.languageForm = this.form.group({
@@ -100,11 +100,6 @@ export class LoginPage {
 		this.languageChange(lang);
 		// ------------------------------------- //
 
-		this.app.getVersionNumber().then((s) => {
-			console.log("ver: " + s);
-			this.appVersion = s;
-		});
-
 		function isEmailPattern(emailV) {
 			var pattern = new RegExp(
 				/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i
@@ -114,12 +109,13 @@ export class LoginPage {
 		}
 
 		function checkFirstCharacterValidator(control) {
-			// if(isEmailPattern(control.value)) { // match what we want
-			//     console.log('true');
-			//     return { checkFirstCharacterValidator: false };
+			// if (isEmailPattern(control.value)) {
+			// 	// match what we want
+			// 	console.log("true");
+			// 	return { checkFirstCharacterValidator: false };
 			// } else {
-			//     console.log('false');
-			//     return { checkFirstCharacterValidator: true };
+			// 	console.log("false");
+			// 	return { checkFirstCharacterValidator: true };
 			// }
 			return true;
 		}
@@ -128,7 +124,13 @@ export class LoginPage {
 		//    this.hideFooter = this.initialHeight !== window.innerHeight;
 		// })
 
-		this.ga.trackView("Login Screen - " + APP_VERSION, "login.html");
+		if (typeof cordova != "undefined") {
+			this.app.getVersionNumber().then((s) => {
+				console.log("ver: " + s);
+				this.appVersion = s;
+			});
+			this.ga.trackView("Login Screen - " + APP_VERSION, "login.html");
+		}
 	}
 
 	onPageWillEnter() {
@@ -167,19 +169,19 @@ export class LoginPage {
 			this.asd = this.zaaskServices.doLogin(value.email, value.password, this.uuid, this.platformId, this.versionId, this.appVersion);
 			this.asd.subscribe(
 				(data) => {
-					if (data.json().status == true) {
-						this.user.setUser(value.email, value.password, data.json().hashcode, this.uuid, data.json().userId, data.json().photourl, data.json().name, data.json().subtitle, data.json().numstars, data.json().numreviews, data.json().numcredits, data.json().useractivation, data.json().pushuserid, data.json().pushtoken, this.user.getCountry(), "");
+					if (data.status == true) {
+						this.user.setUser(value.email, value.password, data.hashcode, this.uuid, data.userId, data.photourl, data.name, data.subtitle, data.numstars, data.numreviews, data.numcredits, data.useractivation, data.pushuserid, data.pushtoken, this.user.getCountry(), "");
 						loading.dismiss();
 						this.nav.setRoot("TabsPage");
 					} else {
 						var alert = this.alert.create({
 							title: "Erro",
-							subTitle: data.json().message,
+							subTitle: data.message,
 							buttons: ["Fechar"]
 						});
 						loading.dismiss();
 						alert.present();
-						console.log("login::onSubmit - login message: " + data.json().message);
+						console.log("login::onSubmit - login message: " + data.message);
 					}
 				},
 				(error) => {
@@ -198,8 +200,8 @@ export class LoginPage {
 		}
 	}
 
-	recoverPass(email) {
-		this.nav.push("PassRecoverPage", { emailUser: email, userCountry: this.user.getCountry(), zaaskServices: this.zaaskServices });
+	recoverPass() {
+		this.nav.push("PassRecoverPage", { emailUser: this.loginForm.controls.email.value, userCountry: this.user.getCountry(), zaaskServices: this.zaaskServices });
 	}
 
 	languageChange(data) {
@@ -298,18 +300,16 @@ export class LoginPage {
 			}
 
 			this.zaaskServices.login(event).subscribe(
-				(response: any) => {
-					const userResponse = JSON.parse(response._body);
-					//
-					this.zaaskServices.storeMobileLogin(userResponse.api_token, this.uuid, this.platformId, this.versionId, "manual-login").subscribe();
-					userResponse.user.api_token = userResponse.api_token;
-					userResponse.user.password = event.password;
-					userResponse.user.email = event.email;
-					this.user.setUserNew(userResponse.user);
+				(data: any) => {
+					this.zaaskServices.storeMobileLogin(data.api_token, this.uuid, this.platformId, this.versionId, "manual-login").subscribe();
+					data.user.api_token = data.api_token;
+					data.user.password = event.password;
+					data.user.email = event.email;
+					this.user.setUserNew(data.user);
 					this.zaaskServices.authRequest().subscribe(
 						(data: any) => {
-							const response = data.json();
-							if (!response.user.isTasker) {
+							console.log(data);
+							if (!data.user.isTasker) {
 								const alertMsg = this.user.getCountry() == "PT" ? "Ainda não é um profissional Zaask. Aproveite para <b>registar-se</b>!" : "Aún no eres profesional Zaask. ¡Aprovecha para <b>registrarte</b>!";
 								var alert = this.alert.create({
 									title: "Erro",
@@ -399,14 +399,13 @@ export class LoginPage {
 
 				//
 				this.zaaskServices.facebookLogin(response.authResponse.accessToken).subscribe(
-					(response: any) => {
-						const userResponse = JSON.parse(response._body);
-						this.zaaskServices.storeMobileLogin(userResponse.api_token, this.uuid, this.platformId, this.versionId, "facebook").subscribe();
+					(data: any) => {
+						this.zaaskServices.storeMobileLogin(data.api_token, this.uuid, this.platformId, this.versionId, "facebook").subscribe();
 
-						userResponse.user.api_token = userResponse.api_token;
-						// userResponse.user.password = event.password;
-						// userResponse.user.email = event.email;
-						this.user.setUserNew(userResponse.user);
+						data.user.api_token = data.api_token;
+						// data.user.password = event.password;
+						// data.user.email = event.email;
+						this.user.setUserNew(data.user);
 						this.zaaskServices.authRequest().subscribe(
 							(data) => {
 								this.zaaskServices.saveUserData(data);

@@ -1,5 +1,5 @@
 <ion-header>
-	<ion-navbar *navbar primary> </ion-navbar>
+	<ion-navbar color="primary"> </ion-navbar>
 </ion-header>
 
 <ion-content class="loginPage">
@@ -24,17 +24,17 @@
 		<h1 class="zaask-slogan">{{msgH1}}</h1>
 		<h2 *ngIf="userCountry !== 'PT'" class="zaask-slogan">{{msgH2}}</h2>
 	</header>
-	<form [ngFormModel]="loginForm" (ngSubmit)="onSubmit(loginForm.value)" novalidate>
+	<form [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)" novalidate>
 		<ion-list class="login-ion-list">
 			<ion-item class="login-ion-item">
 				<ion-label floating class="ion-label">{{emailLabel}}</ion-label>
-				<ion-input type="email" value="" [ngFormControl]="email" class="ng-pristine ng-invalid" required></ion-input>
+				<ion-input type="email" value="" formControlName="email" class="ng-pristine ng-invalid" required></ion-input>
 			</ion-item>
 
-			<div *ngIf="email.hasError('required') && email.touched" class="error-box">* Username is required!</div>
-			<div *ngIf="email.hasError('checkFirstCharacterValidator') && email.touched" class="error-box">* Username cant't start with number!</div>
+			<div *ngIf="loginForm.controls.email.hasError('required') " class="error-box">* Username is required!</div>
+			<div *ngIf="loginForm.controls.email.hasError('checkFirstCharacterValidator') " class="error-box">* Username cant't start with number!</div>
 
-			<button block light type="submit" [disabled]="!loginForm.valid" class="login-submit">{{msgRecoverPass}}</button>
+			<button ion-button block light type="submit" [disabled]="!loginForm.valid" class="login-submit">{{msgRecoverPass}}</button>
 		</ion-list>
 	</form>
 </ion-content>

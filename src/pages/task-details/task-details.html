@@ -5,7 +5,7 @@ See http://ionicframework.com/docs/v2/components/#navigation for more info on
 Ionic pages and navigation.
 -->
 <ion-header>
-	<ion-navbar primary *navbar>
+	<ion-navbar color="primary">
 		<ion-title>Pedido #{{taskInfo.task.task_id}}</ion-title>
 		<ion-buttons end [hidden]="requestIgnored">
 			<button (click)="ignoreTask()"><ion-icon name="trash"></ion-icon></button>
@@ -124,18 +124,18 @@ Ionic pages and navigation.
 
 		<div *ngIf="editQuote">
 			<div class="task-quote-title">{{translate.sendAQuoteTo}} {{ownerName}}</div>
-			<form [ngFormModel]="sendQuoteForm" novalidate>
+			<form [formGroup]="sendQuoteForm" novalidate>
 				<ion-row [hidden]="selectedQuoteType == 'more'">
 					<ion-col text-right center>
 						<div class="task-quote-value">
-							<ion-input id="price" type="number" placeholder="200" text-right [(ngModel)]="bidPrice" [ngFormControl]="sendQuoteForm.controls['price']"></ion-input>
+							<ion-input id="price" type="number" placeholder="200" text-right [(ngModel)]="bidPrice" formControlName="sendQuoteForm.controls['price']"></ion-input>
 						</div>
 					</ion-col>
 					<ion-col text-left center class="task-quote-value-icon">
 						<span class="icon-euro"></span>
 					</ion-col>
 				</ion-row>
-				<ion-segment class="task-quote-segment" [(ngModel)]="selectedQuoteType" [ngFormControl]="sendQuoteForm.controls['pricetype']" (change)="onChangeQuoteSegment($event)">
+				<ion-segment class="task-quote-segment" [(ngModel)]="selectedQuoteType" formControlName="sendQuoteForm.controls['pricetype']" (change)="onChangeQuoteSegment($event)">
 					<ion-segment-button value="fixed">
 						<ion-label>{{translate.fixedPrice}}</ion-label>
 					</ion-segment-button>
@@ -147,7 +147,7 @@ Ionic pages and navigation.
 					</ion-segment-button>
 				</ion-segment>
 				<div class="task-quote-info-div">
-					<ion-textarea [ngFormControl]="sendQuoteForm.controls['message']" rows="4" [(ngModel)]="quoteTextAreaValue" placeholder="{{translate.textAreaPlaceholder}}"> </ion-textarea>
+					<ion-textarea formControlName="sendQuoteForm.controls['message']" rows="4" [(ngModel)]="quoteTextAreaValue" placeholder="{{translate.textAreaPlaceholder}}"> </ion-textarea>
 				</div>
 				<div *ngIf="sendQuoteForm.controls['message'].hasError('minlength') && sendQuoteForm.controls['message'].touched" class="error-box">{{translate.msgMinLength}}</div>
 			</form>

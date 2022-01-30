@@ -1,5 +1,5 @@
 <ion-header>
-	<ion-navbar primary *navbar>
+	<ion-navbar color="primary">
 		<ion-title style="display: none">{{msgMyAccount}}</ion-title>
 	</ion-navbar>
 </ion-header>
@@ -7,10 +7,10 @@
 <ion-content class="account">
 	<ion-card class="task-card">
 		<ion-card-content>
-			<div class="task-card-header">
-				<div class="task-card-avatar">
+			<ion-item class="task-card-header">
+				<ion-avatar item-start class="task-card-avatar">
 					<img src="{{photoUrl}}" />
-				</div>
+				</ion-avatar>
 
 				<div class="task-card-name">
 					<h2 class="h1">{{name}}</h2>
@@ -35,7 +35,7 @@
 					</div>
 					<span>{{numCredits}} {{msgCredits}}</span>
 				</div>
-			</div>
+			</ion-item>
 		</ion-card-content>
 	</ion-card>
 

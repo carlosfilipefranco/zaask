@@ -1,5 +1,5 @@
 <ion-header>
-	<ion-navbar *navbar primary class="task-page navbar">
+	<ion-navbar color="primary" class="task-page navbar">
 		<ion-title>{{translate.title}}</ion-title>
 	</ion-navbar>
 </ion-header>
@@ -10,7 +10,7 @@
 	</ion-refresher>
 
 	<ion-list class="task-page task-page-list">
-		<ionic-item class="task-page task-page__card" *ngFor="#task of tasks; #i = index" data-index="#i">
+		<ion-item class="task-page task-page__card" *ngFor="let task of tasks">
 			<ion-card [ngClass]="{ignoredCard: task.ignored}">
 				<ion-card-content *ngIf="!task.ignored" (click)="showTask(task.id)">
 					<ion-card-title> {{task.title}} </ion-card-title>
@@ -57,7 +57,7 @@
 					</ion-col>
 				</ion-row>
 			</ion-grid>
-		</ionic-item>
+		</ion-item>
 	</ion-list>
 
 	<ion-infinite-scroll *ngIf="showInfinite" threshold="100px" on-infinite="loadMoreTasks($event)">
