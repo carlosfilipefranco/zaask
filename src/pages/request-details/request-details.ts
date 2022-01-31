@@ -40,7 +40,7 @@ export class RequestDetailsPage {
 		// this.requests = requests;
 		// this.pricetype = { value: "fix"};
 		this.zaaskServices.getTaskDetails(this.requestID).subscribe(
-			(data) => {
+			(data: any) => {
 				console.log(data);
 				if (data.status) {
 					console.log(data);

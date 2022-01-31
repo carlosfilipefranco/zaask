@@ -39,26 +39,26 @@ export class LoginPage {
 	versionId;
 	platformId;
 	asd;
-	msgLanguage = "Portugal";
-	msgEntrar = "Entrar";
-	msgForgotPassword = "Não se lembra da palavra-chave?";
-	msgH1 = "Novas oportunidades para todo o tipo de profissionais";
-	msgNewAccount = "Criar Conta";
-	msgPassword = "Palavra-chave";
-	msgOpenBrowser = "Esta opção irá abrir o browser do seu telemóvel, aceita?";
-	emailLabel = "ENDEREÇO DE E-MAIL";
-	passwordLabel = "PALAVRA-PASSE";
-	facebookLabel = "Entrar com o Facebook";
-	registrationLabelFirst = "Não tem conta?";
-	registrationLabelSecond = "Registe-se aqui";
-	msgBrowser = "Esta opção irá abrir o browser do seu telemóvel, aceita?";
-	msgNo = "Não";
-	msgYes = "Sim";
-	msgError = "Erro";
-	msgLoginError = "Erro no acesso à Zaask!";
-	msgClose = "Fechar";
 	initialHeight;
 	hideFooter = false;
+	msgOpenBrowser: string;
+	msgLanguage: string;
+	msgEntrar: string;
+	msgForgotPassword: string;
+	msgH1: string;
+	msgNewAccount: string;
+	msgPassword: string;
+	emailLabel: string;
+	passwordLabel: string;
+	facebookLabel: string;
+	registrationLabelFirst: string;
+	registrationLabelSecond: string;
+	msgBrowser: string;
+	msgNo: string;
+	msgYes: string;
+	msgError: string;
+	msgLoginError: string;
+	msgClose: string;
 	constructor(
 		public nav: NavController,
 		public form: FormBuilder,
@@ -94,10 +94,12 @@ export class LoginPage {
 					lang = language.value.split("-")[1];
 					console.log("Device Language: " + lang);
 					this.languageChange(lang);
+					this.languageForm.controls.language.setValue(lang);
 				}, null);
 			} else lang = defaultLang;
 		}
 		this.languageChange(lang);
+		this.languageForm.controls.language.setValue(lang);
 		// ------------------------------------- //
 
 		function isEmailPattern(emailV) {
@@ -245,6 +247,24 @@ export class LoginPage {
 
 	setText() {
 		if (this.user.getCountry() == "PT") {
+			this.msgLanguage = "Portugal";
+			this.msgEntrar = "Entrar";
+			this.msgForgotPassword = "Não se lembra da palavra-chave?";
+			this.msgH1 = "Novas oportunidades para todo o tipo de profissionais";
+			this.msgNewAccount = "Criar Conta";
+			this.msgPassword = "Palavra-chave";
+			this.msgOpenBrowser = "Esta opção irá abrir o browser do seu telemóvel, aceita?";
+			this.emailLabel = "ENDEREÇO DE E-MAIL";
+			this.passwordLabel = "PALAVRA-PASSE";
+			this.facebookLabel = "Entrar com o Facebook";
+			this.registrationLabelFirst = "Não tem conta?";
+			this.registrationLabelSecond = "Registe-se aqui";
+			this.msgBrowser = "Esta opção irá abrir o browser do seu telemóvel, aceita?";
+			this.msgNo = "Não";
+			this.msgYes = "Sim";
+			this.msgError = "Erro";
+			this.msgLoginError = "Erro no acesso à Zaask!";
+			this.msgClose = "Fechar";
 		} else {
 			this.msgLanguage = "España";
 			this.msgEntrar = "Entrar";

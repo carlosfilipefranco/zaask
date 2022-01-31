@@ -1,8 +1,10 @@
 import { Component } from "@angular/core";
 import { OneSignal } from "@ionic-native/onesignal";
+import { IonicPage } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 
+@IonicPage()
 @Component({
 	templateUrl: "tabs.html"
 })
@@ -26,23 +28,23 @@ export class TabsPage {
 
 				//PROD SETTINGS
 				if (this.zaaskServices.getUserCountry() == "PT") {
-					this.oneSignal.OneSignal.init("03f9ed5c-4a94-4db5-a692-f507940e2702", { googleProjectNumber: "170479296785" }, notificationOpenedCallback);
+					this.oneSignal.startInit("03f9ed5c-4a94-4db5-a692-f507940e2702", { googleProjectNumber: "170479296785" }, notificationOpenedCallback);
 				} else {
-					this.oneSignal.OneSignal.init("ad86c96f-3bb4-4351-8a31-134829e60e39", { googleProjectNumber: "170479296785" }, notificationOpenedCallback);
+					this.oneSignal.startInit("ad86c96f-3bb4-4351-8a31-134829e60e39", { googleProjectNumber: "170479296785" }, notificationOpenedCallback);
 				}
 				//STAGING SETTINGS
 				//this.oneSignal.init("9e414fe7-1537-4db3-a5ac-193b41d9d04a",
 				//	{googleProjectNumber: "170479296785"}, notificationOpenedCallback);
 
 				// Show an alert box if a notification comes in when the user is in your app.
-				// this.oneSignal.enableInAppAlertNotification(true);
+				this.oneSignal.enableInAppAlertNotification(true);
 
-				// this.oneSignal.getIds(function (ids) {
-				// 	console.log("OneSignal UserID: " + ids.userId);
-				// 	console.log("OneSignal PushToken: " + ids.pushToken);
+				this.oneSignal.getIds(function (ids) {
+					console.log("OneSignal UserID: " + ids.userId);
+					console.log("OneSignal PushToken: " + ids.pushToken);
 
-				// 	updateIds(ids);
-				// });
+					updateIds(ids);
+				});
 			},
 			false
 		);

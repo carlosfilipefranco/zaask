@@ -40,7 +40,7 @@ export class AccountNotificationsPage {
 	initScreen() {
 		console.log("-----------getNotifications--------");
 		this.zaaskServices.getNotifs().subscribe(
-			(data) => {
+			(data: any) => {
 				console.log(data);
 				if (data.status == true) {
 					this.notifStatus = data.isactive;

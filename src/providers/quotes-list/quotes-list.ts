@@ -31,7 +31,7 @@ export class QuotesListProvider {
 	// getQuotes(filterId, loading) {
 	getQuotes(filterId) {
 		this.zaaskServices.getQuotesList(filterId).subscribe(
-			(data) => {
+			(data: any) => {
 				console.log(data);
 				if (data.status) {
 					this.quotes = data.list;

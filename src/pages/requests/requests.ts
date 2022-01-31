@@ -47,7 +47,7 @@ export class RequestsPage {
 
 		console.log("requests page display");
 		this.zaaskServices.getTasksList().subscribe(
-			(data) => {
+			(data: any) => {
 				// console.log(data);
 				if (data.status) {
 					this.requests = data.list;
@@ -92,7 +92,7 @@ export class RequestsPage {
 		});
 
 		this.zaaskServices.hideTask(request.id).subscribe(
-			(data) => {
+			(data: any) => {
 				// console.log(data);
 				if (data.status) {
 					var index = this.requests.indexOf(request);
@@ -101,7 +101,7 @@ export class RequestsPage {
 					toast.onDidDismiss((resolved, rejected) => {
 						if (rejected == "close") {
 							this.zaaskServices.unHideTask(request.id).subscribe(
-								(data) => {
+								(data: any) => {
 									// console.log(data);
 									if (data.status) {
 										this.requests.splice(index, 0, request); // put it back

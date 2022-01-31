@@ -77,7 +77,7 @@ export class QuoteDetailsPage {
 		// this.keyboard.close(this.closeCallback);
 
 		this.zaaskServices.getQuoteDetails(this.requestID).subscribe(
-			(data) => {
+			(data: any) => {
 				console.log(data);
 				if (data.status) {
 					console.log(data);
@@ -326,7 +326,7 @@ export class QuoteDetailsPage {
 		var self = this;
 		console.log("Quote to be archived: " + index);
 		this.zaaskServices.archiveTask(this.quote.id).subscribe(
-			(data) => {
+			(data: any) => {
 				console.log(data);
 				if (data.status) {
 					this.quotesList.quotes.splice(index, 1); // remove item
@@ -334,7 +334,7 @@ export class QuoteDetailsPage {
 					toast.onDidDismiss((resolved, rejected) => {
 						if (rejected == "close") {
 							this.zaaskServices.unArchiveTask(this.quote.id).subscribe(
-								(data) => {
+								(data: any) => {
 									console.log(data);
 									if (data.status) {
 										this.quotesList.quotes.splice(index, 0, this.quote); // put it back

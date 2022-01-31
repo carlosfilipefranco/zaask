@@ -17,7 +17,7 @@ declare var cordova: any;
 	templateUrl: "app.html"
 })
 export class MyApp {
-	rootPage: any = "";
+	rootPage: any = "TabsPage";
 	asd: any;
 	msgTitle = "Pedidos Adquiridos";
 	msgOrcamNaoEnviados = "Orçam. Não Enviados";
