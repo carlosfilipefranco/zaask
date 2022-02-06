@@ -85,7 +85,7 @@ export class RequestDetailsPage {
 		this.setText();
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
 			this.ga.trackView("RequestDetails Screen", "request-details.html");

@@ -89,12 +89,13 @@ export class AccountPage {
 		// Check Push Notifications status
 		this.zaaskServices.authRequest().subscribe(
 			(data: any) => {
+				let user = data.user;
 				//set notification alert's flags
-				this.alertAllNewOportunities = data.notifEvent1 == 1 || false;
-				this.alertNewOportunities = data.notifEvent2 == 1 || false;
-				this.alertLastHourResume = data.notifEvent3 == 1 || false;
-				this.alertDailyResume = data.notifEvent4 == 1 || false;
-				this.alertOtherNotifications = data.notifEvent5 == 1 || false;
+				this.alertAllNewOportunities = user.notifEvent1 == 1 || false;
+				this.alertNewOportunities = user.notifEvent2 == 1 || false;
+				this.alertLastHourResume = user.notifEvent3 == 1 || false;
+				this.alertDailyResume = user.notifEvent4 == 1 || false;
+				this.alertOtherNotifications = user.notifEvent5 == 1 || false;
 			},
 			(error) => {
 				console.log("auth error", error);
@@ -110,7 +111,7 @@ export class AccountPage {
 		return true;
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
 			this.ga.trackView("Account Screen - " + APP_VERSION, "account.html");

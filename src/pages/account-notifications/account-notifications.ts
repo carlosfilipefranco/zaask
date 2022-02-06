@@ -30,7 +30,7 @@ export class AccountNotificationsPage {
 		this.setText();
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
 			this.ga.trackView("AccountNotifications Screen", "account-notifications.html");

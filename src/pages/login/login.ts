@@ -135,8 +135,12 @@ export class LoginPage {
 		}
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		this.initialHeight = document.getElementById("nav").clientHeight;
+
+		//this.loginForm.controls.email.setValue("francisco+bid@zaask.com");
+
+		//this.loginForm.controls.password.setValue("Zaask123");
 	}
 
 	onSubmit(value) {

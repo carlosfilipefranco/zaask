@@ -39,7 +39,7 @@ export class RequestsPage {
 		//		document.querySelector('ion-tabbar-section').style.order = 20;
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
 			this.ga.trackView("Requests Screen", "requests.html");

@@ -244,7 +244,7 @@ export class QuoteDetailsPage {
 		this.setText();
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
 			this.ga.trackView("QuotesDetails Screen", "quote-details.html");

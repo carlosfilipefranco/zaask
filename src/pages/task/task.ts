@@ -125,7 +125,7 @@ export class TaskPage {
 		});
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		this.platform.ready().then(() => {
 			//Google Analytics
 			this.ga.trackView("Tasks Screen - " + APP_VERSION, "task.html");
@@ -200,6 +200,7 @@ export class TaskPage {
 	}
 
 	doRefresh(event) {
+		console.log(event);
 		this.loadTasks(event);
 	}
 
@@ -230,6 +231,7 @@ export class TaskPage {
 				console.log("login error", error);
 			},
 			() => {
+				console.log(event);
 				if (event != null) event.complete();
 			}
 		);
@@ -272,11 +274,10 @@ export class TaskPage {
 
 		this.zaaskServices.showProTask(id).subscribe(
 			(response: any) => {
-				const taskInfo = JSON.parse(response._body);
-				if (taskInfo.userMeetsRequirements && this.user.lead_credits >= taskInfo.credits[0].credits) this.nav.push("TaskDetails", { taskInfo });
+				if (response.userMeetsRequirements && this.user.lead_credits >= response.credits[0].credits) this.nav.push("TaskDetailsPage", { taskInfo: response });
 				else {
 					const baseUrl = this.user.getCountry() === "PT" ? "https://zaask.pt/task/" : "https://zaask.es/task/";
-					const taskUrl = baseUrl + taskInfo.task.task_id;
+					const taskUrl = baseUrl + response.task.task_id;
 					this.Utils.launchInApp(taskUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
 				}
 			},
