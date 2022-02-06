@@ -3,6 +3,10 @@ page-chat {
 		margin-bottom: 8px;
 	}
 
+	.item-ios.item-block .item-inner {
+		border-bottom: none;
+	}
+
 	.chat-page {
 		background-color: color($colors, graylightest);
 
@@ -50,99 +54,6 @@ page-chat {
 
 			.offline {
 				background-color: #d3d4d5;
-			}
-		}
-
-		.navbar {
-			color: color($colors, light);
-
-			.back-button {
-				display: block;
-			}
-
-			.toolbar-content {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-			}
-
-			button {
-				box-shadow: none;
-			}
-
-			ion-item {
-				width: auto;
-				background-color: transparent;
-				color: white;
-
-				ion-icon {
-					position: absolute;
-					left: 50%;
-					top: 50%;
-					transform: translateY(-50%) translateX(-50%);
-					color: white;
-					font-size: 25px;
-				}
-
-				ion-label {
-					span {
-						display: none;
-					}
-				}
-
-				ion-select {
-					.select-text,
-					.select-icon {
-						display: none;
-					}
-				}
-			}
-		}
-
-		.footer {
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 15px;
-			min-height: 60px;
-
-			.text-container {
-				width: calc(100% - 78px);
-			}
-
-			button {
-				width: 24px;
-				height: 24px;
-				font-size: 24px;
-				background-color: transparent;
-				color: color($colors, primary);
-				font-weight: bold;
-				box-shadow: none;
-			}
-
-			.send-button {
-				margin-left: 15px;
-			}
-
-			.svg {
-				width: 20px;
-				height: 20px;
-				font-size: 0;
-				margin-right: 15px;
-			}
-
-			input {
-				padding: 0 10px;
-				background-color: color($colors, graylightest);
-				margin: 0;
-				height: 45px;
-			}
-
-			&.full {
-				.text-container {
-					width: calc(100% - 117px);
-				}
 			}
 		}
 
@@ -356,6 +267,99 @@ page-chat {
 			width: 16.45px;
 			height: 9.5px;
 			margin-right: 3px;
+		}
+	}
+
+	.footer {
+		background-color: white;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 15px;
+		min-height: 60px;
+
+		.text-container {
+			width: calc(100% - 78px);
+		}
+
+		button {
+			width: 24px;
+			height: 24px;
+			font-size: 24px;
+			background-color: transparent;
+			color: color($colors, primary);
+			font-weight: bold;
+			box-shadow: none;
+		}
+
+		.send-button {
+			margin-left: 15px;
+		}
+
+		.svg {
+			width: 20px;
+			height: 20px;
+			font-size: 0;
+			margin-right: 15px;
+		}
+
+		input {
+			padding: 0 10px;
+			background-color: color($colors, graylightest);
+			margin: 0;
+			height: 45px;
+		}
+
+		&.full {
+			.text-container {
+				width: calc(100% - 117px);
+			}
+		}
+	}
+
+	.navbar {
+		color: color($colors, light);
+
+		.back-button {
+			display: block;
+		}
+
+		.toolbar-content {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		button {
+			box-shadow: none;
+		}
+
+		ion-item {
+			width: auto;
+			background-color: transparent;
+			color: white;
+
+			ion-icon {
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translateY(-50%) translateX(-50%);
+				color: white;
+				font-size: 25px;
+			}
+
+			ion-label {
+				span {
+					display: none;
+				}
+			}
+
+			ion-select {
+				.select-text,
+				.select-icon {
+					display: none;
+				}
+			}
 		}
 	}
 }

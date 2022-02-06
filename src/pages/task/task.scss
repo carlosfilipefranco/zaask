@@ -1,2 +1,19 @@
 page-task {
+	.label-ios,
+	.label-md {
+		margin: 0;
+	}
+
+	.grid {
+		padding: 0;
+	}
+
+	.list-ios .item-block .item-inner {
+		border-bottom: none;
+	}
+
+	.item-ios,
+	.item-md {
+		margin-bottom: 8px;
+	}
 }

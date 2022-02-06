@@ -9,6 +9,9 @@ page-account {
 	.header-ios .toolbar-ios:last-child .toolbar-background-ios {
 		border-width: 0;
 	}
+	.list-md {
+		margin-top: 2px;
+	}
 	.account {
 		ion-card-content {
 			padding-top: 0;
@@ -18,6 +21,7 @@ page-account {
 			.item-md,
 			.item-ios {
 				background-color: color($colors, primary);
+				padding-left: 16px !important;
 			}
 
 			background-color: color($colors, primary);
@@ -63,7 +67,7 @@ page-account {
 		.ion-toggle {
 			position: absolute;
 			right: 16px;
-			top: 16px;
+			top: 10px;
 		}
 
 		.item {
@@ -71,7 +75,7 @@ page-account {
 			@media screen and (min-width: 400px) {
 				font-size: 15px;
 			}
-			height: 50px;
+			// height: 50px;
 			padding-left: 16px;
 		}
 
@@ -82,6 +86,7 @@ page-account {
 
 		.account-options-list {
 			padding-bottom: 50px;
+			padding-left: 16px;
 		}
 	}
 

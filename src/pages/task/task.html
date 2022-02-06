@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content [ngClass]="getPageContentClass()">
-	<ion-refresher slot="fixed" (refresh)="doRefresh($event)">
+	<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content refreshingSpinner="dots"></ion-refresher-content>
 	</ion-refresher>
 
@@ -60,7 +60,7 @@
 		</ion-item>
 	</ion-list>
 
-	<ion-infinite-scroll *ngIf="showInfinite" threshold="100px" on-infinite="loadMoreTasks($event)">
+	<ion-infinite-scroll *ngIf="showInfinite" threshold="100px" (ionInfinite)="loadMoreTasks($event)">
 		<ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
 

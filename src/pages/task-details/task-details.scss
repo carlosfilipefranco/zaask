@@ -5,13 +5,12 @@ page-task-details {
 
 	.TaskDetailsPage {
 		@extend %pageBackground;
-		height: auto;
 	}
 
 	.task-card-owner {
-		position: absolute;
+		// position: absolute;
 		width: 100%;
-		height: 170px;
+		height: 150px;
 		left: 0px;
 		background: #ffffff;
 		/* Shadow/Box */
@@ -19,7 +18,7 @@ page-task-details {
 
 		.task-card-avatar {
 			position: relative;
-			top: 20px;
+			margin-top: 20px !important;
 			width: 100px;
 			height: 100px;
 			margin: auto;
@@ -59,11 +58,11 @@ page-task-details {
 	}
 
 	.task-card-owner-name {
-		position: absolute;
+		// position: absolute;
 		width: 100%;
 		margin: auto;
 		height: 20px;
-		bottom: 20px;
+		// bottom: 20px;
 		text-align: center;
 
 		label {
@@ -185,7 +184,7 @@ page-task-details {
 
 	.task-details-segment {
 		position: relative;
-		top: 180px;
+		// top: 180px;
 
 		.segment-button {
 			line-height: 18px;
@@ -193,6 +192,10 @@ page-task-details {
 			text-align: center;
 			letter-spacing: -0.01em;
 			color: #3e3934;
+
+			ion-label {
+				text-transform: none;
+			}
 		}
 
 		.segment-activated {
@@ -202,7 +205,7 @@ page-task-details {
 
 	.task-details-div {
 		position: relative;
-		top: 165px;
+		// top: 165px;
 		ion-row {
 			margin-top: 16px;
 			height: 80px;
@@ -265,6 +268,8 @@ page-task-details {
 		font-size: 14px;
 		letter-spacing: -0.01em;
 		color: #676460;
+		display: block;
+		font-weight: 400;
 
 		.icon-check {
 			@include bgImg2x("../../assets/images/check_box", png);
@@ -425,7 +430,7 @@ page-task-details {
 
 	.task-details-quote {
 		position: relative;
-		top: 180px;
+		// top: 180px;
 		width: 90%;
 		margin: auto;
 	}

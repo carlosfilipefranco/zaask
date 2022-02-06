@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { AlertController, IonicPage, Modal, ModalController, NavController, NavParams, Platform, ToastController } from "ionic-angular";
+import { AlertController, IonicPage, Modal, ModalController, NavController, NavParams, Platform, PopoverController, ToastController } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 import moment from "moment-timezone";
@@ -19,7 +19,6 @@ export class QuotesPage {
 	tabAccount: string;
 	country: string;
 	showModal: boolean;
-	modalFilter: Modal;
 	initialFilter: string;
 	filter: any;
 	searchPlaceholder: any;
@@ -30,7 +29,8 @@ export class QuotesPage {
 	closeButtonText: string;
 	alertTitleSuccess: string;
 	alertTitleError: string;
-	constructor(public nav: NavController, public zaaskServices: ZaaskServices, public platform: Platform, public user: User, public navParams: NavParams, public Alert: AlertController, public Toast: ToastController, public Utils: Utils, public modal: ModalController, public ga: GoogleAnalytics) {
+	search: string;
+	constructor(public nav: NavController, public zaaskServices: ZaaskServices, public platform: Platform, public user: User, public navParams: NavParams, public Alert: AlertController, public Toast: ToastController, public Utils: Utils, public modal: ModalController, public ga: GoogleAnalytics, public popoverController: PopoverController) {
 		this.nav = nav;
 		this.platform = platform;
 		this.zaaskServices = zaaskServices;
@@ -44,7 +44,6 @@ export class QuotesPage {
 		this.setTranslations();
 		//
 		this.showModal = true;
-		this.modalFilter = null;
 		this.initialFilter = "bought";
 		this.filter = this.navParams.data.filter || this.initialFilter;
 		this.searchPlaceholder = this.translate.search;
@@ -54,7 +53,7 @@ export class QuotesPage {
 		this.getQuotes(this.filter);
 	}
 
-	onPageWillEnter() {
+	ionViewWillEnter() {
 		//Google Analytics
 		this.platform.ready().then(() => {
 			this.ga.trackView("Quotes Screen", "quotes.html");
@@ -161,13 +160,8 @@ export class QuotesPage {
 
 	updateSearch(searchQuery) {
 		this.quotesToShow = this.initialQuotes.filter((task) => {
-			return task.title.toLowerCase().includes(searchQuery.toLowerCase()) || task.userName.toLowerCase().includes(searchQuery.toLowerCase());
+			return task.title.toLowerCase().includes(this.search.toLowerCase()) || task.userName.toLowerCase().includes(this.search.toLowerCase());
 		});
-	}
-
-	openFilter(event) {
-		if (this.showModal) this.openModalFilter();
-		else this.closeModalFilter();
 	}
 
 	clearFilter() {
@@ -251,11 +245,14 @@ export class QuotesPage {
 				  };
 	}
 
-	openModalFilter() {
-		this.modalFilter = this.modal.create("QuotesModalFilter");
-		this.modalFilter.present();
+	openModalFilter(myEvent) {
+		this.popoverController.config.set("mode", "md");
+		let popover = this.popoverController.create("QuotesFilterPage");
+		popover.present({
+			ev: myEvent
+		});
 		this.showModal = false;
-		this.modalFilter.onDidDismiss((data) => {
+		popover.onDidDismiss((data) => {
 			if (data == undefined) return;
 			//
 			this.filter = data.filterCode;
@@ -265,8 +262,8 @@ export class QuotesPage {
 		});
 	}
 
-	closeModalFilter() {
-		this.showModal = true;
-		this.modalFilter.dismiss();
-	}
+	// closeModalFilter() {
+	// 	this.showModal = true;
+	// 	this.modalFilter.dismiss();
+	// }
 }

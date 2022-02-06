@@ -1,146 +1,175 @@
 page-quotes {
-	.quotes {
-		.requestsPage {
-			margin-bottom: 70px;
-		}
-
-		.quote-state {
-			width: fit-content;
-			height: 22px;
-			border: 1px solid;
-			padding: 3px 5px;
-			text-transform: uppercase;
-			border-radius: 2px;
-			font-size: 12px;
-			line-height: 14px;
-			display: flex;
-
-			&-bided {
-				color: #01c851;
-				border-color: #01c851;
-			}
-			&-not-bided {
-				color: #ffbb34;
-				border-color: #ffbb34;
-			}
-			&-won {
-				color: #01c851;
-				border-color: #01c851;
-			}
-			&-lost {
-				color: #f44;
-				border-color: #f44;
-			}
-			&-refunded {
-				color: #9f9c9a;
-				border-color: #9f9c9a;
-			}
-		}
-
-		.quote-icon {
-			margin-right: 5px;
-			font-size: 1.2em;
-			vertical-align: bottom;
-
-			&-bided {
-				color: #01c851;
-			}
-			&-not-bided {
-				color: #ffbb34;
-			}
-			&-won {
-				color: #01c851;
-			}
-			&-lost {
-				color: #f44;
-			}
-			&-refunded {
-				color: #9f9c9a;
-			}
-		}
-
-		.task-quote-edit-info {
-			margin-top: 30px;
-
-			.task-quote-title {
-				height: 20px;
-				width: 80%;
-				margin: auto;
-				margin-top: 10px;
-				text-align: center;
-				line-height: 19px;
-				font-size: 17px;
-				letter-spacing: -0.02em;
-				color: #3e3934;
-			}
-
-			.task-quote-edit-button {
-				width: 130px;
-				height: 32px;
-				position: relative;
-				top: 40px;
-				margin: auto;
-				border: 1px solid #676460;
-				box-sizing: border-box;
-				border-radius: 4px;
-				text-align: center;
-				text-transform: uppercase;
-
-				label {
-					position: relative;
-					top: 8px;
-					font-size: 12px;
-					line-height: normal;
-					color: #676460;
-					border-radius: 4px;
-				}
-			}
-		}
+	.searchbar-md .searchbar-input {
+		box-shadow: none;
+		border: 1px solid #ccc;
+	}
+	.header-md::after,
+	.tabs-md[tabsPlacement="top"] > .tabbar::after,
+	.footer-md::before,
+	.tabs-md[tabsPlacement="bottom"] > .tabbar::before {
+		background-image: none;
+	}
+	.header-ios .toolbar-ios:last-child .toolbar-background-ios {
+		border-width: none;
+	}
+	.label-ios,
+	.label-md {
+		margin: 0;
 	}
 
-	ion-title {
-		padding: $safeArea;
+	.grid {
+		padding: 0;
 	}
 
-	.nav-bar {
+	.list-ios .item-block .item-inner {
+		border-bottom: none;
+	}
+
+	.item-ios,
+	.item-md {
+		margin-bottom: 8px;
+	}
+
+	.requestsPage {
+		margin-bottom: 70px;
+	}
+
+	.quote-state {
+		width: fit-content;
+		height: 22px;
+		border: 1px solid;
+		padding: 3px 5px;
+		text-transform: uppercase;
+		border-radius: 2px;
+		font-size: 12px;
+		line-height: 14px;
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		height: 70px;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		z-index: 1;
 
-		div {
-			display: flex;
-			width: 33.3333%;
-			align-items: center;
-			justify-content: center;
-			flex-flow: column;
-			padding: 1rem 1rem 0 1rem;
+		&-bided {
+			color: #01c851;
+			border-color: #01c851;
+		}
+		&-not-bided {
+			color: #ffbb34;
+			border-color: #ffbb34;
+		}
+		&-won {
+			color: #01c851;
+			border-color: #01c851;
+		}
+		&-lost {
+			color: #f44;
+			border-color: #f44;
+		}
+		&-refunded {
 			color: #9f9c9a;
-			font-size: 10px;
+			border-color: #9f9c9a;
+		}
+	}
+
+	.quote-icon {
+		margin-right: 5px;
+		font-size: 1.2em;
+		vertical-align: bottom;
+
+		&-bided {
+			color: #01c851;
+		}
+		&-not-bided {
+			color: #ffbb34;
+		}
+		&-won {
+			color: #01c851;
+		}
+		&-lost {
+			color: #f44;
+		}
+		&-refunded {
+			color: #9f9c9a;
+		}
+	}
+
+	.task-quote-edit-info {
+		margin-top: 30px;
+
+		.task-quote-title {
+			height: 20px;
+			width: 80%;
+			margin: auto;
+			margin-top: 10px;
+			text-align: center;
+			line-height: 19px;
+			font-size: 17px;
+			letter-spacing: -0.02em;
+			color: #3e3934;
+		}
+
+		.task-quote-edit-button {
+			width: 130px;
+			height: 32px;
+			position: relative;
+			top: 40px;
+			margin: auto;
+			border: 1px solid #676460;
+			box-sizing: border-box;
+			border-radius: 4px;
+			text-align: center;
 			text-transform: uppercase;
 
-			span {
-				margin: 7px 0;
-				text-transform: uppercase;
-				text-align: center;
+			label {
+				position: relative;
+				top: 8px;
+				font-size: 12px;
+				line-height: normal;
+				color: #676460;
+				border-radius: 4px;
 			}
+		}
+	}
+}
 
-			&.selected {
-				color: #3e3934;
-			}
+ion-title {
+	padding: $safeArea;
+}
 
-			ion-label {
-				margin: 0;
-			}
+.nav-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	height: 70px;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
 
-			ion-icon {
-				font-size: 24px;
-			}
+	div {
+		display: flex;
+		width: 33.3333%;
+		align-items: center;
+		justify-content: center;
+		flex-flow: column;
+		padding: 1rem 1rem 0 1rem;
+		color: #9f9c9a;
+		font-size: 10px;
+		text-transform: uppercase;
+
+		span {
+			margin: 7px 0;
+			text-transform: uppercase;
+			text-align: center;
+		}
+
+		&.selected {
+			color: #3e3934;
+		}
+
+		ion-label {
+			margin: 0;
+		}
+
+		ion-icon {
+			font-size: 24px;
 		}
 	}
 }

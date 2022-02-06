@@ -1,16 +1,4 @@
 page-quotes-filter {
-	.quotes-modal-filter.show-page.modal {
-		width: 80%;
-		height: 320px;
-		margin: auto;
-		top: 115px;
-		left: 30%;
-		border: 1px solid #e9e9ec;
-		box-sizing: border-box;
-		box-shadow: 0px 10px 20px rgba(31, 32, 65, 0.05);
-		background: #c4c4c4;
-	}
-
 	.filter-button {
 		background: #ffffff;
 		box-shadow: 0px -1px 0px #e9e9ec, 0px 1px 0px #e9e9ec;
@@ -30,7 +18,20 @@ page-quotes-filter {
 		opacity: 0.5;
 	}
 
+	.list-md,
+	.list-ios {
+		margin: 0;
+		padding-left: 8px;
+	}
+
 	.filter-icon-white {
 		color: white;
+	}
+
+	.item-md ion-icon[item-left] + .item-inner,
+	.item-md ion-icon[item-left] + .item-input,
+	.item-md ion-icon[item-start] + .item-inner,
+	.item-md ion-icon[item-start] + .item-input {
+		margin-left: 8px;
 	}
 }

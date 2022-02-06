@@ -325,7 +325,7 @@ export class ChatPage {
 	archiveTask() {
 		this.zaaskServices.archiveQuoteNew(this.taskId).subscribe(
 			(data) => {
-				this.nav.setRoot("Quotes", { filter: "archived" });
+				this.nav.setRoot("QuotesPage", { filter: "archived" });
 			},
 			(err) => {
 				var alert = this.Alert.create({
@@ -342,7 +342,7 @@ export class ChatPage {
 	unarchiveTask() {
 		this.zaaskServices.unarchiveQuoteNew(this.taskId).subscribe(
 			(data) => {
-				this.nav.setRoot("Quotes", { filter: "archived" });
+				this.nav.setRoot("QuotesPage", { filter: "archived" });
 			},
 			(err) => {
 				var alert = this.Alert.create({

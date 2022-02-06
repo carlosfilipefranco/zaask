@@ -2,7 +2,14 @@
 	<ion-navbar color="primary" class="task-page navbar">
 		<ion-title>{{translate.title}}</ion-title>
 	</ion-navbar>
-	<ion-searchbar placeholder="{{searchPlaceholder}}" (click)="clearQuery()" (input)="updateSearch($event.value)" (clear)="openFilter($event)" cancelText=""> </ion-searchbar>
+	<ion-toolbar>
+		<ion-searchbar mode="md" [(ngModel)]="search" placeholder="{{searchPlaceholder}}" (click)="clearQuery()" (ionInput)="updateSearch($event)" (clear)="openFilter($event)" cancelText=""> </ion-searchbar>
+		<ion-buttons end>
+			<button ion-button clear (click)="openModalFilter($event)">
+				<ion-icon name="md-funnel"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content class="task-page task-page__heigth">
