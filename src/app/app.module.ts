@@ -21,7 +21,19 @@ import { OneSignal } from "@ionic-native/onesignal";
 
 @NgModule({
 	declarations: [MyApp],
-	imports: [BrowserModule, IonicModule.forRoot(MyApp), IonicStorageModule.forRoot(), HttpClientModule, FormsModule, ReactiveFormsModule],
+	imports: [
+		BrowserModule,
+		IonicModule.forRoot(MyApp, {
+			scrollPadding: false,
+			scrollAssist: true,
+			autoFocusAssist: false,
+			backButtonText: ""
+		}),
+		IonicStorageModule.forRoot(),
+		HttpClientModule,
+		FormsModule,
+		ReactiveFormsModule
+	],
 	bootstrap: [IonicApp],
 	entryComponents: [MyApp],
 	providers: [StatusBar, SplashScreen, { provide: ErrorHandler, useClass: IonicErrorHandler }, QuotesListProvider, User, ZaaskServices, Device, AppVersion, InAppBrowser, Utils, GoogleAnalytics, Facebook, Globalization, OneSignal]
