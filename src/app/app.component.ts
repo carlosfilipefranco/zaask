@@ -10,6 +10,8 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { Device } from "@ionic-native/device";
 import { AppVersion } from "@ionic-native/app-version";
 import { GoogleAnalytics } from "@ionic-native/google-analytics";
+import { OneSignal } from "@ionic-native/onesignal";
+import { Utils } from "../providers/utils/utils";
 
 declare var cordova: any;
 
@@ -17,7 +19,7 @@ declare var cordova: any;
 	templateUrl: "app.html"
 })
 export class MyApp {
-	rootPage: any = "TabsPage";
+	rootPage: any = "LoadingPage";
 	asd: any;
 	msgTitle = "Pedidos Adquiridos";
 	msgOrcamNaoEnviados = "Orçam. Não Enviados";
@@ -32,7 +34,7 @@ export class MyApp {
 	platformId: any;
 	appVersion: any = "";
 
-	constructor(public statusBar: StatusBar, public splashScreen: SplashScreen, public user: User, public zaaskServices: ZaaskServices, public quotesList: QuotesListProvider, public platform: Platform, public storage: Storage, public iab: InAppBrowser, public device: Device, private app: AppVersion, public ga: GoogleAnalytics) {
+	constructor(public statusBar: StatusBar, public splashScreen: SplashScreen, public user: User, public zaaskServices: ZaaskServices, public quotesList: QuotesListProvider, public platform: Platform, public storage: Storage, public iab: InAppBrowser, public device: Device, private app: AppVersion, public ga: GoogleAnalytics, public oneSignal: OneSignal, public Utils: Utils) {
 		this.initializeApp();
 	}
 
@@ -59,7 +61,8 @@ export class MyApp {
 			// Okay, so the platform is ready and our plugins are available.
 			// Here you can do any higher level native things you might need.
 			if (typeof cordova != "undefined") {
-				this.statusBar.styleDefault();
+				this.statusBar.overlaysWebView(false);
+				this.statusBar.backgroundColorByHexString("#0096d7");
 				this.splashScreen.hide();
 
 				this.app.getVersionNumber().then((s) => {
@@ -83,8 +86,6 @@ export class MyApp {
 					}
 				}
 			}
-
-			// console.log("app::initializeApp - device: " + window.device);
 
 			this.loadUserFromLocalStorageNew();
 		});
