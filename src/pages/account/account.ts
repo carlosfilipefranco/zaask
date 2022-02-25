@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { Utils } from "../../providers/utils/utils";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
-import { APP_VERSION } from "../../env";
+import { APP_VERSION, API_URL } from "../../env";
 
 @IonicPage()
 @Component({
@@ -43,10 +43,10 @@ export class AccountPage {
 	msgBrowser = "Esta opção irá abrir o browser do seu telemóvel, aceita?";
 	msgNo = "Não";
 	msgYes = "Sim";
-	profileURL = "https://zaask.pt/profile";
+	profileURL = `${API_URL}/profile`;
 	helpURL = "https://zaask.zendesk.com/hc/pt";
-	creditosUrl = "https://zaask.pt/creditos/comprar";
-	settingsUrl = "https://www.zaask.pt/definicoes";
+	creditosUrl = `${API_URL}/creditos/comprar`;
+	settingsUrl = `${API_URL}/definicoes`;
 	msgNotifications = "Notificações";
 	msgAllNewOportunities = "Todas as novas oportunidades";
 	msgNewOportunities = "Lembrete de novas oportunidades";
@@ -136,16 +136,53 @@ export class AccountPage {
 			versionId = this.platform.versions().android.str || "6";
 		}
 		//fix inapp upload bug in Android versions <= 6
-		if (platformId == "Android" && Number(versionId.substr(0, 1)) <= 6) this.utils.launchInApp(this.profileURL, "_system", this.user.uniqcode, false);
-		else this.utils.launchInApp(this.profileURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		// var browser = null;
+		// if (platformId == "Android" && Number(versionId.substr(0, 1)) <= 6) {
+		// 	browser = this.utils.launchInApp(this.profileURL, "_system", this.user.uniqcode, false);
+		// } else {
+		// 	browser = this.utils.launchInApp(this.profileURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		// }
+		var browser = this.utils.launchInApp(this.profileURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		browser.on("exit").subscribe((event) => {
+			this.loadUser();
+		});
 	}
 
 	launchHelpUrl() {
-		this.utils.launchInApp(this.helpURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		var browser = this.utils.launchInApp(this.helpURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		browser.on("exit").subscribe((event) => {
+			this.loadUser();
+		});
 	}
 
 	launchCreditos() {
-		this.utils.launchInApp(this.creditosUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		var browser = this.utils.launchInApp(this.creditosUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		browser.on("exit").subscribe((event) => {
+			this.loadUser();
+		});
+	}
+
+	loadUser() {
+		const user = JSON.parse(localStorage.getItem("user"));
+
+		this.zaaskServices.authRequestWithTokenParam(user.api_token).subscribe(
+			(data: any) => {
+				this.user.setUserNew(data.user);
+				this.zaaskServices.saveUserData(data);
+				this.userId = this.user.getUserId();
+				this.name = this.user.getName();
+				this.subtitle = this.user.getSubTitle();
+				this.reviewsAvg = this.user.getNumStars();
+				this.numCredits = this.user.getUserField("lead_credits");
+				this.photoUrl = this.user.getUserField("image");
+				this.numReviews = this.user.getUserField("nreviews");
+				this.userActivation = this.user.getUserActivation();
+				this.country = this.user.getCountry();
+				this.osUserId = this.user.getUserField("osUserId");
+				this.osPushToken = this.user.getUserField("osPushToken");
+			},
+			(error) => {}
+		);
 	}
 
 	launchSettings() {
