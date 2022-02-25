@@ -194,8 +194,8 @@ export class TaskDetailsPage {
 	}
 
 	onChangeTopSegment(event) {
-		if (event.value == "quote") this.showQuoteSegment();
-		if (event.value == "details") this.showDetailsSegment();
+		if (this.selectedSegment == "quote") this.showQuoteSegment();
+		if (this.selectedSegment == "details") this.showDetailsSegment();
 	}
 
 	showQuoteSegment() {
@@ -213,8 +213,15 @@ export class TaskDetailsPage {
 		document.getElementsByTagName("input")[0].focus();
 		document.getElementsByTagName("input")[0].scrollIntoView();
 		//if option == 'more', set price = 0 to unlock send button
-		if (event.value == "more" && this.bidPrice == "") this.bidPrice = "0";
-		if (event.value != "more" && this.bidPrice == "0") this.bidPrice = "";
+		console.log(this.selectedQuoteType);
+		if (this.selectedQuoteType == "more" && this.sendQuoteForm.controls.price.value == "") {
+			this.sendQuoteForm.controls.price.setValue("0");
+			console.log("0", this.sendQuoteForm.controls.price.value);
+		}
+		if (this.selectedQuoteType != "more" && this.sendQuoteForm.controls.price.value == "0") {
+			this.sendQuoteForm.controls.price.setValue("");
+			console.log("null", this.sendQuoteForm.controls.price.value);
+		}
 	}
 
 	useLastMessage() {
@@ -303,6 +310,7 @@ export class TaskDetailsPage {
 	}
 
 	attachFile(event) {
+		console.log(event);
 		var attachType = "";
 		var attachImage = "";
 		if (event.target.files[0].size / 1024 / 1024 >= 8) {
