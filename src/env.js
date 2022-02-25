@@ -7,3 +7,6 @@ export const ENVIRONMENT = "DEV";
 // define APP VERSION
 export const APP_VERSION = ENVIRONMENT + "_1412";
 //_______________________________________________
+
+export const API_URL = "https://www.zaask.pt";
+// export const API_URL = "https://staging.zaask.pt";

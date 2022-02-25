@@ -6,6 +6,8 @@ import "rxjs/add/operator/map";
 
 import Jquery from "jquery";
 
+import { API_URL } from "../../env";
+
 @Injectable()
 export class ZaaskServices {
 	server: string;
@@ -25,9 +27,7 @@ export class ZaaskServices {
 
 	setServer(country) {
 		if (country === "PT") {
-			// this.server = "https://www.zaask.pt/api/v1";
-			this.server = "https://staging.zaask.pt/api/v1";
-			// this.server = "http://localhost:8101/api-dev/v1";
+			this.server = `${API_URL}/api/v1`;
 		} else {
 			this.server = "https://www.zaask.es/api-dev/v1";
 			//this.server = "https://staging.zaask.es";
