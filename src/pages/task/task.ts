@@ -6,7 +6,7 @@ import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 import moment from "moment-timezone";
 import { Utils } from "../../providers/utils/utils";
 import { GoogleAnalytics } from "@ionic-native/google-analytics";
-import { APP_VERSION } from "../../env";
+import { APP_VERSION, API_URL } from "../../env";
 import { Facebook } from "@ionic-native/facebook";
 import { OneSignal } from "@ionic-native/onesignal";
 
@@ -110,19 +110,23 @@ export class TaskPage {
 						policyWarningText_8: " de OneSignal.",
 						policyAccept: "He leído y acepto"
 				  };
+	}
 
+	ionViewDidLoad() {
 		this.loadTasks();
 
-		platform.ready().then(() => {
-			//disable onesignal plugin until user accept privacy policy
-			if (this.policyAccepted) this.initOneSignal();
-			else {
-				this.oneSignal.setRequiresUserPrivacyConsent(true);
-				this.oneSignal.userProvidedPrivacyConsent((providedConsent) => {
-					if (providedConsent) this.initOneSignal();
-				});
-			}
-		});
+		//disable onesignal plugin until user accept privacy policy
+		if (this.policyAccepted) {
+			this.oneSignal.setRequiresUserPrivacyConsent(true);
+			this.initOneSignal();
+		} else {
+			this.oneSignal.setRequiresUserPrivacyConsent(true);
+			this.oneSignal.provideUserConsent(true);
+			this.oneSignal.userProvidedPrivacyConsent((providedConsent) => {
+				console.log("provided consent", providedConsent);
+				if (providedConsent) this.initOneSignal();
+			});
+		}
 	}
 
 	ionViewWillEnter() {
@@ -141,14 +145,10 @@ export class TaskPage {
 		}
 		//
 		let funcaoRetorno = (data) => {
-			if (typeof data.notification.payload.additionalData.task_id !== "undefined" && data.notification.payload.additionalData.task_id.length) {
+			if (typeof data.notification.payload.additionalData != "undefined" && typeof data.notification.payload.additionalData.task_id !== "undefined" && data.notification.payload.additionalData.task_id.length) {
 				var taskId = data.notification.payload.additionalData.task_id;
 				this.showTask(taskId);
 			}
-		};
-		var getPlayerIdCallback = (ids) => {
-			console.log(ids);
-			this.updateIds(ids);
 		};
 		var iosSettings = {};
 		iosSettings["kOSSettingsKeyAutoPrompt"] = true;
@@ -169,24 +169,46 @@ export class TaskPage {
 				.endInit();
 		}
 		//
-		this.oneSignal.getIds().then(getPlayerIdCallback);
+		this.oneSignal.getIds().then((ids: any) => {
+			console.log("here");
+			console.log(ids);
+			this.user.setUserField("osUserId", ids.userId);
+			this.user.setUserField("osPushToken", ids.pushToken);
+
+			// Verify here if we update or not */
+			this.isToSetPUshs(ids.userId, ids.pushToken);
+
+			// Check Notifications status
+			this.zaaskServices.authRequest().subscribe(
+				(data: any) => {
+					const responseData = data.user;
+					Object.keys(responseData.pushNotifications).forEach((key) => {
+						if (responseData.pushNotifications[key]["external_user_id"] == this.user.osUserId && responseData.pushNotifications[key]["user_agent"] == "ZaaskPRO" && responseData.pushNotifications[key]["is_subscribed"] == 1) {
+							this.user.setUserField("notifications", true);
+						}
+					});
+				},
+				(error) => {
+					console.log("auth error", error);
+				}
+			);
+		});
 	}
 
 	isToSetPUshs(osUserId, osPushToken) {
-		var self = this;
 		this.zaaskServices.statusNotification(osUserId, osPushToken).subscribe(
 			(data: any) => {
-				const responseData = JSON.parse(data._body).is_subscribed;
-				if (responseData == 1 || responseData == 2) {
-					self.zaaskServices.setNotification(osUserId, osPushToken, "ZaaskPRO").subscribe(
-						(data) => {
-							self.user.setUserField("notifications", true);
-						},
-						(error) => {
-							console.log(error);
-						}
-					);
-				}
+				console.log("statusnotification", data);
+				// if (data.is_subscribed == 1 || data.is_subscribed == 2) {
+				this.zaaskServices.setNotification(osUserId, osPushToken, "ZaaskPRO").subscribe(
+					(data) => {
+						this.user.setUserField("notifications", true);
+					},
+					(error) => {
+						console.log(error);
+					}
+				);
+				// }
 			},
 			(error) => {
 				return 0;
@@ -201,6 +223,8 @@ export class TaskPage {
 
 	doRefresh(event) {
 		console.log(event);
+		this.tasks = [];
+		this.pagination = 1;
 		this.loadTasks(event);
 	}
 
@@ -231,7 +255,6 @@ export class TaskPage {
 				console.log("login error", error);
 			},
 			() => {
-				console.log(event);
 				if (event != null) event.complete();
 			}
 		);
@@ -276,7 +299,7 @@ export class TaskPage {
 			(response: any) => {
 				if (response.userMeetsRequirements && this.user.lead_credits >= response.credits[0].credits) this.nav.push("TaskDetailsPage", { taskInfo: response });
 				else {
-					const baseUrl = this.user.getCountry() === "PT" ? "https://zaask.pt/task/" : "https://zaask.es/task/";
+					const baseUrl = this.user.getCountry() === "PT" ? `${API_URL}/task/` : "https://zaask.es/task/";
 					const taskUrl = baseUrl + response.task.task_id;
 					this.Utils.launchInApp(taskUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
 				}
@@ -297,38 +320,12 @@ export class TaskPage {
 	}
 
 	editCategory() {
-		const url = this.user.getCountry() === "PT" ? "https://zaask.pt/profile/services" : "https://zaask.es/profile/services";
+		const url = this.user.getCountry() === "PT" ? `${API_URL}/profile/services` : "https://zaask.es/profile/services";
 		this.Utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
 	}
 
 	openLink(url) {
 		this.Utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
-	}
-
-	updateIds(response) {
-		console.log("here");
-		console.log(response);
-		this.user.setUserField("osUserId", response.userId);
-		this.user.setUserField("osPushToken", response.pushToken);
-
-		// Verify here if we update or not */
-		this.isToSetPUshs(response.userId, response.pushToken);
-
-		var self = this;
-		// Check Notifications status
-		this.zaaskServices.authRequest().subscribe(
-			(data: any) => {
-				const responseData = JSON.parse(data._body).user;
-				Object.keys(responseData.pushNotifications).forEach(function (key) {
-					if (responseData.pushNotifications[key]["external_user_id"] == self.user.osUserId && responseData.pushNotifications[key]["user_agent"] == "ZaaskPRO" && responseData.pushNotifications[key]["is_subscribed"] == 1) {
-						self.user.setUserField("notifications", true);
-					}
-				});
-			},
-			(error) => {
-				console.log("auth error", error);
-			}
-		);
 	}
 
 	getRelativeTime(date) {
@@ -362,6 +359,9 @@ export class TaskPage {
 		this.showTerms = false;
 		//enable onesignal plugin
 		this.oneSignal.provideUserConsent(true);
+		this.oneSignal.getPermissionSubscriptionState().then((data) => {
+			console.log(data);
+		});
 	}
 
 	getLang() {

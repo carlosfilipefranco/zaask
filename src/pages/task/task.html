@@ -31,7 +31,7 @@
 
 				<ion-card-content *ngIf="task.ignored">
 					<div class="task-page task-page__card--info ignore-message" *ngIf="country === 'PT'">
-						<span> Se pretende não voltar a ver pedidos como este, edite as suas preferências de <span class="link" (click)="openLink('https://zaask.pt/profile/localizacao')">localização</span> e <span class="link" (click)="openLink('https://zaask.pt/profile/servicos')">serviços</span>. </span>
+						<span> Se pretende não voltar a ver pedidos como este, edite as suas preferências de <span class="link" (click)="openLink(API_URL + '/profile/localizacao')">localização</span> e <span class="link" (click)="openLink(API_URL + '/profile/servicos')">serviços</span>. </span>
 					</div>
 
 					<div class="task-page task-page__card--info ignore-message" *ngIf="country !== 'PT'">

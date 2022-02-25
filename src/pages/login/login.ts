@@ -9,7 +9,7 @@ import { AppVersion } from "@ionic-native/app-version";
 import { Device } from "@ionic-native/device";
 import { Utils } from "../../providers/utils/utils";
 import { GoogleAnalytics } from "@ionic-native/google-analytics";
-import { APP_VERSION } from "../../env";
+import { APP_VERSION, API_URL } from "../../env";
 import { Facebook } from "@ionic-native/facebook";
 import { Globalization } from "@ionic-native/globalization";
 
@@ -77,8 +77,8 @@ export class LoginPage {
 		private globalization: Globalization
 	) {
 		this.loginForm = this.form.group({
-			email: ["francisco+bid@zaask.com", [Validators.required, Validators.minLength(1), checkFirstCharacterValidator]],
-			password: ["Zaask123", [Validators.required, Validators.minLength(1)]]
+			email: ["", [Validators.required, Validators.minLength(1), checkFirstCharacterValidator]],
+			password: ["", [Validators.required, Validators.minLength(1)]]
 		});
 
 		this.languageForm = this.form.group({
@@ -138,72 +138,9 @@ export class LoginPage {
 	ionViewWillEnter() {
 		this.initialHeight = document.getElementById("nav").clientHeight;
 
-		//this.loginForm.controls.email.setValue("francisco+bid@zaask.com");
+		// this.loginForm.controls.email.setValue("francisco+bid@zaask.com");
 
-		//this.loginForm.controls.password.setValue("Zaask123");
-	}
-
-	onSubmit(value) {
-		if (this.loginForm.valid) {
-			console.log("login::onSubmit - value: ");
-			console.log(JSON.stringify(value));
-			console.log("--------------------------");
-
-			if (this.user.getCountry() === "PT") {
-				var msgAlert = "Por favor espere...";
-			} else {
-				var msgAlert = "Por favor, espere...";
-			}
-
-			let loading = this.loading.create();
-
-			if (typeof this.device !== "undefined") {
-				this.uuid = this.device.uuid;
-				this.versionId = this.device.version;
-				this.platformId = this.device.platform;
-			} else {
-				if (typeof this.platform.versions().ios !== "undefined") {
-					this.platformId = "IOS";
-					this.versionId = this.platform.versions().ios.str;
-				} else if (typeof this.platform.versions().android !== "undefined") {
-					this.platformId = "Android";
-					this.versionId = this.platform.versions().android.str;
-				}
-				this.uuid = "undefined";
-			}
-
-			this.asd = this.zaaskServices.doLogin(value.email, value.password, this.uuid, this.platformId, this.versionId, this.appVersion);
-			this.asd.subscribe(
-				(data) => {
-					if (data.status == true) {
-						this.user.setUser(value.email, value.password, data.hashcode, this.uuid, data.userId, data.photourl, data.name, data.subtitle, data.numstars, data.numreviews, data.numcredits, data.useractivation, data.pushuserid, data.pushtoken, this.user.getCountry(), "");
-						loading.dismiss();
-						this.nav.setRoot("TabsPage");
-					} else {
-						var alert = this.alert.create({
-							title: "Erro",
-							subTitle: data.message,
-							buttons: ["Fechar"]
-						});
-						loading.dismiss();
-						alert.present();
-						console.log("login::onSubmit - login message: " + data.message);
-					}
-				},
-				(error) => {
-					var alert = this.alert.create({
-						title: this.user.getCountry() === "PT" ? "Erro" : "ERROR",
-						subTitle: this.user.getCountry() === "PT" ? "Erro no acesso à Zaask!" : "¡Error de acceso a Zaask!",
-						buttons: ["Fechar"]
-					});
-					loading.dismiss();
-					alert.present();
-					console.log("login::onSubmit - login error: ");
-					console.log(error);
-					console.log("-----------------------------");
-				}
-			);
-		}
+		// this.loginForm.controls.password.setValue("Zaask123");
 	}
 
 	recoverPass() {
@@ -237,7 +174,7 @@ export class LoginPage {
 					handler: () => {
 						this.platform.ready().then(() => {
 							if (this.zaaskServices.getUserCountry() == "PT") {
-								window.open("https://www.zaask.pt/bem-vindo", "_system", "location=yes");
+								window.open(`${API_URL}/bem-vindo`, "_system", "location=yes");
 							} else {
 								window.open("https://www.zaask.es/bienvenido", "_system", "location=yes");
 							}
@@ -297,16 +234,16 @@ export class LoginPage {
 
 	onLogin(event) {
 		if (this.loginForm.valid) {
-			// if (this.user.getCountry === "PT") {
-			//     var msgAlert = "Por favor espere...";
-			// } else {
-			//     var msgAlert = "Por favor, espere...";
-			// }
-			//
-			// let loading = Loading.create({
-			//     content: msgAlert
-			// });
-			// this.nav.present(loading);
+			if (this.user.getCountry() === "PT") {
+				var msgAlert = "Por favor espere...";
+			} else {
+				var msgAlert = "Por favor, espere...";
+			}
+
+			let loading = this.loading.create({
+				content: msgAlert
+			});
+			loading.present();
 
 			if (typeof this.device !== "undefined") {
 				this.uuid = this.device.uuid;
@@ -332,7 +269,7 @@ export class LoginPage {
 					this.user.setUserNew(data.user);
 					this.zaaskServices.authRequest().subscribe(
 						(data: any) => {
-							console.log(data);
+							loading.dismiss();
 							if (!data.user.isTasker) {
 								const alertMsg = this.user.getCountry() == "PT" ? "Ainda não é um profissional Zaask. Aproveite para <b>registar-se</b>!" : "Aún no eres profesional Zaask. ¡Aprovecha para <b>registrarte</b>!";
 								var alert = this.alert.create({
@@ -357,11 +294,13 @@ export class LoginPage {
 							}
 						},
 						(error) => {
+							loading.dismiss();
 							console.log("auth error", error);
 						}
 					);
 				},
 				(error) => {
+					loading.dismiss();
 					var alert = this.alert.create({
 						title: this.msgError,
 						subTitle: this.msgLoginError,
@@ -377,7 +316,7 @@ export class LoginPage {
 
 	openLink() {
 		this.platform.ready().then(() => {
-			const url = this.user.getCountry() === "PT" ? "https://zaask.pt/bem-vindo" : "https://zaask.es/bem-vindo";
+			const url = this.user.getCountry() === "PT" ? `${API_URL}/bem-vindo` : "https://zaask.es/bem-vindo";
 			this.utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
 		});
 	}
@@ -385,7 +324,7 @@ export class LoginPage {
 	openRegisterLink() {
 		this.platform.ready().then(() => {
 			const isIOS = this.platform.is("ios");
-			const url = this.user.getCountry() === "PT" ? "https://www.zaask.pt/register/pro" : "https://www.zaask.es/register/pro";
+			const url = this.user.getCountry() === "PT" ? `${API_URL}/register/pro` : "https://www.zaask.es/register/pro";
 			var inAppBrowserRef = this.utils.launchInApp(url, "_blank", undefined, isIOS); //don't send uniqcode
 			inAppBrowserRef.on("loadstop").subscribe(
 				() => {
@@ -442,9 +381,10 @@ export class LoginPage {
 						this.nav.setRoot("TaskPage");
 					},
 					(error) => {
+						let message = error.error && error.error.message ? error.error.message : "Erro no acesso à Zaask!";
 						var alert = this.alert.create({
 							title: "Erro",
-							subTitle: "Erro no acesso à Zaask!",
+							subTitle: message,
 							buttons: ["Fechar"]
 						});
 						alert.present();
