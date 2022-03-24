@@ -69,6 +69,13 @@
 		</button>
 	</ion-list>
 
+	<ion-list class="login-ion-list" *ngIf="this.platform.is('ios')">
+		<button ion-button icon-end block light class="login-submit login-submit__apple" (click)="appleLogin()">
+			<ion-icon class="fb-icon" name="logo-apple"></ion-icon>
+			{{appleLabel}}
+		</button>
+	</ion-list>
+
 	<ion-list class="login-ion-list">
 		<button ion-button block clear round class="register-button" (click)="openLink()"><ion-label>{{registrationLabelFirst}}</ion-label> <ion-label>{{registrationLabelSecond}}</ion-label></button>
 	</ion-list>

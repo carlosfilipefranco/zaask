@@ -118,6 +118,15 @@ page-login {
 				margin-right: 20px;
 			}
 		}
+
+		&__apple {
+			background-color: black;
+			margin-top: 10px;
+			color: white;
+			.fb-icon {
+				margin-right: 20px;
+			}
+		}
 	}
 
 	.set-language {

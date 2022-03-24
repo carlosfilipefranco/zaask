@@ -12,6 +12,7 @@ import { GoogleAnalytics } from "@ionic-native/google-analytics";
 import { APP_VERSION, API_URL } from "../../env";
 import { Facebook } from "@ionic-native/facebook";
 import { Globalization } from "@ionic-native/globalization";
+import jwt_decode from "jwt-decode";
 
 declare var cordova: any;
 
@@ -51,6 +52,7 @@ export class LoginPage {
 	emailLabel: string;
 	passwordLabel: string;
 	facebookLabel: string;
+	appleLabel: string;
 	registrationLabelFirst: string;
 	registrationLabelSecond: string;
 	msgBrowser: string;
@@ -198,6 +200,7 @@ export class LoginPage {
 			this.emailLabel = "ENDEREÇO DE E-MAIL";
 			this.passwordLabel = "PALAVRA-PASSE";
 			this.facebookLabel = "Entrar com o Facebook";
+			this.appleLabel = "Entrar com a Apple";
 			this.registrationLabelFirst = "Não tem conta?";
 			this.registrationLabelSecond = "Registe-se aqui";
 			this.msgBrowser = "Esta opção irá abrir o browser do seu telemóvel, aceita?";
@@ -217,6 +220,7 @@ export class LoginPage {
 			this.emailLabel = "DIRECCIÓN DE CORREO ELECTRÓNICO";
 			this.passwordLabel = "CONTRASEÑA";
 			this.facebookLabel = "Entrar con Facebook";
+			this.appleLabel = "Entrar con Apple";
 			this.registrationLabelFirst = "¿No tienes cuenta?";
 			this.registrationLabelSecond = "Regístrate aquí";
 			this.msgBrowser = "Esta opción abrirá el navegador de tu móvil, aceptas?";
@@ -339,6 +343,76 @@ export class LoginPage {
 				}
 			);
 		});
+	}
+
+	appleLogin() {
+		cordova.plugins.SignInWithApple.signin(
+			{ requestedScopes: [0, 1] },
+			(succ) => {
+				if (this.user.getCountry() === "PT") {
+					var msgAlert = "Por favor espere...";
+				} else {
+					var msgAlert = "Por favor, espere...";
+				}
+
+				let loading = this.loading.create({
+					content: msgAlert
+				});
+				loading.present();
+				var jwt = succ.identityToken;
+				var decoded = jwt_decode(jwt);
+				var email = decoded.email;
+				if (typeof this.device !== "undefined") {
+					this.uuid = this.device.uuid;
+					this.versionId = this.device.version;
+					this.platformId = this.device.platform;
+				} else {
+					if (typeof this.platform.versions().ios !== "undefined") {
+						this.platformId = "IOS";
+						this.versionId = this.platform.versions().ios.str;
+					} else if (typeof this.platform.versions().android !== "undefined") {
+						this.platformId = "Android";
+						this.versionId = this.platform.versions().android.str;
+					}
+					this.uuid = "undefined";
+				}
+
+				this.zaaskServices.appleLogin(succ.identityToken, email).subscribe(
+					(data: any) => {
+						loading.dismiss();
+						this.zaaskServices.storeMobileLogin(data.api_token, this.uuid, this.platformId, this.versionId, "facebook").subscribe();
+						data.user.api_token = data.api_token;
+						this.user.setUserNew(data.user);
+						this.zaaskServices.authRequest().subscribe(
+							(data) => {
+								this.zaaskServices.saveUserData(data);
+							},
+							(error) => {
+								console.log("auth error", error);
+							}
+						);
+
+						this.nav.setRoot("TaskPage");
+					},
+					(error) => {
+						loading.dismiss();
+						let message = error.error && error.error.message ? error.error.message : "Erro no acesso à Zaask!";
+						var alert = this.alert.create({
+							title: "Erro",
+							subTitle: message,
+							buttons: ["Fechar"]
+						});
+						alert.present();
+						localStorage.removeItem("user");
+						console.log("login error", error);
+					}
+				);
+			},
+			(err) => {
+				console.error(err);
+				console.log(JSON.stringify(err));
+			}
+		);
 	}
 
 	facebookLogin() {

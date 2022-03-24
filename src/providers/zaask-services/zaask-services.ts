@@ -245,6 +245,16 @@ export class ZaaskServices {
 		return this.http.get(this.url);
 	}
 
+	appleLogin(token, email) {
+		this.setServer(this.getUserCountry());
+		this.url = `${this.server}/apple/login`;
+		var user = {
+			token,
+			email
+		};
+		return this.http.post(this.url, JSON.stringify(user), this.httpOptions);
+	}
+
 	//////// Pro Task Methods ////////
 
 	getProTasksAvailable(pageNr = 1) {
