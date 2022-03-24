@@ -4,7 +4,7 @@
 	</ion-navbar>
 </ion-header>
 
-<ion-content [ngClass]="getPageContentClass()">
+<ion-content [ngClass]="pageContentClass">
 	<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content refreshingSpinner="dots"></ion-refresher-content>
 	</ion-refresher>

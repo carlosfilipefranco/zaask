@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectorRef, Component } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { AlertController, IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { User } from "../../providers/user/user";
@@ -49,7 +49,8 @@ export class TaskPage {
 		policyWarningText_8: string;
 		policyAccept: string;
 	};
-	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal) {
+	pageContentClass = "task-page task-page__heigth";
+	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef) {
 		this.passwordType = "password";
 		this.tasks = [];
 		this.country = this.user.getCountry();
@@ -61,6 +62,9 @@ export class TaskPage {
 		this.pagination = 1;
 		//
 		this.policyAccepted = localStorage.getItem("terms_accepted") == "true";
+		if (!this.policyAccepted) {
+			this.pageContentClass = "task-page task-page__heigth task-page__heigth-backdrop";
+		}
 		this.showTerms = false;
 		this.showPrivacyPolicy = false;
 		//
@@ -332,10 +336,6 @@ export class TaskPage {
 		return moment.tz(date, this.userTimeZone).fromNow();
 	}
 
-	getPageContentClass() {
-		return this.policyAccepted ? "task-page task-page__heigth" : "task-page task-page__heigth task-page__heigth-backdrop";
-	}
-
 	displayTerms() {
 		this.showTerms = true;
 	}
@@ -355,13 +355,16 @@ export class TaskPage {
 	acceptTerms() {
 		localStorage.setItem("terms_accepted", "true");
 		this.policyAccepted = true;
+		this.pageContentClass = "task-page task-page__heigth";
 		this.showPrivacyPolicy = false;
 		this.showTerms = false;
 		//enable onesignal plugin
+		this.oneSignal.setRequiresUserPrivacyConsent(true);
 		this.oneSignal.provideUserConsent(true);
-		this.oneSignal.getPermissionSubscriptionState().then((data) => {
-			console.log(data);
+		this.oneSignal.userProvidedPrivacyConsent((providedConsent) => {
+			if (providedConsent) this.initOneSignal();
 		});
+		this.ref.detectChanges();
 	}
 
 	getLang() {
