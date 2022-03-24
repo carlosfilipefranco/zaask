@@ -29,7 +29,7 @@ export class ZaaskServices {
 		if (country === "PT") {
 			this.server = `${API_URL}/api/v1`;
 		} else {
-			this.server = "https://www.zaask.es/api-dev/v1";
+			this.server = "https://www.zaask.es/api/v1";
 			//this.server = "https://staging.zaask.es";
 		}
 		// Only for tests
