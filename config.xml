@@ -62,6 +62,9 @@
         <config-file mode="merge" parent="NSLocationWhenInUseUsageDescription" target="*-Info.plist">
             <string>Show the best tasks near user</string>
         </config-file>
+        <config-file mode="merge" parent="NSUserTrackingUsageDescription" target="*-Info.plist">
+            <string>Allow Zaask to use your data to give you a better browsing experience.</string>
+        </config-file>
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
         <icon height="20" src="resources/ios/icon/icon-20.png" width="20" />

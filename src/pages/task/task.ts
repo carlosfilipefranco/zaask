@@ -10,6 +10,8 @@ import { APP_VERSION, API_URL } from "../../env";
 import { Facebook } from "@ionic-native/facebook";
 import { OneSignal } from "@ionic-native/onesignal";
 
+declare var window;
+
 @IonicPage()
 @Component({
 	selector: "page-task",
@@ -118,6 +120,8 @@ export class TaskPage {
 
 	ionViewDidLoad() {
 		this.loadTasks();
+
+		this.requestConsent();
 
 		//disable onesignal plugin until user accept privacy policy
 		if (this.policyAccepted) {
@@ -379,5 +383,17 @@ export class TaskPage {
 	openOneSignalTerms() {
 		var termsUrl = "https://onesignal.com/tos";
 		this.Utils.launchInApp(termsUrl, "_blank", null, this.platform.is("ios"));
+	}
+
+	private async requestConsent() {
+		window.plugins.impacTracking.requestTracking(
+			null,
+			(result) => {
+				this.zaaskServices.consent(result).subscribe();
+			},
+			(error) => {
+				console.log(error);
+			}
+		);
 	}
 }

@@ -61,6 +61,7 @@ export class LoginPage {
 	msgError: string;
 	msgLoginError: string;
 	msgClose: string;
+	isIOS = false;
 	constructor(
 		public nav: NavController,
 		public form: FormBuilder,
@@ -135,6 +136,10 @@ export class LoginPage {
 			});
 			this.ga.trackView("Login Screen - " + APP_VERSION, "login.html");
 		}
+
+		this.platform.ready().then(() => {
+			this.isIOS = this.platform.is("ios");
+		});
 	}
 
 	ionViewWillEnter() {

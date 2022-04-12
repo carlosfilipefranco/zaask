@@ -255,6 +255,18 @@ export class ZaaskServices {
 		return this.http.post(this.url, JSON.stringify(user), this.httpOptions);
 	}
 
+	consent(consent) {
+		const token = this.user.getUser().api_key;
+		var user = {
+			token,
+			consent
+		};
+		this.setServer(this.getUserCountry());
+		this.url = `${this.server}/user/consent`;
+
+		return this.http.post(this.url, JSON.stringify(user), this.httpOptions);
+	}
+
 	//////// Pro Task Methods ////////
 
 	getProTasksAvailable(pageNr = 1) {
