@@ -30,7 +30,7 @@ export class ZaaskServices {
 			this.server = `${API_URL}/api/v1`;
 		} else {
 			this.server = "https://www.zaask.es/api/v1";
-			//this.server = "https://staging.zaask.es";
+			// this.server = "https://staging.zaask.es";
 		}
 		// Only for tests
 		// this.server = "http://zaask.bo2z";

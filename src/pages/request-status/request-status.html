@@ -1,6 +1,6 @@
 <ion-header>
 	<ion-navbar color="primary" class="request-status-page navbar">
-		<span>{{translate.header}}</span>
+		<ion-title>{{translate.header}}</ion-title>
 	</ion-navbar>
 </ion-header>
 
@@ -9,7 +9,7 @@
 		<ion-label class="question--label"> {{questions[0].title}} </ion-label>
 
 		<ion-list radio-group [(ngModel)]="questions[0].value">
-			<ion-item *ngFor="#option of questions[0].options">
+			<ion-item *ngFor="let option of questions[0].options">
 				<ion-radio item-left value="{{option.value}}" (click)="radioChecked()"></ion-radio>
 				<ion-label>{{option.label}}</ion-label>
 			</ion-item>
@@ -41,7 +41,7 @@
 		<ion-label class="question--label"> {{questions[1].title}} </ion-label>
 
 		<ion-list radio-group [(ngModel)]="questions[1].value">
-			<ion-item *ngFor="#option of questions[1].options">
+			<ion-item *ngFor="let option of questions[1].options">
 				<ion-radio item-left value="{{option.value}}" (click)="radioChecked()"></ion-radio>
 				<ion-label>{{option.label}}</ion-label>
 			</ion-item>
@@ -64,16 +64,16 @@
 	</div>
 </ion-content>
 
-<ion-footer align="center">
-	<button class="request-status-page__submit-button request-status-page__submit-button--active" *ngIf="questions[0].value === '0'" (click)="submit()">{{translate.submitButton}}</button>
+<ion-footer text-center>
+	<button ion-button class="request-status-page__submit-button request-status-page__submit-button--active" *ngIf="questions[0].value === '0'" (click)="submit()">{{translate.submitButton}}</button>
 
 	<div *ngIf="questions[0].value === '1' || questions[0].value === '2' || jobIsDone">
-		<button class="request-status-page__submit-button request-status-page__submit-button--active" *ngIf="questions[1].value !== null" (click)="submit()">{{translate.submitButton}}</button>
+		<button ion-button class="request-status-page__submit-button request-status-page__submit-button--active" *ngIf="questions[1].value !== null" (click)="submit()">{{translate.submitButton}}</button>
 	</div>
 
-	<button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="questions[0].value === null && !jobIsDone">{{translate.submitButton}}</button>
+	<button ion-button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="questions[0].value === null && !jobIsDone">{{translate.submitButton}}</button>
 
-	<button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="questions[0].value !== '0' && questions[0].value !== null && questions[1].value === null">{{translate.submitButton}}</button>
+	<button ion-button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="questions[0].value !== '0' && questions[0].value !== null && questions[1].value === null">{{translate.submitButton}}</button>
 
-	<button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="jobIsDone && questions[1].value === null">{{translate.submitButton}}</button>
+	<button ion-button disabled class="request-status-page__submit-button request-status-page__submit-button--disable" *ngIf="jobIsDone && questions[1].value === null">{{translate.submitButton}}</button>
 </ion-footer>

@@ -8,6 +8,7 @@ import io from "socket.io-client";
 import moment from "moment-timezone";
 import { GoogleAnalytics } from "@ionic-native/google-analytics";
 import { APP_VERSION } from "../../env";
+import { CallNumber } from "@ionic-native/call-number";
 
 @IonicPage()
 @Component({
@@ -46,7 +47,7 @@ export class ChatPage {
 	response;
 	alertTitleError;
 	closeButtonText;
-	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public form: FormBuilder, public params: NavParams, public utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics) {
+	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public form: FormBuilder, public params: NavParams, public utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, private callNumber: CallNumber) {
 		this.country = this.user.getCountry();
 
 		this.userId = this.user.getUserField("id");
@@ -245,6 +246,7 @@ export class ChatPage {
 		this.zaaskServices.showProTask(id).subscribe(
 			(data: any) => {
 				//console.log(_response);
+				this.response = data;
 				this.taskInfo = data.task;
 				this.lead_id = data.lead.id;
 				this.messages = data.messages;
@@ -294,7 +296,7 @@ export class ChatPage {
 		const option = this.RequestTabs[id];
 
 		if (option.id === 0) {
-			this.nav.push("TaskDetails", { taskInfo: this.response, updatePaid: true });
+			this.nav.push("TaskDetailsPage", { taskInfo: this.response, updatePaid: true });
 		} else if (option.id === 1) {
 			if (this.filter === "archived") this.unarchiveTask();
 			else this.archiveTask();
@@ -376,8 +378,8 @@ export class ChatPage {
 		}
 	}
 
-	callNumber() {
-		// CallNumber.callNumber(`${this.taskInfo.phone}`, true);
+	call() {
+		this.callNumber.callNumber(`${this.taskInfo.phone}`, true);
 	}
 
 	toBase64(file, callback) {

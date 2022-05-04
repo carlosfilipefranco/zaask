@@ -31,9 +31,6 @@
 				<ion-input type="email" value="" formControlName="email" class="ng-pristine ng-invalid" required></ion-input>
 			</ion-item>
 
-			<div *ngIf="loginForm.controls.email.hasError('required') " class="error-box">* Username is required!</div>
-			<div *ngIf="loginForm.controls.email.hasError('checkFirstCharacterValidator') " class="error-box">* Username cant't start with number!</div>
-
 			<button ion-button block light type="submit" [disabled]="!loginForm.valid" class="login-submit">{{msgRecoverPass}}</button>
 		</ion-list>
 	</form>

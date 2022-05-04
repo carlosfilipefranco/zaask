@@ -24,37 +24,24 @@
 		<h1 class="zaask-slogan">{{msgH1}}</h1>
 	</header>
 
-	<form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm.value)" novalidate>
+	<form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm.value)">
 		<ion-list class="login-ion-list">
 			<ion-item class="login-ion-item">
 				<ion-label><ion-icon name="mail"></ion-icon></ion-label>
-				<ion-input placeholder="{{emailLabel}}" type="email" value="" formControlName="email" class="ng-pristine ng-invalid" required></ion-input>
+				<ion-input autocomplete="none" placeholder="{{emailLabel}}" autocomplete="none" type="email" value="" formControlName="email" class="ng-pristine ng-invalid" required></ion-input>
 			</ion-item>
 
-			<!-- <div *ngIf="email.hasError('required') && email.touched"
-			class="error-box">* Username is required!</div> -->
 			<div *ngIf="loginForm.controls.email.hasError('checkFirstCharacterValidator') && loginForm.controls.email.touched" class="error-box">You should write a valid email.</div>
 
 			<ion-item [class.error]="!loginForm.controls.password.valid && loginForm.controls.password.touched" class="login-ion-item">
 				<ion-label><ion-icon name="lock"></ion-icon></ion-label>
-				<ion-input placeholder="{{passwordLabel}}" type="{{passwordType}}" value="" formControlName="password" class="ng-pristine ng-invalid" required></ion-input>
+				<ion-input placeholder="{{passwordLabel}}" autocomplete="none" type="{{passwordType}}" value="" formControlName="password" class="ng-pristine ng-invalid" required></ion-input>
 				<button ion-button item-right clear class="login-eye" (click)="$event.preventDefault(); tooglePasswordType()">
 					<ion-icon name="eye-off"></ion-icon>
 				</button>
 			</ion-item>
 
 			<button ion-button small clear light type="button" class="login-forgot-button" (click)="recoverPass()">{{msgForgotPassword}}</button>
-
-			<!-- *ngIf="(password.hasError('required') && password.touched) || loginForm.invalid" -->
-			<!-- <button small clear light class="login-forgot-button" (click)="recoverPass(email.value)">
-				Forgot password?
-			</button> -->
-
-			<!-- <div *ngIf="password.hasError('minlength') && password.touched"
-			class="error-box">* Minimum password length is 8!</div> -->
-			<!-- <div *ngIf="password.hasError('checkFirstCharacterValidator') && password.touched"
-			class="error-box">* Password cant't start with number!</div> -->
-
 			<button ion-button icon-end block light type="submit" [disabled]="!loginForm.valid" class="login-submit login-button">
 				{{msgEntrar}}
 				<ion-icon class="right-arrow" name="md-arrow-forward"></ion-icon>

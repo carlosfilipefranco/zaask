@@ -18,14 +18,17 @@ import { GoogleAnalytics } from "@ionic-native/google-analytics";
 import { Facebook } from "@ionic-native/facebook";
 import { Globalization } from "@ionic-native/globalization";
 import { OneSignal } from "@ionic-native/onesignal";
+import { CallNumber } from "@ionic-native/call-number";
 
 @NgModule({
 	declarations: [MyApp],
 	imports: [
 		BrowserModule,
 		IonicModule.forRoot(MyApp, {
+			autocomplete: "off",
+			autocorrect: "off",
 			scrollPadding: false,
-			scrollAssist: true,
+			scrollAssist: false,
 			autoFocusAssist: false,
 			backButtonText: ""
 		}),
@@ -36,6 +39,6 @@ import { OneSignal } from "@ionic-native/onesignal";
 	],
 	bootstrap: [IonicApp],
 	entryComponents: [MyApp],
-	providers: [StatusBar, SplashScreen, { provide: ErrorHandler, useClass: IonicErrorHandler }, QuotesListProvider, User, ZaaskServices, Device, AppVersion, InAppBrowser, Utils, GoogleAnalytics, Facebook, Globalization, OneSignal]
+	providers: [StatusBar, SplashScreen, { provide: ErrorHandler, useClass: IonicErrorHandler }, QuotesListProvider, User, ZaaskServices, Device, AppVersion, InAppBrowser, Utils, GoogleAnalytics, Facebook, Globalization, OneSignal, CallNumber]
 })
 export class AppModule {}
