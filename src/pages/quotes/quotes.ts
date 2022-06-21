@@ -30,6 +30,8 @@ export class QuotesPage {
 	alertTitleSuccess: string;
 	alertTitleError: string;
 	search: string;
+	pagination: number = 1;
+	showInfinite: boolean = true;
 	constructor(public nav: NavController, public zaaskServices: ZaaskServices, public platform: Platform, public user: User, public navParams: NavParams, public Alert: AlertController, public Toast: ToastController, public Utils: Utils, public modal: ModalController, public ga: GoogleAnalytics, public popoverController: PopoverController) {
 		this.nav = nav;
 		this.platform = platform;
@@ -178,13 +180,32 @@ export class QuotesPage {
 	 * PRIVATE
 	 */
 
-	getQuotes(filter) {
+	loadMoreQuotes(event) {
+		this.showInfinite = false;
+		this.getQuotes(this.filter, event);
+	}
+
+	doRefresh(event) {
+		this.initialQuotes = [];
+		this.quotesToShow = [];
+		this.pagination = 1;
+		this.getQuotes(this.initialFilter, event);
+	}
+
+	getQuotes(filter, event?: any) {
 		const loading = this.Utils.createZaaskLoading();
 		loading.present();
-		this.zaaskServices.getQuotesNew(filter).subscribe(
-			(res: any) => {
-				this.initialQuotes = res.data;
+		this.zaaskServices.getQuotesNew(filter, this.pagination).subscribe(
+			(data: any) => {
+				if (data.data.length > 0) {
+					data.data.forEach((quote) => {
+						this.initialQuotes.push(quote);
+					});
+					this.pagination += 1;
+					this.showInfinite = true;
+				}
 				this.quotesToShow = this.initialQuotes;
+				loading.dismiss();
 			},
 			(err) => {
 				var alert = this.Alert.create({
@@ -193,9 +214,10 @@ export class QuotesPage {
 					buttons: ["close"]
 				});
 				alert.present();
+				loading.dismiss();
 			},
 			() => {
-				loading.dismiss();
+				if (event != null) event.complete();
 			}
 		);
 	}
@@ -224,10 +246,10 @@ export class QuotesPage {
 						quoteArchived: "Pedido arquivado."
 				  }
 				: {
-						msgPedidosDisponiveis: "Solicitudes",
+						msgPedidosDisponiveis: "Pedidos",
 						msgPedidosAdquiridos: "Buzón de entrada",
 						msgMyAccount: "Definiciones",
-						request: "Solicitude",
+						request: "Pedido",
 						details: "Ver detalles",
 						archive: "Archivar",
 						title: "Buzón de entrada",
@@ -237,7 +259,7 @@ export class QuotesPage {
 						won: "Adjudicado",
 						lost: "Perdido",
 						refunded: "Reembolsado",
-						noRequestsToShow: "No hay solicitudes seleccionadas para el filtro",
+						noRequestsToShow: "No hay pedidos seleccionados para el filtro",
 						clearFilter: "Limpiar el filtro",
 						unarchive: "Desarchivar",
 						quoteUnarchived: "Pedido desarchivado.",
@@ -258,6 +280,9 @@ export class QuotesPage {
 			this.filter = data.filterCode;
 			this.searchPlaceholder = data.filterName;
 			this.showModal = true;
+			this.initialQuotes = [];
+			this.quotesToShow = [];
+			this.pagination = 1;
 			this.getQuotes(this.filter);
 		});
 	}

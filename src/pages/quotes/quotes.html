@@ -3,7 +3,7 @@
 		<ion-title>{{translate.title}}</ion-title>
 	</ion-navbar>
 	<ion-toolbar>
-		<ion-searchbar mode="md" [(ngModel)]="search" placeholder="{{searchPlaceholder}}" (click)="clearQuery()" (ionInput)="updateSearch($event)" (clear)="openFilter($event)" cancelText=""> </ion-searchbar>
+		<ion-searchbar mode="md" [(ngModel)]="search" placeholder="{{searchPlaceholder}}" (click)="clearQuery()" (ionInput)="updateSearch($event)" cancelText=""> </ion-searchbar>
 		<ion-buttons end>
 			<button ion-button clear (click)="openModalFilter($event)">
 				<ion-icon name="md-funnel"></ion-icon>
@@ -13,8 +13,11 @@
 </ion-header>
 
 <ion-content class="task-page task-page__heigth">
+	<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content refreshingSpinner="dots"></ion-refresher-content>
+	</ion-refresher>
 	<ion-list class="task-page task-page-list">
-		<ion-item class="task-page task-page__card" *ngFor="let task of quotesToShow">
+		<ion-item class="task-page task-page__card" *ngFor="let task of quotesToShow; let i = index">
 			<ion-card>
 				<ion-card-content>
 					<ion-card-title> {{task.title}} </ion-card-title>
@@ -76,6 +79,9 @@
 			</div>
 		</div>
 	</ion-list>
+	<ion-infinite-scroll *ngIf="showInfinite" threshold="100px" (ionInfinite)="loadMoreQuotes($event)">
+		<ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </ion-content>
 
 <div class="task-page nav-bar">
