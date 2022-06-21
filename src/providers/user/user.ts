@@ -79,7 +79,7 @@ export class User {
 
 	clearUser() {
 		this.setUser("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
-		localStorage.removeItem("user");
+		this.storage.remove("user");
 	}
 
 	saveUserInfo() {
@@ -166,24 +166,30 @@ export class User {
 	}
 
 	setUserNew(user) {
+		console.log(user);
 		this.username = user.username;
 		this.name = user.name;
 		this.api_key = user.api_token;
 		this.id = user.id;
 
-		return localStorage.setItem("user", JSON.stringify(user));
+		return this.storage.set("user", user);
 	}
 
-	setUserField(field, value) {
+	async setUserField(field, value) {
 		this[field] = value;
-		const user = JSON.parse(localStorage.getItem("user"));
+		const user = await this.storage.get("user");
 		user[field] = value;
 
-		return localStorage.setItem("user", JSON.stringify(user));
+		return this.storage.set("user", user);
 	}
 
-	getUserField(field) {
-		const user = JSON.parse(localStorage.getItem("user"));
+	async getUserField(field) {
+		const user = await this.storage.get("user");
 		return user[field];
+	}
+
+	async get() {
+		const user = await this.storage.get("user");
+		return user;
 	}
 }

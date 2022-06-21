@@ -44,14 +44,12 @@ export class ZaaskServices {
 	}
 
 	storeMobileLogin(api_token, uuid, platform, version, method) {
-		this.setServer(this.getUserCountry());
 		this.url = `${this.server}/login/app?api_token=${api_token}`;
 		const sendObject = { api_token, uuid, platform, version, method };
 		return this.http.post(this.url, JSON.stringify(sendObject), this.httpOptions);
 	}
 
 	doLogin(username, password, uuid, platformId, versionId, appVersion) {
-		this.setServer(this.getUserCountry());
 		this.postLoginParams = "username=" + username + "&password=" + password + "&uuid=" + uuid + "&platform=" + platformId + "&version=" + versionId + "&appversion=" + appVersion;
 
 		console.log("login params -> " + this.postLoginParams);
@@ -68,74 +66,62 @@ export class ZaaskServices {
 	}
 
 	getProfile() {
-		this.setServer(this.getUserCountry());
 		return this.http.get(this.server + "/mobile-rest/getprofile?" + this.buildParams());
 	}
 
 	getTasksList() {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/gettaskslist?" + this.buildParams();
 		console.log("ZaaskServices::getTasksList - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	getTaskDetails(taskId) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/gettaskdetails?" + this.buildParams() + "&taskid=" + taskId;
 		console.log("ZaaskServices::getTaskDetails - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	getQuotesList(filterId) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/getquoteslist?" + this.buildParams() + "&filter=" + filterId;
 		console.log("ZaaskServices::getQuotesList - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	getQuoteDetails(quoteId) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/getquotedetails?" + this.buildParams() + "&quoteid=" + quoteId;
 		console.log("ZaaskServices::getQuotesDetails - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	hideTask(taskId) {
-		this.setServer(this.getUserCountry());
 		return this.http.get(this.server + "/mobile-rest/settaskinvisible?" + this.buildParams() + "&taskid=" + taskId + "&filter=1");
 	}
 
 	unHideTask(taskId) {
-		this.setServer(this.getUserCountry());
 		return this.http.get(this.server + "/mobile-rest/settaskinvisible?" + this.buildParams() + "&taskid=" + taskId + "&filter=2");
 	}
 
 	archiveTask(taskId) {
-		this.setServer(this.getUserCountry());
 		return this.http.get(this.server + "/mobile-rest/settaskarchived?" + this.buildParams() + "&taskid=" + taskId + "&filter=1");
 	}
 
 	unArchiveTask(taskId) {
-		this.setServer(this.getUserCountry());
 		return this.http.get(this.server + "/mobile-rest/settaskarchived?" + this.buildParams() + "&taskid=" + taskId + "&filter=2");
 	}
 
 	getChatMessages(taskId) {
-		this.setServer(this.getUserCountry());
 		var url = this.server + "/mobile-rest/getlist?" + this.buildParams() + "&taskid=" + taskId;
 		console.log("ZaaskServices::getChatMessages - URL: " + url);
 		return this.http.get(url);
 	}
 
 	setQuote(taskId, priceType, price, observations, source) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/setquote?" + this.buildParams() + "&taskid=" + taskId + "&pricetype=" + priceType + "&price=" + price + "&observations=" + observations + "&source=" + source;
 		console.log("ZaaskServices::setQuote - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	sendReply(taskId, target, message) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/sendreply?" + this.buildParams() + "&hashcode=" + this.user.getHashcode() + "&uuid=" + this.user.getUUID() + "&userid=" + this.user.getUserId() + "&taskid=" + taskId + "&target=" + target + "&message=" + message + "&isfromproduct=" + 0;
 
 		console.log("ZaaskServices::sendReply - URL: " + this.url);
@@ -143,21 +129,18 @@ export class ZaaskServices {
 	}
 
 	setNotifs(status) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/setnotifs?" + this.buildParams() + "&status=" + status + "&pushuserid=" + this.user.getPushUserId() + "&pushtoken=" + this.user.getPushToken();
 		console.log("ZaaskServices::setNotifs - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	getNotifs() {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/getnotifs?" + this.buildParams() + "&pushuserid=" + this.user.getPushUserId() + "&pushtoken=" + this.user.getPushToken();
 		console.log("ZaaskServices::getNotifs - URL: " + this.url);
 		return this.http.get(this.url);
 	}
 
 	registerPushNotif(pushUserId, pushToken) {
-		this.setServer(this.getUserCountry());
 		this.url = this.server + "/mobile-rest/registerpushnotif?" + this.buildParams() + "&pushuserid=" + pushUserId + "&pushtoken=" + pushToken;
 		console.log("ZaaskServices::registerPushNotif - URL: " + this.url);
 		return this.http.get(this.url);
@@ -166,26 +149,22 @@ export class ZaaskServices {
 	//////// Login Methods ////////
 
 	login(user) {
-		this.setServer(this.getUserCountry());
 		this.url = `${this.server}/login`;
 		return this.http.post(this.url, JSON.stringify(user), this.httpOptions);
 	}
 
 	recoverPassword(email) {
-		this.setServer(this.getUserCountry());
 		this.url = `${this.server}/password/recover`;
 		return this.http.post(this.url, JSON.stringify({ email }), this.httpOptions);
 	}
 
 	authRequest() {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/auth/user?api_token=${token}`;
 		return this.http.get(this.url);
 	}
 
 	authRequestWithTokenParam(token) {
-		this.setServer(this.getUserCountry());
 		// const token = this.user.getUser().api_key;
 		this.url = `${this.server}/auth/user?api_token=${token}`;
 		return this.http.get(this.url);
@@ -203,7 +182,6 @@ export class ZaaskServices {
 	}
 
 	setNotification(osUserId, osUserToken, userAgent) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/pushNotification/set?api_token=${token}&osUserId=${osUserId}&osUserToken`;
 		const sendObject = { osUserId, osUserToken, userAgent };
@@ -212,7 +190,6 @@ export class ZaaskServices {
 	}
 
 	unsetNotification(osUserId, userAgent) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 
 		this.url = `${this.server}/pushNotification/unset?api_token=${token}`;
@@ -221,7 +198,6 @@ export class ZaaskServices {
 	}
 
 	statusNotification(osUserId, userAgent) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 
 		this.url = `${this.server}/pushNotification/status?api_token=${token}`;
@@ -230,7 +206,6 @@ export class ZaaskServices {
 	}
 
 	setAlert(notification_flag, status) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/notification/settings/set?api_token=${token}`;
 		const params = { notification_flag, status };
@@ -239,14 +214,12 @@ export class ZaaskServices {
 	}
 
 	facebookLogin(token) {
-		this.setServer(this.getUserCountry());
 		this.url = `${this.server}/facebook/login?token=${token}`;
 
 		return this.http.get(this.url);
 	}
 
 	appleLogin(token, email) {
-		this.setServer(this.getUserCountry());
 		this.url = `${this.server}/apple/login`;
 		var user = {
 			token,
@@ -261,7 +234,6 @@ export class ZaaskServices {
 			token,
 			consent
 		};
-		this.setServer(this.getUserCountry());
 		this.url = `${this.server}/user/consent`;
 
 		return this.http.post(this.url, JSON.stringify(user), this.httpOptions);
@@ -270,7 +242,6 @@ export class ZaaskServices {
 	//////// Pro Task Methods ////////
 
 	getProTasksAvailable(pageNr = 1) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		console.log(token, this.user);
 		this.url = `${this.server}/pro/task/available?api_token=${token}` + "&page=" + pageNr;
@@ -278,35 +249,30 @@ export class ZaaskServices {
 	}
 
 	ignoreProTask(id) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/ignore?api_token=${token}`;
 		return this.http.post(this.url, null, this.httpOptions);
 	}
 
 	abortIgnoreProTask(id) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/abortIgnore?api_token=${token}`;
 		return this.http.post(this.url, null, this.httpOptions);
 	}
 
 	showProTask(id) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/v2/pro/task/${id}/show?api_token=${token}`;
 		return this.http.get(this.url);
 	}
 
 	archiveProTask(id) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/archive?api_token=${token}`;
 		return this.http.put(this.url, this.httpOptions);
 	}
 
 	setQuoteNew(id, type, value, message, source, attach) {
-		this.setServer(this.getUserCountry());
 		const api_token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/buy`;
 		//
@@ -335,21 +301,18 @@ export class ZaaskServices {
 	}
 
 	getBoughtTasks() {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/bought?api_token=${token}`;
 		return this.http.get(this.url);
 	}
 
-	getQuotesNew(filter) {
-		this.setServer(this.getUserCountry());
+	getQuotesNew(filter, pageNr = 1) {
 		const token = this.user.getUser().api_key;
-		this.url = `${this.server}/pro/task/${filter}?api_token=${token}`;
+		this.url = `${this.server}/pro/task/${filter}?api_token=${token}&page=${pageNr}`;
 		return this.http.get(this.url);
 	}
 
 	archiveQuoteNew(id) {
-		this.setServer(this.getUserCountry());
 		const api_token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/archive?api_token=${api_token}`;
 
@@ -357,7 +320,6 @@ export class ZaaskServices {
 	}
 
 	unarchiveQuoteNew(id) {
-		this.setServer(this.getUserCountry());
 		const api_token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/unarchive?api_token=${api_token}`;
 
@@ -365,7 +327,6 @@ export class ZaaskServices {
 	}
 
 	updateTaskStatus(id, sendingObject) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 		this.url = `${this.server}/pro/task/${id}/update?api_token=${token}`;
 
@@ -374,7 +335,6 @@ export class ZaaskServices {
 
 	//////// Chat Methods ////////
 	saveMessage(lead_id, description, attach, callBack) {
-		this.setServer(this.getUserCountry());
 		const token = this.user.getUser().api_key;
 
 		const form = new FormData();

@@ -10,7 +10,7 @@
 	</ion-refresher>
 
 	<ion-list class="task-page task-page-list">
-		<ion-item class="task-page task-page__card" *ngFor="let task of tasks">
+		<ion-item class="task-page task-page__card" *ngFor="let task of tasks let i = index">
 			<ion-card [ngClass]="{ignoredCard: task.ignored}">
 				<ion-card-content *ngIf="!task.ignored" (click)="showTask(task.id)">
 					<ion-card-title> {{task.title}} </ion-card-title>
@@ -31,7 +31,7 @@
 
 				<ion-card-content *ngIf="task.ignored">
 					<div class="task-page task-page__card--info ignore-message" *ngIf="country === 'PT'">
-						<span> Se pretende não voltar a ver pedidos como este, edite as suas preferências de <span class="link" (click)="openLink(API_URL + '/profile/localizacao')">localização</span> e <span class="link" (click)="openLink(API_URL + '/profile/servicos')">serviços</span>. </span>
+						<span> Se pretende não voltar a ver pedidos como este, edite as suas preferências de <span class="link" (click)="openLink('https://www.zaask.pt/profile/localizacao')">localização</span> e <span class="link" (click)="openLink('https://www.zaask.pt/profile/servicos')">serviços</span>. </span>
 					</div>
 
 					<div class="task-page task-page__card--info ignore-message" *ngIf="country !== 'PT'">
@@ -1196,7 +1196,7 @@
 		</div>
 		<h3 id="condicoes-gerais" class="m-bottom20 m-top40">1. Condiciones generales</h3>
 		<p class="p-left15">
-			1) El website de Zaask es una plataforma online donde los Clientes realizan solicitudes de presupuesto, haciendo constar su interés en la prestación de un determinado servicio y, donde los Profesionales prestadores de servicios se inscriben con la intención de tener acceso a los pedidos presentados.
+			1) El website de Zaask es una plataforma online donde los Clientes realizan pedidos de presupuesto, haciendo constar su interés en la prestación de un determinado servicio y, donde los Profesionales prestadores de servicios se inscriben con la intención de tener acceso a los pedidos presentados.
 			<br />
 			<br />
 			2) Cada solicitud debe representar una necesidad real del Cliente. Zaask podrá, según su criterio exclusivo, excluir los pedidos y/o contenidos publicados en la plataforma que no cumplan los Términos y Condiciones o incluyan contenido que pueda perjudicar a Zaask o a la imagen de los Profesionales y Clientes que utilizan sus servicios.
@@ -1358,7 +1358,7 @@
 			<br /><br />
 			2) Cualquier una de las partes podrá terminar este Acuerdo, de modo inmediato, a través de notificación escrita, si la otra parte incurre en incumplimiento material de alguna de las cláusulas de este documento. Si es posible reparar el incumplimiento pero este no fue reparado en el periodo de 30 días, se debe remitir una solicitud escrita para que se resuelva esta infracción.
 			<br /><br />
-			3) Si el servicio está suspendido de conformidad con la cláusula 12, el Cliente no podrá seguir presentando solicitudes de nuevas Tareas.
+			3) Si el servicio está suspendido de conformidad con la cláusula 12, el Cliente no podrá seguir presentando pedidos de nuevas Tareas.
 			<br /><br />
 			4) Zaask se reserva el derecho de retener los créditos adquiridos por el profesional en su cuenta creada, a Profesionales impedidos de utilizar la Plataforma.
 			<br /><br />

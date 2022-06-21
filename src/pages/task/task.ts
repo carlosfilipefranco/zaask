@@ -9,7 +9,9 @@ import { GoogleAnalytics } from "@ionic-native/google-analytics";
 import { APP_VERSION, API_URL } from "../../env";
 import { Facebook } from "@ionic-native/facebook";
 import { OneSignal } from "@ionic-native/onesignal";
+import { Storage } from "@ionic/storage";
 
+declare var cordova: any;
 declare var window;
 
 @IonicPage()
@@ -52,7 +54,7 @@ export class TaskPage {
 		policyAccept: string;
 	};
 	pageContentClass = "task-page task-page__heigth";
-	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef) {
+	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef, private storage: Storage) {
 		this.passwordType = "password";
 		this.tasks = [];
 		this.country = this.user.getCountry();
@@ -63,12 +65,7 @@ export class TaskPage {
 		this.showInfinite = true;
 		this.pagination = 1;
 		//
-		this.policyAccepted = localStorage.getItem("terms_accepted") == "true";
-		if (!this.policyAccepted) {
-			this.pageContentClass = "task-page task-page__heigth task-page__heigth-backdrop";
-		}
-		this.showTerms = false;
-		this.showPrivacyPolicy = false;
+		this.startPolicy();
 		//
 		this.translate =
 			this.country === "PT"
@@ -98,7 +95,7 @@ export class TaskPage {
 						title: "Nuevos pedidos",
 						details: "Ver detalles",
 						ignore: "Ignorar",
-						msgPedidosDisponiveis: "Solicitudes",
+						msgPedidosDisponiveis: "Pedidos",
 						msgPedidosAdquiridos: "Buzón de entrada",
 						msgMyAccount: "Definiciones",
 						emptyTitle: "¡Los pedidos están de camino!",
@@ -118,10 +115,20 @@ export class TaskPage {
 				  };
 	}
 
+	async startPolicy() {
+		this.policyAccepted = (await this.storage.get("terms_accepted")) == "true";
+		if (!this.policyAccepted) {
+			this.pageContentClass = "task-page task-page__heigth task-page__heigth-backdrop";
+		}
+		this.showTerms = false;
+		this.showPrivacyPolicy = false;
+	}
+
 	ionViewDidLoad() {
 		this.loadTasks();
-
-		this.requestConsent();
+		if (typeof cordova !== "undefined") {
+			this.requestConsent();
+		}
 
 		//disable onesignal plugin until user accept privacy policy
 		if (this.policyAccepted) {
@@ -357,7 +364,7 @@ export class TaskPage {
 	}
 
 	acceptTerms() {
-		localStorage.setItem("terms_accepted", "true");
+		this.storage.set("terms_accepted", "true");
 		this.policyAccepted = true;
 		this.pageContentClass = "task-page task-page__heigth";
 		this.showPrivacyPolicy = false;

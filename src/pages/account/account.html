@@ -9,31 +9,31 @@
 		<ion-card-content>
 			<ion-item class="task-card-header">
 				<ion-avatar item-start class="task-card-avatar">
-					<img src="{{photoUrl}}" />
+					<img [src]="user?.image" />
 				</ion-avatar>
 
 				<div class="task-card-name">
-					<h2 class="h1">{{name}}</h2>
-					<h3>{{subtitle}}</h3>
+					<h2 class="h1">{{user?.name}}</h2>
+					<!-- <h3>{{subtitle}}</h3> -->
 
-					<div *ngIf="reviewsAvg>0" class="task-card-subheader">
+					<div *ngIf="user?.avgreviews>0" class="task-card-subheader">
 						<span>
-							<ion-icon *ngIf="reviewsAvg>=1" name="star"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg>=2" name="star"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg>=3" name="star"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg>=4" name="star"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg>=5" name="star"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg%1!=0 && reviewsAvg<5" name="star-half"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg==0" name="star-outline"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg<=1" name="star-outline"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg<=2" name="star-outline"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg<=3" name="star-outline"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg<=4" name="star-outline"></ion-icon>
-							<ion-icon *ngIf="reviewsAvg%1==0 && reviewsAvg<5" name="star-outline"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews>=1" name="star"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews>=2" name="star"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews>=3" name="star"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews>=4" name="star"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews>=5" name="star"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews%1!=0 && user?.avgreviews<5" name="star-half"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews==0" name="star-outline"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews<=1" name="star-outline"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews<=2" name="star-outline"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews<=3" name="star-outline"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews<=4" name="star-outline"></ion-icon>
+							<ion-icon *ngIf="user?.avgreviews%1==0 && user?.avgreviews<5" name="star-outline"></ion-icon>
 						</span>
-						<span class="t-c-reviews">{{numReviews}} {{msgAvaliacoes}}</span>
+						<span class="t-c-reviews">{{user?.nreviews}} {{msgAvaliacoes}}</span>
 					</div>
-					<span>{{numCredits}} {{msgCredits}}</span>
+					<span>{{user?.lead_credits}} {{msgCredits}}</span>
 				</div>
 			</ion-item>
 		</ion-card-content>
@@ -113,7 +113,7 @@
 				/>
 			</svg>
 		</ion-label>
-		<span>{{translate.msgPedidosDisponiveis}}</span>
+		<span>{{translate?.msgPedidosDisponiveis}}</span>
 	</div>
 
 	<div (click)="tabRedirect(tabQuotes)">
@@ -125,7 +125,7 @@
 				/>
 			</svg>
 		</ion-label>
-		<span>{{translate.msgPedidosAdquiridos}}</span>
+		<span>{{translate?.msgPedidosAdquiridos}}</span>
 	</div>
 
 	<div class="selected">
@@ -137,6 +137,6 @@
 				/>
 			</svg>
 		</ion-label>
-		<span>{{translate.msgMyAccount}}</span>
+		<span>{{translate?.msgMyAccount}}</span>
 	</div>
 </div>

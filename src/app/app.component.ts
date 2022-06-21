@@ -12,6 +12,7 @@ import { AppVersion } from "@ionic-native/app-version";
 import { GoogleAnalytics } from "@ionic-native/google-analytics";
 import { OneSignal } from "@ionic-native/onesignal";
 import { Utils } from "../providers/utils/utils";
+import { Globalization } from "@ionic-native/globalization";
 
 declare var cordova: any;
 
@@ -34,7 +35,22 @@ export class MyApp {
 	platformId: any;
 	appVersion: any = "";
 
-	constructor(public statusBar: StatusBar, public splashScreen: SplashScreen, public user: User, public zaaskServices: ZaaskServices, public quotesList: QuotesListProvider, public platform: Platform, public storage: Storage, public iab: InAppBrowser, public device: Device, private app: AppVersion, public ga: GoogleAnalytics, public oneSignal: OneSignal, public Utils: Utils) {
+	constructor(
+		public statusBar: StatusBar,
+		public splashScreen: SplashScreen,
+		public user: User,
+		public zaaskServices: ZaaskServices,
+		public quotesList: QuotesListProvider,
+		public platform: Platform,
+		public storage: Storage,
+		public iab: InAppBrowser,
+		public device: Device,
+		private app: AppVersion,
+		public ga: GoogleAnalytics,
+		public oneSignal: OneSignal,
+		public Utils: Utils,
+		private globalization: Globalization
+	) {
 		this.initializeApp();
 	}
 
@@ -57,7 +73,7 @@ export class MyApp {
 	}
 
 	initializeApp() {
-		this.platform.ready().then(() => {
+		this.platform.ready().then(async () => {
 			// Okay, so the platform is ready and our plugins are available.
 			// Here you can do any higher level native things you might need.
 			if (typeof cordova != "undefined") {
@@ -87,27 +103,31 @@ export class MyApp {
 				}
 			}
 
+			let lang = await this.storage.get("language");
+			if (lang == null) {
+				let defaultLang = "PT"; //default lang
+				if (typeof cordova !== "undefined") {
+					this.globalization.getPreferredLanguage().then((language) => {
+						lang = language.value.split("-")[1];
+					}, null);
+				} else lang = defaultLang;
+			}
+			this.user.setCountry(lang);
+			this.zaaskServices.setServer(lang);
 			this.loadUserFromLocalStorageNew();
 		});
 	}
 
-	loadUserFromLocalStorageNew() {
-		const user = JSON.parse(localStorage.getItem("user"));
+	async loadUserFromLocalStorageNew() {
+		const user = await this.storage.get("user");
 		if (user) {
-			//  const event = { email: user.email, password: user.password };
 			this.zaaskServices.authRequestWithTokenParam(user.api_token).subscribe(
 				(data: any) => {
 					console.log(data);
 					this.zaaskServices.storeMobileLogin(user.api_token, this.uuid, this.platformId, this.versionId, "autologin").subscribe();
-
-					data.user.api_token = user.api_token;
-					// userResponse.user.password = user.password;
-					data.user.email = user.email;
-					data.user.id = user.id;
 					this.user.setUserNew(data.user);
-					//console.log(userResponse);
 					this.setText();
-					this.zaaskServices.saveUserData(data);
+					// this.zaaskServices.saveUserData(data);
 					this.rootPage = "TaskPage";
 				},
 				(error) => {

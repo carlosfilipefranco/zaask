@@ -50,7 +50,7 @@ export class ChatPage {
 	constructor(public nav: NavController, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public form: FormBuilder, public params: NavParams, public utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, private callNumber: CallNumber) {
 		this.country = this.user.getCountry();
 
-		this.userId = this.user.getUserField("id");
+		this.userId = this.user.id;
 
 		// this.socketHost = 'https://chat2staging.zaask.pt/';
 

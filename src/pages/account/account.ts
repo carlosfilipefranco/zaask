@@ -5,6 +5,7 @@ import { User } from "../../providers/user/user";
 import { Utils } from "../../providers/utils/utils";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 import { APP_VERSION, API_URL } from "../../env";
+import { Storage } from "@ionic/storage";
 
 @IonicPage()
 @Component({
@@ -12,20 +13,10 @@ import { APP_VERSION, API_URL } from "../../env";
 	templateUrl: "account.html"
 })
 export class AccountPage {
-	userId;
-	name;
-	subtitle;
-	reviewsAvg;
-	numCredits;
-	photoUrl;
-	numReviews;
-	userActivation;
+	user;
 	tabTask;
 	tabQuotes;
-	country;
 	pushNotificationToggle;
-	osUserId;
-	osPushToken;
 	userAgent;
 	translate;
 	alertAllNewOportunities;
@@ -55,36 +46,14 @@ export class AccountPage {
 	msgOtherNotifications = "Outras notificações";
 	msgSettings = "Definições";
 
-	constructor(public nav: NavController, public navParams: NavParams, public zaaskServices: ZaaskServices, public platform: Platform, public utils: Utils, public user: User, public ga: GoogleAnalytics) {
-		this.userId = this.user.getUserId();
-		this.name = this.user.getName();
-		this.subtitle = this.user.getSubTitle();
-		this.reviewsAvg = this.user.getNumStars();
-		this.numCredits = this.user.getUserField("lead_credits");
-		this.photoUrl = this.user.getUserField("image");
-		this.numReviews = this.user.getUserField("nreviews");
-		this.userActivation = this.user.getUserActivation();
+	constructor(public nav: NavController, public navParams: NavParams, public zaaskServices: ZaaskServices, public platform: Platform, public utils: Utils, public userProvider: User, public ga: GoogleAnalytics, private storage: Storage) {
 		this.tabTask = "TaskPage";
 		this.tabQuotes = "QuotesPage";
-		this.country = this.user.getCountry();
 		// this.pushNotificationToggle = this.user.notifications;
-		this.osUserId = this.user.getUserField("osUserId");
-		this.osPushToken = this.user.getUserField("osPushToken");
+
 		this.userAgent = window.navigator && window.navigator.userAgent;
 
-		this.translate =
-			this.country === "PT"
-				? {
-						msgPedidosDisponiveis: "PEDIDOS",
-						msgPedidosAdquiridos: "CAIXA DE ENTRADA",
-						msgMyAccount: "DEFINIÇÕES"
-				  }
-				: {
-						msgPedidosDisponiveis: "Solicitudes",
-						msgPedidosAdquiridos: "Buzón de entrada",
-						msgMyAccount: "Definiciones"
-				  };
-		this.setText();
+		this.getUserFields();
 
 		// Check Push Notifications status
 		this.zaaskServices.authRequest().subscribe(
@@ -104,6 +73,24 @@ export class AccountPage {
 		//console.log(this.user);
 	}
 
+	async getUserFields() {
+		this.user = await this.userProvider.get();
+		console.log(this.user);
+		this.translate =
+			this.userProvider.getCountry() === "PT"
+				? {
+						msgPedidosDisponiveis: "PEDIDOS",
+						msgPedidosAdquiridos: "CAIXA DE ENTRADA",
+						msgMyAccount: "DEFINIÇÕES"
+				  }
+				: {
+						msgPedidosDisponiveis: "Pedidos",
+						msgPedidosAdquiridos: "Buzón de entrada",
+						msgMyAccount: "Definiciones"
+				  };
+		this.setText();
+	}
+
 	containsAll(needles, haystack) {
 		for (var i = 0, len = needles.length; i < len; i++) {
 			if (haystack.indexOf(needles[i]) == -1) return false;
@@ -119,7 +106,7 @@ export class AccountPage {
 	}
 
 	logout() {
-		this.user.clearUser();
+		this.userProvider.clearUser();
 		//this.nav.setRoot(LoginPage);
 		this.nav.setRoot("LoginPage");
 	}
@@ -162,24 +149,14 @@ export class AccountPage {
 		});
 	}
 
-	loadUser() {
-		const user = JSON.parse(localStorage.getItem("user"));
+	async loadUser() {
+		const user = await this.storage.get("user");
 
 		this.zaaskServices.authRequestWithTokenParam(user.api_token).subscribe(
 			(data: any) => {
-				this.user.setUserNew(data.user);
+				this.user = data.user;
+				this.userProvider.setUserNew(data.user);
 				this.zaaskServices.saveUserData(data);
-				this.userId = this.user.getUserId();
-				this.name = this.user.getName();
-				this.subtitle = this.user.getSubTitle();
-				this.reviewsAvg = this.user.getNumStars();
-				this.numCredits = this.user.getUserField("lead_credits");
-				this.photoUrl = this.user.getUserField("image");
-				this.numReviews = this.user.getUserField("nreviews");
-				this.userActivation = this.user.getUserActivation();
-				this.country = this.user.getCountry();
-				this.osUserId = this.user.getUserField("osUserId");
-				this.osPushToken = this.user.getUserField("osPushToken");
 			},
 			(error) => {}
 		);
@@ -190,7 +167,7 @@ export class AccountPage {
 	}
 
 	setText() {
-		if (this.user.getCountry() == "PT") {
+		if (this.userProvider.getCountry() == "PT") {
 		} else {
 			this.msgMyAccount = "Mi Cuenta";
 			this.msgAvaliacoes = "valoraciones";

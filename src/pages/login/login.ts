@@ -13,6 +13,7 @@ import { APP_VERSION, API_URL } from "../../env";
 import { Facebook } from "@ionic-native/facebook";
 import { Globalization } from "@ionic-native/globalization";
 import jwt_decode from "jwt-decode";
+import { Storage } from "@ionic/storage";
 
 declare var cordova: any;
 
@@ -77,7 +78,8 @@ export class LoginPage {
 		public utils: Utils,
 		public ga: GoogleAnalytics,
 		public facebook: Facebook,
-		private globalization: Globalization
+		private globalization: Globalization,
+		public storage: Storage
 	) {
 		this.loginForm = this.form.group({
 			email: ["", [Validators.required, Validators.minLength(1), checkFirstCharacterValidator]],
@@ -89,20 +91,7 @@ export class LoginPage {
 		});
 
 		// -------- set initial language ------- //
-		let lang = localStorage.getItem("language");
-		if (lang == null) {
-			let defaultLang = "PT"; //default lang
-			if (typeof cordova !== "undefined") {
-				this.globalization.getPreferredLanguage().then((language) => {
-					lang = language.value.split("-")[1];
-					console.log("Device Language: " + lang);
-					this.languageChange(lang);
-					this.languageForm.controls.language.setValue(lang);
-				}, null);
-			} else lang = defaultLang;
-		}
-		this.languageChange(lang);
-		this.languageForm.controls.language.setValue(lang);
+		this.setLanguage();
 		// ------------------------------------- //
 
 		function isEmailPattern(emailV) {
@@ -142,11 +131,25 @@ export class LoginPage {
 		});
 	}
 
+	async setLanguage() {
+		let lang = await this.storage.get("language");
+		if (lang == null) {
+			let defaultLang = "PT"; //default lang
+			if (typeof cordova !== "undefined") {
+				this.globalization.getPreferredLanguage().then((language) => {
+					lang = language.value.split("-")[1];
+					this.languageChange(lang);
+					this.languageForm.controls.language.setValue(lang);
+				}, null);
+			} else lang = defaultLang;
+		}
+		this.languageChange(lang);
+		this.languageForm.controls.language.setValue(lang);
+	}
+
 	ionViewWillEnter() {
 		this.initialHeight = document.getElementById("nav").clientHeight;
-
 		// this.loginForm.controls.email.setValue("francisco+bid@zaask.com");
-
 		// this.loginForm.controls.password.setValue("Zaask123");
 	}
 
@@ -155,14 +158,10 @@ export class LoginPage {
 	}
 
 	languageChange(data) {
-		console.log("Selet Language changed to: " + data);
-		localStorage.setItem("language", data);
+		this.storage.set("language", data);
 		this.user.setCountry(data);
 		this.zaaskServices.setServer(data);
 		this.setText();
-		console.log("Old Value set: " + this.languageForm.controls.language.value);
-		//this.language._value = "" + data;
-		console.log("Value set: " + this.languageForm.controls.language.value);
 	}
 
 	newAccount() {
@@ -212,7 +211,7 @@ export class LoginPage {
 			this.msgNo = "Não";
 			this.msgYes = "Sim";
 			this.msgError = "Erro";
-			this.msgLoginError = "Erro no acesso à Zaask!";
+			this.msgLoginError = "Palavra-passe incorreta.";
 			this.msgClose = "Fechar";
 		} else {
 			this.msgLanguage = "España";
@@ -232,7 +231,7 @@ export class LoginPage {
 			this.msgNo = "No";
 			this.msgYes = "Si";
 			this.msgError = "Error";
-			this.msgLoginError = "No ha sido posible acceder.";
+			this.msgLoginError = "Contraseña inválida.";
 			this.msgClose = "Cerrar";
 		}
 	}
@@ -316,7 +315,7 @@ export class LoginPage {
 						buttons: [this.msgClose]
 					});
 					alert.present();
-					localStorage.removeItem("user");
+					this.storage.remove("user");
 					console.log("login error", error);
 				}
 			);
@@ -408,7 +407,7 @@ export class LoginPage {
 							buttons: ["Fechar"]
 						});
 						alert.present();
-						localStorage.removeItem("user");
+						this.storage.remove("user");
 						console.log("login error", error);
 					}
 				);
@@ -467,7 +466,7 @@ export class LoginPage {
 							buttons: ["Fechar"]
 						});
 						alert.present();
-						localStorage.removeItem("user");
+						this.storage.remove("user");
 						console.log("login error", error);
 					}
 				);
