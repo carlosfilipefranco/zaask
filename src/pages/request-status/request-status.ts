@@ -49,8 +49,8 @@ export class RequestStatusPage {
 						personalTitle: "Personalize e envie o seu pedido de avaliação"
 				  }
 				: {
-						header: "Actualizar solicitude",
-						msgPedidosDisponiveis: "Solicitudes",
+						header: "Actualizar pedido",
+						msgPedidosDisponiveis: "Pedidos",
 						msgPedidosAdquiridos: "Buzón de entrada",
 						msgMyAccount: "Definiciones",
 						submitButton: "Actualizar",
