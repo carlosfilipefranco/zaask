@@ -64,7 +64,8 @@ export class TaskPage {
 		moment.locale(this.country.toLowerCase());
 		this.showInfinite = true;
 		this.pagination = 1;
-		//
+
+		this.getUser();
 		this.startPolicy();
 		//
 		this.translate =
@@ -122,6 +123,10 @@ export class TaskPage {
 		}
 		this.showTerms = false;
 		this.showPrivacyPolicy = false;
+	}
+
+	async getUser() {
+		this.user = await this.storage.get("user");
 	}
 
 	ionViewDidLoad() {
