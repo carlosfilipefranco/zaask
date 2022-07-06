@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.zaask.zaaskpro" android-versionCode="20220629" id="com.zaask.zaaskpro" ios-CFBundleIdentifier="com.zaask.zaaskpro.ios" version="1.6.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.zaask.zaaskpro" android-versionCode="20220706" id="com.zaask.zaaskpro" ios-CFBundleIdentifier="com.zaask.zaaskpro.ios" version="1.7.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Zaask PRO</name>
     <description>Zassk Mobile App for PROs</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -51,10 +51,10 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <config-file mode="merge" parent="NSCameraUsageDescription" target="*-Info.plist">
-            <string>We would like to access your camera</string>
+            <string>Allow Zaask to access your camera to change the profile image</string>
         </config-file>
         <config-file mode="merge" parent="NSPhotoLibraryUsageDescription" target="*-Info.plist">
-            <string>We would like to access your photos</string>
+            <string>Allow Zaask to access your photos to change the profile image</string>
         </config-file>
         <config-file mode="merge" parent="NSLocationAlwaysUsageDescription" target="*-Info.plist">
             <string>Show the best tasks near user</string>

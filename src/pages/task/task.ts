@@ -20,6 +20,7 @@ declare var window;
 	templateUrl: "task.html"
 })
 export class TaskPage {
+	user: any;
 	passwordType: string;
 	tasks: any[];
 	country: string;
@@ -54,10 +55,10 @@ export class TaskPage {
 		policyAccept: string;
 	};
 	pageContentClass = "task-page task-page__heigth";
-	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public user: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef, private storage: Storage) {
+	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public userProvider: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef, private storage: Storage) {
 		this.passwordType = "password";
 		this.tasks = [];
-		this.country = this.user.getCountry();
+		this.country = this.userProvider.getCountry();
 		this.tabQuotes = "QuotesPage";
 		this.tabAccount = "AccountPage";
 		this.userTimeZone = moment.tz.guess();
@@ -192,8 +193,8 @@ export class TaskPage {
 		this.oneSignal.getIds().then((ids: any) => {
 			console.log("here");
 			console.log(ids);
-			this.user.setUserField("osUserId", ids.userId);
-			this.user.setUserField("osPushToken", ids.pushToken);
+			this.userProvider.setUserField("osUserId", ids.userId);
+			this.userProvider.setUserField("osPushToken", ids.pushToken);
 
 			// Verify here if we update or not */
 			this.isToSetPUshs(ids.userId, ids.pushToken);
@@ -204,7 +205,7 @@ export class TaskPage {
 					const responseData = data.user;
 					Object.keys(responseData.pushNotifications).forEach((key) => {
 						if (responseData.pushNotifications[key]["external_user_id"] == this.user.osUserId && responseData.pushNotifications[key]["user_agent"] == "ZaaskPRO" && responseData.pushNotifications[key]["is_subscribed"] == 1) {
-							this.user.setUserField("notifications", true);
+							this.userProvider.setUserField("notifications", true);
 						}
 					});
 				},
@@ -222,7 +223,7 @@ export class TaskPage {
 				// if (data.is_subscribed == 1 || data.is_subscribed == 2) {
 				this.zaaskServices.setNotification(osUserId, osPushToken, "ZaaskPRO").subscribe(
 					(data) => {
-						this.user.setUserField("notifications", true);
+						this.userProvider.setUserField("notifications", true);
 					},
 					(error) => {
 						console.log(error);
@@ -319,7 +320,7 @@ export class TaskPage {
 			(response: any) => {
 				if (response.userMeetsRequirements && this.user.lead_credits >= response.credits[0].credits) this.nav.push("TaskDetailsPage", { taskInfo: response });
 				else {
-					const baseUrl = this.user.getCountry() === "PT" ? `${API_URL}/task/` : "https://zaask.es/task/";
+					const baseUrl = this.userProvider.getCountry() === "PT" ? `${API_URL}/task/` : "https://zaask.es/task/";
 					const taskUrl = baseUrl + response.task.task_id;
 					this.Utils.launchInApp(taskUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
 				}
@@ -340,7 +341,7 @@ export class TaskPage {
 	}
 
 	editCategory() {
-		const url = this.user.getCountry() === "PT" ? `${API_URL}/profile/services` : "https://zaask.es/profile/services";
+		const url = this.userProvider.getCountry() === "PT" ? `${API_URL}/profile/services` : "https://zaask.es/profile/services";
 		this.Utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
 	}
 
@@ -384,7 +385,7 @@ export class TaskPage {
 	}
 
 	getLang() {
-		return this.user.getCountry();
+		return this.userProvider.getCountry();
 	}
 
 	openOneSignalPolicy() {
