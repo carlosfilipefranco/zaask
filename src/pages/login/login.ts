@@ -274,9 +274,9 @@ export class LoginPage {
 					data.user.api_token = data.api_token;
 					data.user.password = event.password;
 					data.user.email = event.email;
-					this.user.setUserNew(data.user);
+					this.user.set(data.user);
 					this.zaaskServices.authRequest().subscribe(
-						(data: any) => {
+						async (data: any) => {
 							loading.dismiss();
 							if (!data.user.isTasker) {
 								const alertMsg = this.user.getCountry() == "PT" ? "Ainda não é um profissional Zaask. Aproveite para <b>registar-se</b>!" : "Aún no eres profesional Zaask. ¡Aprovecha para <b>registrarte</b>!";
@@ -296,7 +296,7 @@ export class LoginPage {
 								alert.present();
 								return;
 							} else {
-								this.zaaskServices.saveUserData(data);
+								await this.zaaskServices.saveUserData(data);
 								//
 								this.nav.setRoot("TaskPage");
 							}
@@ -383,20 +383,20 @@ export class LoginPage {
 
 				this.zaaskServices.appleLogin(succ.identityToken, email).subscribe(
 					(data: any) => {
-						loading.dismiss();
 						this.zaaskServices.storeMobileLogin(data.api_token, this.uuid, this.platformId, this.versionId, "facebook").subscribe();
 						data.user.api_token = data.api_token;
-						this.user.setUserNew(data.user);
+						this.user.set(data.user);
 						this.zaaskServices.authRequest().subscribe(
-							(data) => {
-								this.zaaskServices.saveUserData(data);
+							async (data) => {
+								loading.dismiss();
+								await this.zaaskServices.saveUserData(data);
+								this.nav.setRoot("TaskPage");
 							},
 							(error) => {
+								loading.dismiss();
 								console.log("auth error", error);
 							}
 						);
-
-						this.nav.setRoot("TaskPage");
 					},
 					(error) => {
 						loading.dismiss();
@@ -438,6 +438,17 @@ export class LoginPage {
 					this.uuid = "undefined";
 				}
 
+				if (this.user.getCountry() === "PT") {
+					var msgAlert = "Por favor espere...";
+				} else {
+					var msgAlert = "Por favor, espere...";
+				}
+
+				let loading = this.loading.create({
+					content: msgAlert
+				});
+				loading.present();
+
 				//
 				this.zaaskServices.facebookLogin(response.authResponse.accessToken).subscribe(
 					(data: any) => {
@@ -446,17 +457,18 @@ export class LoginPage {
 						data.user.api_token = data.api_token;
 						// data.user.password = event.password;
 						// data.user.email = event.email;
-						this.user.setUserNew(data.user);
+						this.user.set(data.user);
 						this.zaaskServices.authRequest().subscribe(
-							(data) => {
-								this.zaaskServices.saveUserData(data);
+							async (data) => {
+								await this.zaaskServices.saveUserData(data);
+								loading.dismiss();
+								this.nav.setRoot("TaskPage");
 							},
 							(error) => {
+								loading.dismiss();
 								console.log("auth error", error);
 							}
 						);
-
-						this.nav.setRoot("TaskPage");
 					},
 					(error) => {
 						let message = error.error && error.error.message ? error.error.message : "Erro no acesso à Zaask!";
@@ -465,6 +477,7 @@ export class LoginPage {
 							subTitle: message,
 							buttons: ["Fechar"]
 						});
+						loading.dismiss();
 						alert.present();
 						this.storage.remove("user");
 						console.log("login error", error);

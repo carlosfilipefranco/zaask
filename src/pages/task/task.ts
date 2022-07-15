@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
-import { AlertController, IonicPage, NavController, NavParams, Platform } from "ionic-angular";
+import { AlertController, Events, IonicPage, NavController, NavParams, Platform } from "ionic-angular";
 import { User } from "../../providers/user/user";
 import { ZaaskServices } from "../../providers/zaask-services/zaask-services";
 import moment from "moment-timezone";
@@ -55,7 +55,10 @@ export class TaskPage {
 		policyAccept: string;
 	};
 	pageContentClass = "task-page task-page__heigth";
-	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public userProvider: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef, private storage: Storage) {
+	evGetUser = () => {
+		this.getUser();
+	};
+	constructor(public nav: NavController, public form: FormBuilder, public platform: Platform, public zaaskServices: ZaaskServices, public userProvider: User, public Utils: Utils, public Alert: AlertController, public ga: GoogleAnalytics, public facebook: Facebook, public oneSignal: OneSignal, private ref: ChangeDetectorRef, private storage: Storage, private events: Events) {
 		this.passwordType = "password";
 		this.tasks = [];
 		this.country = this.userProvider.getCountry();
@@ -68,6 +71,8 @@ export class TaskPage {
 
 		this.getUser();
 		this.startPolicy();
+
+		this.events.subscribe("user:update", this.evGetUser);
 		//
 		this.translate =
 			this.country === "PT"
@@ -128,6 +133,7 @@ export class TaskPage {
 
 	async getUser() {
 		this.user = await this.storage.get("user");
+		console.log(this.user);
 	}
 
 	ionViewDidLoad() {
@@ -148,6 +154,10 @@ export class TaskPage {
 				if (providedConsent) this.initOneSignal();
 			});
 		}
+	}
+
+	ionViewWillUnload() {
+		this.events.unsubscribe("user:update", this.evGetUser);
 	}
 
 	ionViewWillEnter() {
@@ -318,6 +328,10 @@ export class TaskPage {
 
 		this.zaaskServices.showProTask(id).subscribe(
 			(response: any) => {
+				console.log("user requirements", response.userMeetsRequirements);
+				console.log("user credits", this.user.lead_credits);
+				console.log("user credits", this.user);
+				console.log("credits", response.credits[0].credits);
 				if (response.userMeetsRequirements && this.user.lead_credits >= response.credits[0].credits) this.nav.push("TaskDetailsPage", { taskInfo: response });
 				else {
 					const baseUrl = this.userProvider.getCountry() === "PT" ? `${API_URL}/task/` : "https://zaask.es/task/";

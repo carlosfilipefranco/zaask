@@ -125,7 +125,7 @@ export class MyApp {
 				(data: any) => {
 					console.log(data);
 					this.zaaskServices.storeMobileLogin(user.api_token, this.uuid, this.platformId, this.versionId, "autologin").subscribe();
-					this.user.setUserNew(data.user);
+					this.user.set(data.user);
 					this.setText();
 					// this.zaaskServices.saveUserData(data);
 					this.rootPage = "TaskPage";

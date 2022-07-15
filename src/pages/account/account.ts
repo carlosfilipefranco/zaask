@@ -155,7 +155,7 @@ export class AccountPage {
 		this.zaaskServices.authRequestWithTokenParam(user.api_token).subscribe(
 			(data: any) => {
 				this.user = data.user;
-				this.userProvider.setUserNew(data.user);
+				this.userProvider.set(data.user);
 				this.zaaskServices.saveUserData(data);
 			},
 			(error) => {}
