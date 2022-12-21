@@ -125,25 +125,25 @@ export class AccountPage {
 		//fix inapp upload bug in Android versions <= 6
 		// var browser = null;
 		// if (platformId == "Android" && Number(versionId.substr(0, 1)) <= 6) {
-		// 	browser = this.utils.launchInApp(this.profileURL, "_system", this.user.uniqcode, false);
+		// 	browser = this.utils.launchInApp(this.profileURL, "_system", this.user.api_token, false);
 		// } else {
-		// 	browser = this.utils.launchInApp(this.profileURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		// 	browser = this.utils.launchInApp(this.profileURL, "_blank", this.user.api_token, this.platform.is("ios"));
 		// }
-		var browser = this.utils.launchInApp(this.profileURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		var browser = this.utils.launchInApp(this.profileURL, "_blank", this.user.api_token, this.platform.is("ios"));
 		browser.on("exit").subscribe((event) => {
 			this.loadUser();
 		});
 	}
 
 	launchHelpUrl() {
-		var browser = this.utils.launchInApp(this.helpURL, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		var browser = this.utils.launchInApp(this.helpURL, "_blank", this.user.api_token, this.platform.is("ios"));
 		browser.on("exit").subscribe((event) => {
 			this.loadUser();
 		});
 	}
 
 	launchCreditos() {
-		var browser = this.utils.launchInApp(this.creditosUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		var browser = this.utils.launchInApp(this.creditosUrl, "_blank", this.user.api_token, this.platform.is("ios"));
 		browser.on("exit").subscribe((event) => {
 			this.loadUser();
 		});
@@ -163,7 +163,7 @@ export class AccountPage {
 	}
 
 	launchSettings() {
-		this.utils.launchInApp(this.settingsUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		this.utils.launchInApp(this.settingsUrl, "_blank", this.user.api_token, this.platform.is("ios"));
 	}
 
 	setText() {

@@ -230,7 +230,7 @@ export class TaskDetailsPage {
 
 	openTipsWebPage() {
 		var tipsUrl = "https://www.zaask.pt/como-ter-sucesso-na-zaask?uniqcode=pU0o06bNGUzZjt4RriXrwPlU7PdWX77s197836";
-		this.utils.launchInApp(tipsUrl, "blank", this.user.uniqcode, this.platform.is("ios"));
+		this.utils.launchInApp(tipsUrl, "blank", this.user.api_token, this.platform.is("ios"));
 	}
 
 	buyTask(formData) {

@@ -19,9 +19,9 @@ export class User {
 	pushuserid: string;
 	pushtoken: string;
 	country: string;
-	api_key: string;
 	id: string;
 	uniqcode: string;
+	api_token: string;
 	lead_credits: any;
 	osUserId;
 	constructor(private storage: Storage, private events: Events) {
@@ -59,7 +59,7 @@ export class User {
 	}
 
 	getKey() {
-		return this.api_key;
+		return this.api_token;
 	}
 
 	setCountry(country) {
@@ -69,7 +69,7 @@ export class User {
 	set(user) {
 		this.username = user.username;
 		this.name = user.name;
-		this.api_key = user.api_token;
+		this.api_token = user.api_token;
 		this.id = user.id;
 
 		this.events.publish("user:update", user);

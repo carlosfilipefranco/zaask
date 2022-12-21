@@ -336,7 +336,7 @@ export class TaskPage {
 				else {
 					const baseUrl = this.userProvider.getCountry() === "PT" ? `${API_URL}/task/` : "https://zaask.es/task/";
 					const taskUrl = baseUrl + response.task.task_id;
-					this.Utils.launchInApp(taskUrl, "_blank", this.user.uniqcode, this.platform.is("ios"));
+					this.Utils.launchInApp(taskUrl, "_blank", this.user.api_token, this.platform.is("ios"));
 				}
 			},
 			(error) => {
@@ -356,11 +356,11 @@ export class TaskPage {
 
 	editCategory() {
 		const url = this.userProvider.getCountry() === "PT" ? `${API_URL}/profile/services` : "https://zaask.es/profile/services";
-		this.Utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		this.Utils.launchInApp(url, "_blank", this.user.api_token, this.platform.is("ios"));
 	}
 
 	openLink(url) {
-		this.Utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
+		this.Utils.launchInApp(url, "_blank", this.user.api_token, this.platform.is("ios"));
 	}
 
 	getRelativeTime(date) {

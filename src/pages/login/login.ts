@@ -325,7 +325,7 @@ export class LoginPage {
 	openLink() {
 		this.platform.ready().then(() => {
 			const url = this.user.getCountry() === "PT" ? `${API_URL}/bem-vindo` : "https://zaask.es/bem-vindo";
-			this.utils.launchInApp(url, "_blank", this.user.uniqcode, this.platform.is("ios"));
+			this.utils.launchInApp(url, "_blank", this.user.api_token, this.platform.is("ios"));
 		});
 	}
 

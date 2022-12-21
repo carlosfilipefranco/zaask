@@ -165,7 +165,6 @@ export class ZaaskServices {
 	}
 
 	authRequestWithTokenParam(token) {
-		// const token = this.user.getUser().api_key;
 		this.url = `${this.server}/auth/user?api_token=${token}`;
 		return this.http.get(this.url);
 	}
@@ -177,7 +176,7 @@ export class ZaaskServices {
 		user.lead_credits = responseData.lead_credits;
 		user.image = responseData.image;
 		user.id = responseData.id;
-		user.uniqcode = responseData.uniqcode;
+		user.api_token = responseData.api_token;
 		user.notifications = false;
 		user.avgreviews = responseData.avgreviews;
 		await this.userProvider.set(user);

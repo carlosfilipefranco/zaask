@@ -158,7 +158,7 @@ export class ChatPage {
 
 		this.socket.emit("login", {
 			userId: this.user.id,
-			token: this.user.api_key
+			token: this.user.api_token
 		});
 	}
 
