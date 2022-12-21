@@ -6,9 +6,9 @@ import moment from "moment";
 @Injectable()
 export class Utils {
 	constructor(public iab: InAppBrowser, public loadingController: LoadingController) {}
-	launchInApp(url, target, uniqcode, isIOS) {
-		//console.log(`${url}?uniqcode=${uniqcode}&source=zaaskpro`);
-		return this.iab.create(`${url}?uniqcode=${uniqcode}&source=zaaskpro`, target, { location: isIOS ? "no" : "yes", clearcache: "yes", hideurlbar: "yes", hidenavigationbuttons: "no", closebuttoncaption: "Done" });
+	launchInApp(url, target, api_token, isIOS) {
+		console.log(`${url}?api_token=${api_token}&source=zaaskpro`);
+		return this.iab.create(`${url}?api_token=${api_token}&source=zaaskpro`, target, { location: isIOS ? "no" : "yes", clearcache: "yes", hideurlbar: "yes", hidenavigationbuttons: "no", closebuttoncaption: "Done" });
 	}
 
 	createZaaskLoading() {
