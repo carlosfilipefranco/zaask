@@ -68,7 +68,7 @@
 		"cordova-plugin-tracking-transparency": "^1.0.4",
 		"cordova-plugin-whitelist": "^1.3.3",
 		"cordova-sqlite-storage": "^6.0.0",
-		"onesignal-cordova-plugin": "^2.11.4",
+		"onesignal-cordova-plugin": "^3.0.1",
 		"typescript": "2.6.2"
 	},
 	"description": "An Ionic project",
@@ -94,10 +94,10 @@
 				"ANDROID_SUPPORT_V4_VERSION": "27.+"
 			},
 			"cordova-plugin-ionic-webview": {},
-			"onesignal-cordova-plugin": {},
 			"cordova-plugin-sign-in-with-apple": {},
 			"cordova-plugin-tracking-transparency": {},
-			"cordova-sqlite-storage": {}
+			"cordova-sqlite-storage": {},
+			"onesignal-cordova-plugin": {}
 		},
 		"platforms": [
 			"ios",
